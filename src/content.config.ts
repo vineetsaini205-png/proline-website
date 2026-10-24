@@ -30,6 +30,7 @@ const landing = z.object({
   need: z.string().optional(),
   serviceType: z.string().optional(), // adds Service schema when set
   guide: z.boolean().default(false),  // long guide: shows author box + BlogPosting schema
+  widget: z.enum(['dc-inside', 'white-label']).optional(), // interactive block shown after the body
   updated: z.coerce.date(),
   draft: z.boolean().default(false),
 });

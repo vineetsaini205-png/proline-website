@@ -451,7 +451,7 @@ form.is-done .form-done { display: block; }
 .site-footer { background: var(--navy); color: #A9BBD3; font-size: 14.5px; }
 .site-footer a { color: #DCE6F2; text-decoration: none; }
 .site-footer a:hover { color: var(--green); text-decoration: underline; }
-.footer-top { display: grid; grid-template-columns: minmax(0, 1.45fr) repeat(5, minmax(0, 1fr)); gap: 28px; padding-top: 64px; padding-bottom: 40px; }
+.footer-top { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(5, minmax(0, 1fr)); gap: 28px; padding-top: 64px; padding-bottom: 40px; }
 .footer-col li { line-height: 1.4; }
 .footer-contact span { color: #8FA3BF; }
 .footer-brand .logo-name { color: var(--white); }
@@ -459,7 +459,8 @@ form.is-done .form-done { display: block; }
 .footer-brand p { margin-top: 16px; line-height: 1.6; max-width: 340px; }
 .footer-contact { list-style: none; display: grid; gap: 8px; margin-top: 18px; }
 .footer-contact li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.45; }
-.footer-contact li > span { display: block; }
+.footer-contact li > span { display: block; min-width: 0; }
+.footer-contact a { overflow-wrap: anywhere; }
 .footer-contact .fc-note { display: block; font-size: 13px; color: #8FA3BF; }
 .footer-brand .logo rect { fill: var(--green); }
 .footer-brand .logo path { fill: var(--navy); }

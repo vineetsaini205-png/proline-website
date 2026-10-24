@@ -16,7 +16,23 @@ Never redo a ticked item unless the owner asks for a change.
 | Stack | Astro 5 static site, Markdown content collections, Sveltia CMS at /admin, Cloudflare Pages |
 
 Resume: `git clone https://github.com/vineetsaini205-png/proline-website && cd proline-website && npm install && npm run dev`
-Build: `npm run build` (output in `dist/`). Check: `npm run check:links` (once added).
+Build: `npm run build` (output in `dist/`). Content rules check: `node scripts/check-content.mjs`. Screenshots: `node scripts/shots.mjs <outDir> / /services/` (FULL=1 for full page).
+
+## How the site is built (where to change what)
+
+| To change | Edit |
+|---|---|
+| Phone, email, hours, offer strip, stats, clients, states, form URL | `src/data/site.json` |
+| Menus and footer links | `src/data/nav.ts` |
+| Fuel prices, public charging rates, CO2 factors | `src/data/rates.json` · state EV tariffs: `src/data/tariffs.json` |
+| CMS screenshots (D1–D5, P1–P6) | `src/data/cms-screens.json` + files in `public/images/cms/` |
+| Photos (blur boxes, alt text) | `scripts/photos/process.py` → `public/images/` + `src/data/images.json` |
+| Service / charger / battery / audience / root pages | Markdown in `src/content/<collection>/` (schema: `src/content.config.ts`, template: `src/layouts/LandingPage.astro`) |
+| Blog posts, FAQs | `src/content/blog/`, `src/content/faqs/` |
+| Look and feel | `src/styles/global.css` (design tokens at the top) |
+| Calculator maths | `src/lib/calc.ts` (shared by pages and browser scripts) |
+| Schema.org data | `src/lib/schema.ts` |
+| How to write pages | `docs/content-brief.md` · approved plan copy: `docs/plan.md` |
 
 ## Owner's rules — never break these
 
@@ -41,19 +57,21 @@ Legend: [x] done · [~] in progress · [ ] not started
 - [x] Repo created by owner and cloned; Astro 5.18 + sitemap + fonts installed (`package.json`)
 - [x] Photos exported to `public/images/` (12 photos × 1600w + 800w WebP) by `scripts/photos/process.py`; sizes/alt in `src/data/images.json`
 - [x] Working file (this file)
-- [ ] Astro config, base layout, header (dropdowns), footer, mobile WhatsApp/Call bar, global CSS with design tokens
-- [ ] Site data: `src/data/site.json` (phone, email, hours, stats, clients, states, offer strip, form endpoint)
-- [ ] Content collections schema (`src/content.config.ts`)
-- [ ] CMS screens extracted from the deck → `public/images/cms/` (stand-ins, labelled "concept design")
-- [ ] Placeholder logo SVG (real Charge-O logo file still needed from owner)
+- [x] Astro config, base layout, header (dropdowns), footer, mobile WhatsApp/Call bar, global CSS with design tokens
+- [x] Site data: `src/data/site.json`, `rates.json` (fuel 20 Oct 2026, CNG 29 Aug 2026), `tariffs.json` (BEE list), `cms-screens.json`
+- [x] Content collections schema (`src/content.config.ts`), templates `LandingPage.astro`, `HubPage.astro`
+- [x] CMS screens extracted from the deck → `public/images/cms/` (stand-ins, labelled "Concept design · sample data")
+- [x] Placeholder logo (mark in `Logo.astro`, `public/favicon.svg`, `public/images/logo-512.png`); real Charge-O logo file still needed
+- [x] Open Graph images: `public/images/og-default.jpg` (`scripts/og-default.mjs`), per-photo crops in `public/images/og/`
+- [x] Content checker `scripts/check-content.mjs` and writing guide `docs/content-brief.md`
 
 ### Pages (launch set, ~60)
 Home
-- [ ] `/`
+- [x] `/` (draft screenshots sent to owner 24 Oct)
 
 Services
-- [ ] `/services/` hub
-- [ ] `/services/ev-charger-installation/`
+- [x] `/services/` hub
+- [x] `/services/ev-charger-installation/` (model page for writers)
 - [ ] `/services/home-ev-charger-installation/`
 - [ ] `/services/dc-fast-charger-installation/`
 - [ ] `/services/ev-charging-station-setup/`
@@ -74,13 +92,13 @@ Proline CMS (copy from owner's `proline-cms-website-copy.md`, sections 1–9; se
 - [ ] `/cms/demo/`
 
 Chargers and products
-- [ ] `/chargers/` hub
+- [x] `/chargers/` hub (cards fill from content)
 - [ ] `/chargers/ac-chargers/`
 - [ ] `/chargers/dc-fast-chargers/` (+ "Inside a DC charger" animation, rebuilt — originals not available)
 - [ ] `/chargers/2w-3w-chargers/`
 - [ ] `/chargers/bus-truck-chargers/`
 - [ ] `/chargers/white-label-chargers/` (+ "Your brand on the charger" demo, rebuilt)
-- [ ] `/batteries/` hub
+- [x] `/batteries/` hub (cards fill from content)
 - [ ] `/batteries/2-wheeler-batteries/`
 - [ ] `/batteries/e-rickshaw-batteries/`
 - [ ] `/batteries/inverter-solar-batteries/`
@@ -88,7 +106,7 @@ Chargers and products
 - [ ] `/solar-ev-charging/`
 
 Who we serve
-- [ ] `/for/` hub
+- [x] `/for/` hub (cards fill from content)
 - [ ] `/for/charge-point-operators/`
 - [ ] `/for/charger-brands/`
 - [ ] `/for/ev-makers-and-dealers/`
@@ -150,3 +168,4 @@ Company
 
 ## Session log
 - 24 Oct 2026: photos re-exported with minimal blur; PROGRESS.md created; first push.
+- 24 Oct 2026: skeleton, homepage, templates and hubs built and pushed. Seven writers drafting Markdown in parallel: services (10), chargers (5), batteries (4) + /solar-ev-charging/, audiences (7), blog (3), start-a-station guide + FAQs. If a session ends before they report back, check which files exist in `src/content/` and run the checker; write only the missing ones.
