@@ -154,7 +154,7 @@ Company
 - [x] Cloudflare `_headers` (security, caching, noindex on *.pages.dev)
 - [x] Checks: build passes, no broken internal links (`npm run check:links`), titles/descriptions (`npm run check:seo`), no sideways scrolling on phones 320–412 px wide (header button gets a short label under 400 px)
 - [x] Go-live guide `docs/GO-LIVE.md`
-- [ ] Final zip of `dist/` sent to owner
+- [x] Packaging: not needed. The site deploys from GitHub to Cloudflare Pages on every push (a `dist/` zip was only for the manual-upload fallback)
 
 ## Waiting on the owner (site works without these; add when they arrive)
 - Charge-O logo file (SVG or PNG) — placeholder bolt logo used until then
