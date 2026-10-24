@@ -233,6 +233,17 @@ a.card:hover, .card.is-link:hover { border-color: var(--line-strong); box-shadow
   .menu-toggle { display: inline-flex; }
 }
 @media (max-width: 760px) { .header-actions .btn { min-height: 44px; padding: 0 14px; font-size: 14px; border-radius: 10px; } }
+.cta-short { display: none; }
+/* Small phones (360–400 px is common in India): tighter header, short button label */
+@media (max-width: 400px) {
+  .site-header .wrap { gap: 10px; }
+  .header-actions { gap: 8px; }
+  .header-actions .btn { padding: 0 12px; }
+  .header-actions .cta-long { display: none; }
+  .header-actions .cta-short { display: inline; }
+  main .btn { white-space: normal; text-align: center; }
+}
+@media (max-width: 359px) { .site-header .logo-sub { display: none; } }
 
 /* Mobile menu panel */
 .mnav { position: fixed; inset: 0; z-index: 70; background: var(--white); display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; }
@@ -387,11 +398,12 @@ form.is-done .form-done { display: block; }
 /* ---------- Contact options ---------- */
 .contact-list { list-style: none; display: grid; gap: 14px; }
 .contact-list li { display: flex; gap: 14px; align-items: flex-start; }
+.contact-list li > div { min-width: 0; }
 .contact-list .ci { width: 44px; height: 44px; border-radius: 12px; background: var(--green-50); color: var(--green-text); display: flex; align-items: center; justify-content: center; flex: none; }
 .section-navy .contact-list .ci { background: rgba(19, 178, 107, .16); color: var(--green); }
 .contact-list strong { display: block; color: var(--ink); font-size: 16px; }
 .section-navy .contact-list strong { color: var(--white); }
-.contact-list a { font-weight: 600; }
+.contact-list a { font-weight: 600; overflow-wrap: anywhere; }
 .section-navy .contact-list a { color: var(--white); }
 .contact-list span { font-size: 14px; color: var(--muted); }
 .section-navy .contact-list span { color: #A9BBD3; }

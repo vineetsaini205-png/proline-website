@@ -8,6 +8,12 @@ import { waLink } from '../lib/text';
 interface Props { cta?: { label: string; href: string }; waText?: string }
 const { cta = { label: 'Get a quote', href: '#quote' }, waText } = Astro.props;
 const path = Astro.url.pathname;
+// On phones under 400 px the header button gets a short label, so it fits beside the logo.
+const shortLabels: Record<string, string> = {
+  'Plan your station': 'Get a quote', 'Partner with us': 'Contact us', 'Become a brand partner': 'Contact us',
+  'Ask your question': 'Ask us', 'Book a site survey': 'Book survey', 'Book a survey': 'Book survey', 'Book a demo': 'Book demo',
+};
+const short = shortLabels[cta.label];
 
 const menuNotes: Record<string, string> = {
   Services: 'Not sure what you need? Start with a site survey.',
@@ -49,7 +55,7 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
     </nav>
     <div class="header-actions">
       <a class="icon-btn icon-call" href={`tel:${site.phoneE164}`} aria-label={`Call ${site.phoneDisplay} (${site.callHours.toLowerCase()})`}><Icon name="phone" size={20} /></a>
-      <a class="btn btn-primary" href={cta.href}>{cta.label}</a>
+      <a class="btn btn-primary" href={cta.href}>{short ? <><span class="cta-long">{cta.label}</span><span class="cta-short">{short}</span></> : cta.label}</a>
       <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><Icon name="menu" size={22} /></button>
     </div>
   </div>

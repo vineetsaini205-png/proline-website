@@ -103,20 +103,20 @@ Chargers and products
 - [x] `/chargers/bus-truck-chargers/`
 - [x] `/chargers/white-label-chargers/` (+ "Your brand on the charger" widget: done, `WhiteLabel.astro`, via `widget: white-label`)
 - [x] `/batteries/` hub (cards fill from content)
-- [~] `/batteries/2-wheeler-batteries/`
-- [~] `/batteries/e-rickshaw-batteries/`
-- [~] `/batteries/inverter-solar-batteries/`
-- [~] `/batteries/bess-for-ev-charging/`
-- [~] `/solar-ev-charging/`
+- [x] `/batteries/2-wheeler-batteries/`
+- [x] `/batteries/e-rickshaw-batteries/`
+- [x] `/batteries/inverter-solar-batteries/`
+- [x] `/batteries/bess-for-ev-charging/`
+- [x] `/solar-ev-charging/`
 
 Who we serve
 - [x] `/for/` hub (cards fill from content)
 - [x] `/for/charge-point-operators/`
 - [x] `/for/charger-brands/`
 - [x] `/for/ev-makers-and-dealers/`
-- [~] `/for/businesses/`
-- [~] `/for/housing-societies/`
-- [~] `/for/fleets/`
+- [x] `/for/businesses/`
+- [x] `/for/housing-societies/`
+- [x] `/for/fleets/`
 - [x] `/for/government-and-psu/`
 
 Tools (result first, no contact wall, no Proline prices)
@@ -152,7 +152,7 @@ Company
 - [x] Brand search: "Proline Electrical Works" in home title, `alternateName` Proline / Proline EV / Proline Electrical / Proline CMS
 - [x] `/admin` (Sveltia CMS 0.230.1, `public/admin/config.yml`): blog, FAQs, all page collections, site settings, rates, tariffs, CMS screenshots. Sign-in setup is owner's step (GO-LIVE 6)
 - [x] Cloudflare `_headers` (security, caching, noindex on *.pages.dev)
-- [~] Checks: build passes, no broken internal links, titles/descriptions lengths, mobile screenshots, page weight
+- [x] Checks: build passes, no broken internal links (`npm run check:links`), titles/descriptions (`npm run check:seo`), no sideways scrolling on phones 320–412 px wide (header button gets a short label under 400 px)
 - [x] Go-live guide `docs/GO-LIVE.md`
 - [ ] Final zip of `dist/` sent to owner
 
@@ -180,3 +180,4 @@ Company
 - 24 Oct 2026 (15:45 IST): the first writers stopped at 14:44 when a request was interrupted. Done by then: services ev-charger-installation, home, dc-fast, earthing, cabling; chargers/ac-chargers; pages/start-an-ev-charging-station; blog/how-to-choose-ev-charging-cms. Relaunched 8 writers for everything else (6 services, 4 chargers, 4 batteries + solar-ev-charging, 7 audiences, 3 blog posts, FAQs). If they stop again: check `ls src/content/*/` and write only what is missing.
 - 24 Oct 2026: **site live** at https://www.prolineelectricalworks.com (owner: "put online … directly, I do not require a test"). New Git-linked Pages project proline-website; www moved from the old project; bare domain added and redirected to www (301, path and query kept). Zoho MX/TXT records untouched.
 - 24 Oct 2026: writers finished services (6), chargers (4), audiences (4) and 3 blog posts; reviewed and pushed. Fixes: Type 6 is DC-only and Type 7 (LECCS) is AC+DC (brief, finder, start guide, FAQ, dealers page); "free advice and installation" reworded so installation never reads as free; signage and single-line diagram removed as unconfirmed services; customers never asked to open a DB cover; 3.3 kW breaker: 16 A for a socket, 20 A wired.
+- 24 Oct 2026: last writers finished (4 battery pages, /solar-ev-charging/, businesses, housing societies, fleets); all ~60 launch pages are in. Type 6/7 fixed on the fleets and 2-wheeler battery pages too. Fixed sideways scrolling on 360 px phones (header button label, long email in contact lists). Content, link and SEO checks: 0 problems.

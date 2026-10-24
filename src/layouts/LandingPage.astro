@@ -27,6 +27,8 @@ const { Content, headings } = await render(entry);
 const path = Astro.url.pathname;
 
 const ctaLabel = { survey: 'Book a site survey', demo: 'Book a demo', station: 'Plan your station', b2b: 'Partner with us', brand: 'Become a brand partner', technician: 'Apply now', ask: 'Ask your question', quote: 'Get a quote' }[d.form];
+// Shorter labels for the header button, so it fits beside the logo on 360 px phones.
+const headerLabel = { survey: 'Book a survey', brand: 'Partner with us', ask: 'Ask a question' }[d.form as string] ?? ctaLabel;
 const schema: object[] = [];
 if (d.serviceType) schema.push(serviceNode(path, d.h1, plainText(d.intro), d.serviceType));
 if (d.faqs.length) schema.push(faqNode(path, d.faqs));
@@ -36,7 +38,7 @@ const tool = d.related.find((r) => r.startsWith('/tools/'));
 const toolInfo = tool ? linkInfo(tool) : undefined;
 const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you help?`;
 ---
-<Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={d.image ? `/images/og/${d.image}.jpg` : undefined} imageAlt={d.h1} waText={wa} headerCta={headerCta ?? { label: ctaLabel, href: '#quote' }} ogType={d.guide ? 'article' : 'website'}>
+<Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={d.image ? `/images/og/${d.image}.jpg` : undefined} imageAlt={d.h1} waText={wa} headerCta={headerCta ?? { label: headerLabel, href: '#quote' }} ogType={d.guide ? 'article' : 'website'}>
   <section class="phero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
