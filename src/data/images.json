@@ -1,0 +1,170 @@
+{
+ "dc-hub-canopy": {
+  "alt": "DC fast chargers under a canopy at an EV charging hub",
+  "sizes": {
+   "1600": [
+    1600,
+    2000
+   ],
+   "800": [
+    800,
+    1000
+   ]
+  },
+  "blurred": 0
+ },
+ "dc-hub-bays": {
+  "alt": "A row of DC fast chargers under a canopy at a charging hub",
+  "sizes": {
+   "1600": [
+    1600,
+    2000
+   ],
+   "800": [
+    800,
+    1000
+   ]
+  },
+  "blurred": 0
+ },
+ "solar-canopy-cars": {
+  "alt": "Electric cars charging under a solar panel canopy",
+  "sizes": {
+   "1600": [
+    1600,
+    1200
+   ],
+   "800": [
+    800,
+    600
+   ]
+  },
+  "blurred": 4
+ },
+ "solar-canopy-aerial": {
+  "alt": "Aerial view of EV chargers under a solar panel canopy",
+  "sizes": {
+   "1600": [
+    1600,
+    1200
+   ],
+   "800": [
+    800,
+    600
+   ]
+  },
+  "blurred": 2
+ },
+ "solar-canopy-tall": {
+  "alt": "Solar carport canopy with EV chargers in a car park",
+  "sizes": {
+   "1600": [
+    1600,
+    2133
+   ],
+   "800": [
+    800,
+    1067
+   ]
+  },
+  "blurred": 4
+ },
+ "dc-charger-car": {
+  "alt": "Electric car parked at a DC fast charger",
+  "sizes": {
+   "1600": [
+    1600,
+    1066
+   ],
+   "800": [
+    800,
+    533
+   ]
+  },
+  "blurred": 1
+ },
+ "ac-charger-plug": {
+  "alt": "Type 2 AC charging plugs docked on a charger",
+  "sizes": {
+   "1600": [
+    1600,
+    2133
+   ],
+   "800": [
+    800,
+    1067
+   ]
+  },
+  "blurred": 1
+ },
+ "ev-charging-suv": {
+  "alt": "SUV plugged in at an EV charging point",
+  "sizes": {
+   "1600": [
+    1600,
+    2000
+   ],
+   "800": [
+    800,
+    1000
+   ]
+  },
+  "blurred": 0
+ },
+ "ac-pedestal-charger": {
+  "alt": "AC pedestal charger with Type 2 sockets and a charging cable",
+  "sizes": {
+   "1600": [
+    1600,
+    2133
+   ],
+   "800": [
+    800,
+    1067
+   ]
+  },
+  "blurred": 1
+ },
+ "ev-pedestal-crossover": {
+  "alt": "Electric crossover charging at a pedestal AC charger",
+  "sizes": {
+   "1600": [
+    1600,
+    1200
+   ],
+   "800": [
+    800,
+    600
+   ]
+  },
+  "blurred": 3
+ },
+ "dc-cabinet-charging": {
+  "alt": "Car charging at a DC charger cabinet",
+  "sizes": {
+   "1600": [
+    1600,
+    2133
+   ],
+   "800": [
+    800,
+    1067
+   ]
+  },
+  "blurred": 0
+ },
+ "ac-charger-closeup": {
+  "alt": "Close-up of an AC EV charger and plug",
+  "sizes": {
+   "1600": [
+    1600,
+    1200
+   ],
+   "800": [
+    800,
+    600
+   ]
+  },
+  "blurred": 0
+ }
+}
