@@ -19,6 +19,8 @@ Your current project "proline" was made with Direct Upload, and Cloudflare does 
    - Environment variable: `NODE_VERSION` = `22`
 4. **Save and Deploy**. After 1–2 minutes you get an address like `proline-website.pages.dev`. Open it and click around.
 
+**Quick option, without GitHub.** Open your existing project **proline** → **Create deployment** and upload the contents of the `proline-website-dist.zip` file you received. This puts the new site live at once. It does not rebuild by itself, though, so admin edits won't appear until you switch to the GitHub project above.
+
 ## 2. Check the new site
 
 On the `.pages.dev` address, check on your phone and computer:

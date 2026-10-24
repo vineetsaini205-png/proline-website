@@ -1,11 +1,22 @@
 ---
+// "Related pages" cards. Titles and one-line notes come from the menus (nav.ts) or from the
+// page's own content file, so any internal URL gets a proper card.
+import { getCollection } from 'astro:content';
 import { linkInfo, type NavLink } from '../data/nav';
 import Icon from './Icon.astro';
 interface Props { links: (string | NavLink)[]; title?: string }
 const { links, title = 'Related pages' } = Astro.props;
+
+const map = new Map<string, NavLink>();
+const bases = { services: '/services/', chargers: '/chargers/', batteries: '/batteries/', audiences: '/for/', pages: '/' } as const;
+for (const [coll, base] of Object.entries(bases)) {
+  for (const e of await getCollection(coll as keyof typeof bases)) map.set(`${base}${e.id}/`, { label: e.data.label, href: `${base}${e.id}/`, note: e.data.summary });
+}
+for (const e of await getCollection('blog')) map.set(`/blog/${e.id}/`, { label: e.data.h1 ?? e.data.title.replace(/ \| Proline.*$/, ''), href: `/blog/${e.id}/`, note: e.data.description });
+
 const items = links
-  .map((l) => (typeof l === 'string' ? linkInfo(l) ?? { label: l, href: l } : l))
-  .filter(Boolean) as NavLink[];
+  .map((l) => (typeof l === 'string' ? linkInfo(l) ?? map.get(l) : l))
+  .filter((x): x is NavLink => !!x);
 ---
 {items.length > 0 && (
   <section class="section section-line" aria-labelledby="related-title">

@@ -146,14 +146,14 @@ Company
 - [x] `404`
 
 ### Site-wide
-- [ ] Enquiry forms → Google Apps Script (Sheet + email to Sales@); falls back to prefilled WhatsApp until the script URL is set
-- [ ] SEO: titles < 60 chars, descriptions ~150, canonical, Open Graph image, sitemap, robots.txt (AI bots blocked), breadcrumbs
-- [ ] Schema: Organization/Electrician (Delhi, hours, no street), Service, BreadcrumbList, BlogPosting, SoftwareApplication (/cms/)
-- [ ] Brand search: "Proline Electrical Works", "Proline EV", "Proline CMS" in titles/schema `alternateName`
-- [ ] `/admin` (Sveltia CMS): blog, FAQs, site settings, tariffs, pages
-- [ ] Cloudflare `_headers` (security + caching)
+- [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → Google Apps Script (`docs/apps-script.gs`: Sheet + email to Sales@); prefilled WhatsApp until the script URL is set in `site.json`
+- [x] SEO: titles ≤ 60, descriptions, canonical, Open Graph, sitemap, robots.txt (AI bots blocked), breadcrumbs (`npm run check:seo`)
+- [x] Schema: Organization/Electrician (Delhi, no street; hours left out until days are confirmed), Service, BreadcrumbList, BlogPosting, FAQPage, SoftwareApplication (/cms/), WebApplication (tools)
+- [x] Brand search: "Proline Electrical Works" in home title, `alternateName` Proline / Proline EV / Proline Electrical / Proline CMS
+- [x] `/admin` (Sveltia CMS 0.230.1, `public/admin/config.yml`): blog, FAQs, all page collections, site settings, rates, tariffs, CMS screenshots. Sign-in setup is owner's step (GO-LIVE 6)
+- [x] Cloudflare `_headers` (security, caching, noindex on *.pages.dev)
 - [ ] Checks: build passes, no broken internal links, titles/descriptions lengths, mobile screenshots, page weight
-- [ ] Go-live guide `docs/GO-LIVE.md` (new Git-linked Pages project, domain move, Apps Script, admin login, Search Console, GBP)
+- [x] Go-live guide `docs/GO-LIVE.md`
 - [ ] Final zip of `dist/` sent to owner
 
 ## Waiting on the owner (site works without these; add when they arrive)
