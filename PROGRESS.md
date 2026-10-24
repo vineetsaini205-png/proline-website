@@ -45,7 +45,7 @@ Build: `npm run build` (output in `dist/`). Content rules check: `node scripts/c
 7. Site survey is **paid**; the fee is adjusted against the order if the customer goes ahead.
 8. Proline CMS: claim only what works today. Not ready (keep off, or "on request"): a named live payment gateway, SMS sending, add-ons, OCPP 2.0.1. Deck screens are concept designs — label them so until real screenshots arrive. Never publish deck slide 22 (commercial).
 9. Pages held back until the owner answers: AMC (`/services/ev-charger-amc/`), power approvals (`/services/ev-charging-power-approval/`).
-13. Proline CMS business model (owner, 24 Oct): software the operator owns, built in their brand and handed over (not a charging network they join). **No commission on charging payments, no fee per charger per month.** Two ways to run it: CPO Edition on the customer's own server/cloud, or **hosted by Proline on Proline's servers at a low running cost with 24/7 support**. "24/7" is allowed for CMS support only (not installation). Hosted server location not confirmed: don't say "in India" for the hosted option until the owner confirms.
+13. Proline CMS business model (owner, 24 Oct): software the operator owns, built in their brand and handed over (not a charging network they join). **No commission on charging payments, no fee per charger per month.** Two ways to run it: CPO Edition on the customer's own server/cloud, or **hosted by Proline on Proline's servers at a low running cost with 24/7 support**. "24/7" is allowed for CMS support only (not installation). Hosted servers are in India (owner confirmed 24 Oct).
 10. Hindi blogs/FAQs are phase 2 (at /hi/, written or checked by a Hindi speaker).
 11. Photos: Pexels downloads from the owner. Owner (24 Oct): "do not blur if it is not required". We blur **only readable charger / charging-network brand marks** (Pexels licence: don't imply endorsement by brands in the image). Car badges and number plates stay. Tesla Supercharger photos are **not used** (the charger design itself is Tesla's, and Proline doesn't install them).
 12. Commits end with the attribution lines in the session's instructions.
@@ -161,7 +161,7 @@ Company
 - Which charger brands Proline sells/works with (for /brands/ and charger pages; no brand names shown until then)
 - Real CMS screenshots (5 desktop, 6 phone) and a public PDF of the CMS deck without slide 22
 - Which CMS features are live at launch (copy section 10)
-- AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)? · Are Proline's CMS hosting servers in India? (asked 24 Oct)
+- AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)?
 - Project stories, client quotes (with permission), registrations (GST, Udyam, licence) — none received, so none shown
 - Google account for the enquiry Sheet (Apps Script) and GitHub logins for admin users
 

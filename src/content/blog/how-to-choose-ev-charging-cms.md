@@ -66,7 +66,7 @@ Commissioning and site visits go faster with a guided phone app that works on we
 
 ## 8. Where is your data, and who can see it?
 
-Under the DPDP Act 2023, the operator is the Data Fiduciary for drivers' details. Ask where the servers are, how long phone numbers are kept, and when the vendor's staff can see your data. Proline CMS can run on your own server in India, keeps drivers' numbers optional, and lets Proline in only through a time-limited support grant you approve, with every step recorded.
+Under the DPDP Act 2023, the operator is the Data Fiduciary for drivers' details. Ask where the servers are, how long phone numbers are kept, and when the vendor's staff can see your data. Proline CMS runs on your own server in India or on ours in India, keeps drivers' numbers optional, and lets Proline in only through a time-limited support grant you approve, with every step recorded.
 
 ## 9. How secure is sign-in, and who can change what?
 
@@ -86,7 +86,7 @@ Charging software is usually sold in one of three ways:
 | Revenue share | A percentage of revenue or a fee per session | The bill grows with every unit sold |
 | Owned licence | A one-time licence and a yearly maintenance contract | No fee per charger and no commission |
 
-Add the hidden costs too: staff time for refunds and reconciliation, payouts you wait for, and the cost of switching later. Proline CMS is sold as owned software, built in your brand and handed over, with **no commission on charging payments and no fee per charger per month**; or we host it for you at a low running cost with 24/7 support. Put any two quotes side by side with the [five-year cost comparison](/cms/affordable-ev-charging-software/#compare).
+Add the hidden costs too: staff time for refunds and reconciliation, payouts you wait for, and the cost of switching later. Proline CMS is sold as owned software, built in your brand and handed over, with **no commission on charging payments and no fee per charger per month**; or we host it for you in India at a low running cost with 24/7 support. Put any two quotes side by side with the [five-year cost comparison](/cms/affordable-ev-charging-software/#compare).
 
 ## 12. What happens if you want to leave?
 

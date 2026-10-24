@@ -125,7 +125,6 @@ These go in when they arrive. Until then the site works without them.
   - Which Tata company did you install for?
   - Do you offer AMC?
   - Do you offer electricity-connection (DISCOM/CEIG) approvals?
-  - Are your CMS hosting servers in India?
   - Which days are calls answered? This goes into Google's opening hours.
 - **Optional:**
   - registrations (GST, Udyam, electrical contractor licence);
