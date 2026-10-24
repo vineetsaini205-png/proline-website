@@ -69,7 +69,13 @@ The admin is at **www.prolineelectricalworks.com/admin**. It saves straight to G
 
 Each person needs a free GitHub account with access to the repository: GitHub → repository → Settings → Collaborators → Add people.
 
-**Quick way to sign in (no setup):** on the admin page choose **Sign in with token**. Create the token at GitHub → Settings → Developer settings → Personal access tokens → **Fine-grained**. Give it access to only `proline-website`, with *Contents: Read and write*. Paste it into the admin.
+**Quick way to sign in (no setup), about 5 minutes:**
+
+1. Sign in to GitHub as **vineetsaini205-png** → your photo (top right) → **Settings** → **Developer settings** (bottom of the left menu) → **Personal access tokens → Fine-grained tokens → Generate new token**.
+2. Name: `Proline admin`. Expiration: 1 year. Repository access: **Only select repositories → proline-website**. Permissions → Repository permissions → **Contents: Read and write**. Click **Generate token** and copy it (it is shown once; keep it private).
+3. Open **www.prolineelectricalworks.com/admin** → **Sign In Using Access Token** → paste → Sign in. The browser remembers you.
+
+To change a picture: open the page or blog post → **Or upload your own photo** → choose the file. It is turned into a fast WebP image (max 1600 px) before it is saved. Fill in "What the uploaded photo shows".
 
 **Smoother way, a "Sign in with GitHub" button (one-time setup, 15 minutes):**
 

@@ -149,6 +149,7 @@ Then drivers need to find you:
 
 - **Google Maps.** A Google Business Profile for the station puts it on the map with its exact location, opening hours and photos.
 - **EV Yatra.** The Bureau of Energy Efficiency keeps a national online database of public charging stations: operators register their stations on its EV Yatra portal, and its app helps drivers find the nearest public charger ([Power Line, Dec 2022](https://powerline.net.in/2022/12/14/ev-yatra-web-portal-and-mobile-app-launched/)). Proline CMS prepares the station and energy files for it.
+- **Unified Bharat eCharge (UBC).** The government's national charging network, launched in August 2026: drivers find chargers and pay by UPI in the BHIM app, while operators keep their own chargers and brand ([Autocar Professional, Aug 2026](https://www.autocarpro.in/news/pulse-energy-joins-unified-bharat-echarge-as-certified-tech-enabler-134136)). Stations on [Proline CMS](/cms/built-for-india/) can join in a few simple steps, now or later.
 - **Apps and fleets.** On a network's platform, your chargers appear in its app. Tie-ups with cab, delivery and e-rickshaw fleets nearby can bring regular users early.
 
 We help with each listing: the exact location, charger types, connectors, power and photos. Expect quiet early months, as usage at a new station typically builds over 6–12 months ([Bolt.Earth](https://bolt.earth/franchise)).

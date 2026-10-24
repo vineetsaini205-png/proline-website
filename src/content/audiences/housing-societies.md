@@ -141,7 +141,7 @@ We are based in Delhi and install EV chargers in 10 states across North, South a
 
 ## What to send us
 
-On WhatsApp to +91 73038 87364, or through the form on this page:
+On [WhatsApp](https://wa.me/917303887364), or through the form on this page:
 
 1. The society's name, city and number of flats
 2. How many residents have EVs now, and how many expect to buy one soon

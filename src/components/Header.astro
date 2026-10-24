@@ -26,7 +26,7 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
 <div class="offer">
   <div class="wrap">
     <p><span class="dot" aria-hidden="true"></span>{site.offerStrip}</p>
-    <p class="offer-hours">{site.callHours} · {site.whatsappHours} · <a href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a></p>
+    <p class="offer-hours"><a href={`tel:${site.phoneE164}`}>{site.callHours}</a> · <a href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank">{site.whatsappHours}</a></p>
   </div>
 </div>
 <header class="site-header">
@@ -54,7 +54,7 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
       </ul>
     </nav>
     <div class="header-actions">
-      <a class="icon-btn icon-call" href={`tel:${site.phoneE164}`} aria-label={`Call ${site.phoneDisplay} (${site.callHours.toLowerCase()})`}><Icon name="phone" size={20} /></a>
+      <a class="icon-btn icon-call" href={`tel:${site.phoneE164}`} aria-label={`Call Proline (${site.callHours.toLowerCase()})`}><Icon name="phone" size={20} /></a>
       <a class="btn btn-primary" href={cta.href}>{short ? <><span class="cta-long">{cta.label}</span><span class="cta-short">{short}</span></> : cta.label}</a>
       <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><Icon name="menu" size={22} /></button>
     </div>
@@ -91,7 +91,7 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
     <div class="mnav-cta">
       <a class="btn btn-primary btn-lg" href={cta.href} data-close-menu-link>{cta.label}</a>
       <a class="btn btn-outline btn-lg" href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />WhatsApp (any time)</a>
-      <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call {site.phoneDisplay}</a>
+      <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call us ({site.callHours.replace(/^Calls\s*/i, '')})</a>
       <p class="small muted center">{site.callHours} · {site.whatsappHours} · {site.city}</p>
     </div>
   </div>

@@ -7,15 +7,15 @@ import Faqs from '../components/Faqs.astro';
 import site from '../data/site.json';
 import { waLink } from '../lib/text';
 const faqs = [
-  { q: 'What is the fastest way to reach you?', a: `WhatsApp ${site.phoneDisplay}, any time. Send photos of your meter, main DB and the parking spot, and the charger you have in mind, and we can often tell you what the job needs straight away.` },
-  { q: 'When can I call?', a: `Calls to ${site.phoneDisplay} are answered from 10 am to 7 pm. Outside those hours, WhatsApp us and we reply.` },
+  { q: 'What is the fastest way to reach you?', a: `WhatsApp us any time, with the WhatsApp button on any page. Send photos of your meter, main DB and the parking spot, and the charger you have in mind, and we can often tell you what the job needs straight away.` },
+  { q: 'When can I call?', a: `Calls are answered from 10 am to 7 pm: tap Call on any page. Outside those hours, WhatsApp us and we reply.` },
   { q: 'Do you charge for a site survey?', a: 'Yes, the site survey is paid. If you go ahead with Proline, the survey fee is adjusted against your order.' },
   { q: 'Where are you based?', a: `In ${site.city}. Our technicians travel to sites across 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu.` },
 ];
 ---
 <SimplePage
   title="Contact Proline: EV Charger Installation in India"
-  description="WhatsApp +91 73038 87364 any time, call 10 am–7 pm, or email Sales@prolineelectricalworks.com for EV charger installation, chargers and Proline CMS."
+  description="WhatsApp us any time, call 10 am–7 pm, or email Sales@prolineelectricalworks.com about EV charger installation, chargers of any brand and Proline CMS."
   h1="Contact Proline"
   eyebrow="Contact"
   crumb="Contact"
@@ -25,8 +25,8 @@ const faqs = [
     <div class="wrap cta-split">
       <div>
         <ul class="contact-list">
-          <li><span class="ci"><Icon name="whatsapp" size={22} /></span><div><strong><a href={waLink(site.whatsapp, 'Hello Proline, I would like to talk about EV charging.')} rel="noopener" target="_blank">WhatsApp {site.phoneDisplay}</a></strong><span>Any time. Photos of your meter, DB and parking spot help.</span></div></li>
-          <li><span class="ci"><Icon name="phone" size={22} /></span><div><strong><a href={`tel:${site.phoneE164}`}>Call {site.phoneDisplay}</a></strong><span>10 am–7 pm</span></div></li>
+          <li><span class="ci"><Icon name="whatsapp" size={22} /></span><div><strong><a href={waLink(site.whatsapp, 'Hello Proline, I would like to talk about EV charging.')} rel="noopener" target="_blank">WhatsApp us</a></strong><span>Any time. Photos of your meter, DB and parking spot help.</span></div></li>
+          <li><span class="ci"><Icon name="phone" size={22} /></span><div><strong><a href={`tel:${site.phoneE164}`}>Call us</a></strong><span>10 am–7 pm</span></div></li>
           <li><span class="ci"><Icon name="mail" size={22} /></span><div><strong><a href={`mailto:${site.email}`}>{site.email}</a></strong><span>Tenders, drawings, documents and brand partnerships</span></div></li>
           <li><span class="ci"><Icon name="map" size={22} /></span><div><strong>{site.city}, India</strong><span>Working across 10 states in North, South and West India</span></div></li>
         </ul>

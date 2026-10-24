@@ -7,3 +7,6 @@ dist/
 .env.*
 __pycache__/
 *.pyc
+
+# Billing test page (local file paths)
+billing/dist/test.html

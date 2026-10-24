@@ -89,7 +89,7 @@ The site survey is paid. It takes an engineer's visit, test instruments and time
 
 ## When photos on WhatsApp are enough
 
-Not every job needs a visit. For most homes, and for a single AC charger close to the main DB, photos are enough to plan the work and quote for it. Send these on WhatsApp to +91 73038 87364:
+Not every job needs a visit. For most homes, and for a single AC charger close to the main DB, photos are enough to plan the work and quote for it. Send these to us on [WhatsApp](https://wa.me/917303887364):
 
 1. The electricity meter and main DB, with its door open so the breakers show (don't remove any cover)
 2. The latest electricity bill, showing the sanctioned load and connection type

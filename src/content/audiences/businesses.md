@@ -145,7 +145,7 @@ We are based in Delhi and work in 10 states across North, South and West India, 
 
 ## What to send us
 
-Send these on WhatsApp to +91 73038 87364, or use the form on this page:
+Send these on [WhatsApp](https://wa.me/917303887364), or use the form on this page:
 
 1. The location and the type of business
 2. How many bays you want for EVs, and how long guests, customers or staff stay

@@ -44,6 +44,8 @@ Being free to buy any brand is also a cost question: you can choose the charger 
 
 Drivers in India expect to scan a QR code and pay by UPI, without installing an app or creating an account. Then ask the more important question: **does the money go into your own payment account, or does the platform collect it and pay you later?** When you are the merchant, you are not waiting for payouts, and you are not paying a share of every session.
 
+Also ask whether it can join **Unified Bharat eCharge (UBC)**, the government's national charging network launched in August 2026, where drivers find chargers and pay by UPI in the BHIM app ([Autocar Professional, Aug 2026](https://www.autocarpro.in/news/pulse-energy-joins-unified-bharat-echarge-as-certified-tech-enabler-134136)). Proline CMS can, in a few simple steps, whenever you are ready.
+
 ## 3. Can a driver ever be charged more than they paid?
 
 A safe system bills from the charger's own meter and caps the bill at the amount paid. Unused money should go back automatically, everything should go back if charging never starts, and failed refunds should be retried. These details decide how many angry calls your team gets.
@@ -97,7 +99,7 @@ Ask how you get your data out and how chargers move to another system. With OCPP
 | Check | What good looks like |
 |---|---|
 | Charger brands | OCPP 1.6J, any make, a test for each model |
-| Payments | QR and UPI, money into your own account |
+| Payments | QR and UPI, money into your own account, ready for UBC |
 | Overcharging | Bill from the meter, capped at the amount paid |
 | Refunds | Automatic, retried if they fail |
 | GST | Documents issued automatically, monthly register |

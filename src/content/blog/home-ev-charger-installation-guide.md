@@ -161,6 +161,6 @@ Ask for a handover pack with the test results, photos of the work and the charge
 
 ## Get it installed
 
-Proline installs home chargers of any brand, including the wall box that came with your car, with its own circuit, DB box and tested earth. Send photos of your meter, main DB, electricity bill and parking spot on WhatsApp to +91 73038 87364 for a quote; see [home EV charger installation](/services/home-ev-charger-installation/). If photos aren't enough, a site survey comes first; it is paid, and the fee is adjusted against your order if you go ahead.
+Proline installs home chargers of any brand, including the wall box that came with your car, with its own circuit, DB box and tested earth. Send photos of your meter, main DB, electricity bill and parking spot on [WhatsApp](https://wa.me/917303887364) for a quote; see [home EV charger installation](/services/home-ev-charger-installation/). If photos aren't enough, a site survey comes first; it is paid, and the fee is adjusted against your order if you go ahead.
 
 Not sure what your home needs yet? Start with the [installation checklist](/tools/installation-checklist/).

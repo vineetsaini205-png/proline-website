@@ -11,8 +11,9 @@ Never redo a ticked item unless the owner asks for a change.
 | Code (this repo) | github.com/vineetsaini205-png/proline-website, branch `main` |
 | Approved plan | Claude Docs: https://claude.ai/artifact/BbomKbPKuGQ3w2mU2rUbE9 |
 | Approved first-screen design | https://claude.ai/artifact/5muNhLbEwLBg2W8et8yY3U (desktop + phone) |
-| Live site | **https://www.prolineelectricalworks.com** (www is the main address; canonical URLs use www). New Cloudflare Pages project **proline-website** (Git-linked to `main`, build `npm run build`, output `dist`, NODE_VERSION 22) — every push to `main` redeploys in ~2 min. Bare domain prolineelectricalworks.com is also on the project and 301-redirects to www (Cloudflare → Rules → Redirect Rules → "Bare domain to www"). Old Direct Upload project "proline" (proline-3da.pages.dev) no longer has the domain; owner can delete it after a week |
+| Live site | **https://www.prolineelectricalworks.com** (www is the main address; canonical URLs use www). New Cloudflare Pages project **proline-website** (Git-linked to `main`, build `npm run build`, output `dist`, NODE_VERSION 22) — every push to `main` redeploys in ~2 min. Bare domain prolineelectricalworks.com is also on the project and 301-redirects to www (Cloudflare → Rules → Redirect Rules → "Bare domain to www"). Old Direct Upload project "proline" was deleted by the owner on 24 Oct |
 | Owner | Vineet Saini, Proline Electrical Works, Delhi |
+| Billing app (invoices, proformas, POs) | Source `billing/` (see `billing/README.md`); runs as a Google Apps Script web app in the owner's Google account, data in the Sheet "Proline Billing", PDFs in Drive "Proline Billing/". Website link: /admin/billing/ |
 | Stack | Astro 5 static site, Markdown content collections, Sveltia CMS at /admin, Cloudflare Pages |
 
 Resume: `git clone https://github.com/vineetsaini205-png/proline-website && cd proline-website && npm install && npm run dev`
@@ -39,16 +40,19 @@ Build: `npm run build` (output in `dist/`). Content rules check: `node scripts/c
 1. **No prices anywhere** (no installation, charger, survey or CMS prices). Cost questions get the factors that decide cost + "Get a quote". Calculators use public tariffs/charging rates only; payback appears only when the visitor types their own quote.
 2. **No AI assistant / chatbot.** Keep AI crawlers blocked (robots.txt + Cloudflare setting). Google and Bing allowed.
 3. **Location = "Delhi" only.** Home-based, no office, no street address, no map pin.
-4. Phone/WhatsApp **+91 73038 87364** — calls 10 am–7 pm, WhatsApp any time. Email **Sales@prolineelectricalworks.com**.
+4. Phone/WhatsApp **+91 73038 87364** — calls 10 am–7 pm, WhatsApp any time. Email **Sales@prolineelectricalworks.com**. **The number is never shown as text on the site (owner, 24 Oct):** only "WhatsApp us" / "Call us" buttons and links carry it (tel: and wa.me), plus the hidden schema.org data. The checker flags the number in content.
 5. Facts allowed: 2 years in business · 500+ chargers installed (AC, DC, DB boxes) · 200+ technicians · North, South and West India · 10 states: Maharashtra, Chhattisgarh, Tamil Nadu, Telangana, Delhi, Himachal Pradesh, Uttarakhand, Uttar Pradesh, Haryana, Madhya Pradesh · installed for TATA, ThunderPlus, Bolt.Earth, KIA (write "TATA" — which Tata company is still unconfirmed).
 6. **Do not invent** projects, testimonials, reviews, certifications/registrations, partner status, prices or response-time promises. "Authorised partner" only for a brand that authorised Proline in writing (none confirmed yet).
 7. Site survey is **paid**; the fee is adjusted against the order if the customer goes ahead.
 8. Proline CMS: claim only what works today. Not ready (keep off, or "on request"): a named live payment gateway, SMS sending, add-ons, OCPP 2.0.1. Deck screens are concept designs — label them so until real screenshots arrive. Never publish deck slide 22 (commercial).
-9. Pages held back until the owner answers: AMC (`/services/ev-charger-amc/`), power approvals (`/services/ev-charging-power-approval/`).
+9. **AMC is offered** (owner, 24 Oct: "we can also work on AMCs") → `/services/ev-charger-amc/`. Still held until the owner answers: power approvals (`/services/ev-charging-power-approval/`).
 13. Proline CMS business model (owner, 24 Oct): software the operator owns, built in their brand and handed over (not a charging network they join). **No commission on charging payments, no fee per charger per month.** Two ways to run it: CPO Edition on the customer's own server/cloud, or **hosted by Proline on Proline's servers at a low running cost with 24/7 support**. "24/7" is allowed for CMS support only (not installation). Hosted servers are in India (owner confirmed 24 Oct).
 10. Hindi blogs/FAQs are phase 2 (at /hi/, written or checked by a Hindi speaker).
 11. Photos: Pexels downloads from the owner. Owner (24 Oct): "do not blur if it is not required". We blur **only readable charger / charging-network brand marks** (Pexels licence: don't imply endorsement by brands in the image). Car badges and number plates stay. Tesla Supercharger photos are **not used** (the charger design itself is Tesla's, and Proline doesn't install them).
 12. Commits end with the attribution lines in the session's instructions.
+14. **Never say what Proline earns** (owner, 24 Oct: "we do not tell customer that we earn commission and how much we earn"): no commission, margin or mark-up that Proline earns on chargers, batteries or anything else, and no amounts. The CMS line "no commission on your charging payments" (Proline takes none) stays until the owner says otherwise. The checker flags "our commission/margin", "we earn a commission".
+15. Batteries (owner confirmed 24 Oct): for scooter and e-rickshaw packs Proline supplies and matches the pack but does not fit it; it installs inverter, solar and station (BESS) batteries.
+16. Unified Bharat eCharge (UBC, national charging network in the BHIM app, launched Aug 2026): owner says Proline CMS will connect customers to it, "in simple steps", now or later.
 
 ## Status
 
@@ -83,7 +87,7 @@ Services
 - [x] `/services/ev-charger-db-box/`
 - [x] `/services/ev-charging-civil-work/`
 - [x] `/services/solar-installation/`
-- held: `/services/ev-charger-amc/`, `/services/ev-charging-power-approval/` (owner to confirm)
+- [x] `/services/ev-charger-amc/` (owner confirmed AMC, 24 Oct) · held: `/services/ev-charging-power-approval/` (owner to confirm)
 
 Proline CMS (copy from owner's `proline-cms-website-copy.md`, sections 1–9; section 10 = not-ready list)
 - [x] `/cms/` (copy sections 1–9; section 10 limits applied; FAQs in `src/data/cms-faqs.ts`)
@@ -145,6 +149,11 @@ Company
 - [x] `/terms/` (owner should have it checked)
 - [x] `404`
 
+### Billing app (owner request 24 Oct: invoice, proforma with annexure, PO; draft/final; series; GST; Drive; email to Sales@)
+- [x] Source in `billing/src` (shared GST maths, Apps Script server, pdfmake PDF layout, app); tests: `billing/test/*` (13 maths checks, 15 server checks with in-memory Google services, PDF samples, full UI flow in Chromium)
+- [ ] Installed in the owner's Google account (Sheet "Proline Billing", Apps Script, web app "Only myself") — needs the owner to approve Google permissions once
+- [ ] Website link /admin/billing/ → web app address
+
 ### Site-wide
 - [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → **live** Google Apps Script web app (owner's Sheet "Website Inquiry", tab "Enquiries"; Apps Script project "Proline website enquiries", deployed 24 Oct as the owner, access Anyone). URL in `site.json` → `formEndpoint`. Test row sent 24 Oct and arrived. If the script changes: Deploy → Manage deployments → Edit → New version (same URL)
 - [x] SEO: titles ≤ 60, descriptions, canonical, Open Graph, sitemap, robots.txt (AI bots blocked), breadcrumbs (`npm run check:seo`)
@@ -161,7 +170,7 @@ Company
 - Which charger brands Proline sells/works with (for /brands/ and charger pages; no brand names shown until then)
 - Real CMS screenshots (5 desktop, 6 phone) and a public PDF of the CMS deck without slide 22
 - Which CMS features are live at launch (copy section 10)
-- AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)?
+- Power approvals: offered or not? (AMC: yes, 24 Oct) · Which Tata company (Tata Power EZ Charge / Tata Motors)?
 - Project stories, client quotes (with permission), registrations (GST, Udyam, licence) — none received, so none shown
 - GitHub logins for admin users
 
@@ -181,3 +190,4 @@ Company
 - 24 Oct 2026: **site live** at https://www.prolineelectricalworks.com (owner: "put online … directly, I do not require a test"). New Git-linked Pages project proline-website; www moved from the old project; bare domain added and redirected to www (301, path and query kept). Zoho MX/TXT records untouched.
 - 24 Oct 2026: writers finished services (6), chargers (4), audiences (4) and 3 blog posts; reviewed and pushed. Fixes: Type 6 is DC-only and Type 7 (LECCS) is AC+DC (brief, finder, start guide, FAQ, dealers page); "free advice and installation" reworded so installation never reads as free; signage and single-line diagram removed as unconfirmed services; customers never asked to open a DB cover; 3.3 kW breaker: 16 A for a socket, 20 A wired.
 - 24 Oct 2026: last writers finished (4 battery pages, /solar-ev-charging/, businesses, housing societies, fleets); all ~60 launch pages are in. Type 6/7 fixed on the fleets and 2-wheeler battery pages too. Fixed sideways scrolling on 360 px phones (header button label, long email in contact lists). Content, link and SEO checks: 0 problems.
+- 24 Oct 2026 (evening): owner asked: hide the phone number (done: buttons/links only), never say what Proline earns (rule 14), AMC confirmed (page added), batteries rule confirmed, UBC government network (added to CMS pages), check public charging prices (still match: AC ₹8–15, DC ₹15–25 across Procharge, NextCharge and network lists), CMS photos from the PPT (already the deck screens), admin picture uploads (added: upload field + automatic WebP), billing app (built and tested; install pending). Decluttering and footer: proposal sent, waiting for approval — change nothing until then.

@@ -111,7 +111,7 @@ Moving house, or moving the charger to a better spot? We take it down, make the 
 
 ## Get a quote from photos
 
-For most homes, photos are enough to plan the job and quote for it. Send these on WhatsApp to +91 73038 87364:
+For most homes, photos are enough to plan the job and quote for it. Send these to us on [WhatsApp](https://wa.me/917303887364):
 
 1. Your electricity meter and main DB, with its door open so the breakers show (don't remove any cover)
 2. The latest electricity bill, showing the sanctioned load and connection type

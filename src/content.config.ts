@@ -20,6 +20,8 @@ const landing = z.object({
   icon: z.string().default('bolt'),
   order: z.number().default(100),
   image: z.string().optional(),      // photo key from src/data/images.json
+  photo: z.string().optional(),      // or an uploaded photo (/images/uploads/…), set in the admin; wins over `image`
+  photoAlt: z.string().optional(),
   highlights: z.array(z.string()).max(4).default([]),
   costFactors: z.array(z.string()).default([]),
   steps: z.array(step).optional(),
@@ -48,6 +50,8 @@ const blog = defineCollection({
     updated: z.coerce.date().optional(),
     author: z.string().default('Vineet Saini'),
     image: z.string().optional(),
+    photo: z.string().optional(),     // uploaded photo (/images/uploads/…); wins over `image`
+    photoAlt: z.string().optional(),
     tags: z.array(z.string()).default([]),
     faqs: z.array(faq).default([]),
     related: z.array(z.string()).default([]),

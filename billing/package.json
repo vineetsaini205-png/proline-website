@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "commonjs",
+  "description": "Proline Billing (Google Apps Script). Source in src/, build with node billing/build.mjs"
+}

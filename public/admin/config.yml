@@ -18,6 +18,18 @@ display_url: https://www.prolineelectricalworks.com
 logo_url: /favicon.svg
 media_folder: public/images/uploads
 public_folder: /images/uploads
+# Uploaded photos are converted to WebP and scaled down to 1600 px before they are saved, so pages stay fast.
+media_libraries:
+  default:
+    config:
+      max_file_size: 20000000
+      slugify_filename: true
+      transformations:
+        raster_image:
+          format: webp
+          quality: 82
+          width: 1600
+          height: 1600
 
 collections:
   - name: blog
@@ -42,6 +54,16 @@ collections:
         widget: select
         required: false
         options: [dc-hub-bays, solar-canopy-cars, solar-canopy-aerial, solar-canopy-tall, dc-charger-car, ac-charger-plug, ev-charging-suv, ac-pedestal-charger, ev-pedestal-crossover, dc-cabinet-charging, ac-charger-closeup, dc-hub-canopy]
+      - &upload
+        name: photo
+        label: "Or upload your own photo (replaces the photo above)"
+        widget: image
+        required: false
+      - &uploadAlt
+        name: photoAlt
+        label: "What the uploaded photo shows (for Google and screen readers)"
+        widget: string
+        required: false
       - { name: tags, label: Tags, widget: list, required: false }
       - &faqs
         name: faqs
@@ -97,6 +119,8 @@ collections:
       - { name: icon, label: Icon, widget: select, default: bolt, options: [bolt, plug, home, gauge, station, clipboard, check, checkCircle, earth, cable, box, hardhat, sun, battery, building, users, truck, bus, landmark, store, car, scooter, calculator, search, list, leaf, phone, shield, wrench, layers, clock, map, tag, server, qr, chart, question, handshake, factory, fuel, file, info, trending, cpu, wifi, lock, refresh, user, globe, palette] }
       - { name: order, label: "Order on the hub page", widget: number, value_type: int, default: 100 }
       - *photo
+      - *upload
+      - *uploadAlt
       - { name: highlights, label: "Three short checks under the heading", widget: list, required: false, max: 4 }
       - { name: costFactors, label: "What decides the cost (no prices!)", widget: list, required: false }
       - name: steps
@@ -111,7 +135,7 @@ collections:
       - *faqs
       - *related
       - { name: form, label: "Form at the bottom", widget: select, default: quote, options: [quote, survey, station, demo, b2b, brand, technician, ask] }
-      - { name: need, label: "Pre-selected need in the quote form", widget: select, required: false, options: ["EV charger installation", "Home charger installation", "DC fast charger or charging station", "Help choosing a charger (any brand)", "Site survey", "Earthing, cabling or DB box", "Civil work or canopy", "Solar installation", "Batteries", "Proline CMS", "Something else"] }
+      - { name: need, label: "Pre-selected need in the quote form", widget: select, required: false, options: ["EV charger installation", "Home charger installation", "DC fast charger or charging station", "Help choosing a charger (any brand)", "Site survey", "EV charger AMC (maintenance)", "Earthing, cabling or DB box", "Civil work or canopy", "Solar installation", "Batteries", "Proline CMS", "Something else"] }
       - { name: serviceType, label: "Service name for Google (service pages only)", widget: string, required: false }
       - { name: guide, label: "Long guide (shows author box)", widget: boolean, default: false }
       - { name: widget, label: "Interactive block", widget: select, required: false, options: [dc-inside, white-label] }

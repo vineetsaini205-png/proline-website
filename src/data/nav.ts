@@ -9,6 +9,7 @@ export const services: NavLink[] = [
   { label: 'Charging station setup', href: '/services/ev-charging-station-setup/', note: 'Survey to go-live, turnkey' },
   { label: 'Site survey', href: '/services/site-survey/', note: 'What your site needs, before you buy' },
   { label: 'Commissioning and testing', href: '/services/ev-charger-commissioning/', note: 'Tests, OCPP setup, handover pack' },
+  { label: 'AMC and maintenance', href: '/services/ev-charger-amc/', note: 'Planned visits, tests and reports' },
   { label: 'Earthing', href: '/services/ev-charger-earthing/', note: 'Pipe or chemical earthing, tested' },
   { label: 'Cabling and wiring', href: '/services/ev-charger-cabling/', note: 'Sized, routed and trenched' },
   { label: 'DB boxes', href: '/services/ev-charger-db-box/', note: 'MCB, RCBO and surge protection' },

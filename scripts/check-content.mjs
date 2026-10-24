@@ -35,7 +35,11 @@ const FORBIDDEN = [
   [/\b(chatbot|ai assistant)\b/i, 'AI assistant (owner said no)'],
   [/\b(office address|our office|visit us at|head office|showroom)\b/i, 'office (Proline has none: Delhi only)'],
   [/\b(razorpay|cashfree|paytm|phonepe pg|billdesk)\b/i, 'payment company named (not integrated yet)'],
+  // Owner (24 Oct): never tell customers that Proline earns a commission or margin, or how much it earns.
+  [/\b((our|proline'?s|proline earns a) (commission|margin|cut|mark-?up)|we (earn|get|make|take) (a |our )?(commission|margin|cut|mark-?up))\b/i, 'Proline earnings or commission (owner: never say what Proline earns)'],
 ];
+// Owner (24 Oct): the phone number is never shown as text; WhatsApp and Call links may carry it.
+const PHONE_TEXT = /(\+?91[\s-]?)?7303\s?8\s?87364/;
 const RUPEE_OK = /tariff|per unit|a unit|\/unit|kwh|petrol|diesel|cng|fuel|litre|example|e\.g\.|for instance|save|saving|earn|revenue|profit|charge drivers|drivers pay|public charging|electricity|bill|fee is adjusted/i;
 
 let errors = 0, warns = 0;
@@ -73,6 +77,7 @@ for (const file of targets.flatMap(files).filter((f) => f.endsWith('.md'))) {
     } else {
       if (!fm.date) err(file, 'missing date');
     }
+    if (fm.photo && !existsSync(join(ROOT, 'public', fm.photo.replace(/^\//, '')))) err(file, `uploaded photo not found in public/: ${fm.photo}`);
     const faqs = fm.faqs || [];
     if (faqs.length < 3) warn(file, `only ${faqs.length} FAQs (aim 3–6)`);
     for (const r of fm.related || []) if (!known.has(r)) err(file, `related link not a known page: ${r}`);
@@ -81,11 +86,13 @@ for (const file of targets.flatMap(files).filter((f) => f.endsWith('.md'))) {
   }
 
   const text = [m[1], body].join('\n');
+  const prose = text.replace(/\]\((https?:\/\/[^)]*)\)/g, '](link)'); // link addresses are not claims
   for (const [re, why] of FORBIDDEN) {
-    const hit = text.match(re);
+    const hit = prose.match(re);
     if (hit) err(file, `${why}: "${hit[0]}"`);
   }
   for (const line of text.split('\n')) {
+    if (PHONE_TEXT.test(line.replace(/\]\((https:\/\/wa\.me\/|tel:)[^)]*\)/g, '](link)'))) err(file, `phone number shown as text (use "WhatsApp us" / "call us" links): ${line.trim().slice(0, 120)}`);
     if (line.includes('₹') && !RUPEE_OK.test(line)) warn(file, `₹ amount: check it is not a Proline/brand price: ${line.trim().slice(0, 120)}`);
     // Owner confirmed 24/7 support for Proline CMS only; never for installation work.
     if (/24\s?[x×\/]\s?7/i.test(line) && !(/support/i.test(line) && /(cms|host)/i.test(line))) err(file, `"24/7" is allowed only for Proline CMS support: ${line.trim().slice(0, 120)}`);

@@ -22,25 +22,25 @@ const { Content, headings } = await render(entry);
 const path = Astro.url.pathname;
 const h1 = d.h1 ?? d.title.replace(/ \| Proline.*$/, '');
 const crumbs = [{ label: 'Blog', href: '/blog/' }, { label: h1 }];
-const schema: object[] = [articleNode(path, { title: h1, description: d.description, date: d.date, updated: d.updated, image: d.image ? `/images/og/${d.image}.jpg` : undefined, author: d.author })];
+const schema: object[] = [articleNode(path, { title: h1, description: d.description, date: d.date, updated: d.updated, image: d.photo ?? (d.image ? `/images/og/${d.image}.jpg` : undefined), author: d.author })];
 if (d.faqs.length) schema.push(faqNode(path, d.faqs));
 const toc = headings.filter((h) => h.depth === 2);
 const tool = d.related.find((r) => r.startsWith('/tools/'));
 const toolInfo = tool ? linkInfo(tool) : undefined;
 const initials = d.author.split(' ').map((w) => w[0]).join('').slice(0, 2);
 ---
-<Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={d.image ? `/images/og/${d.image}.jpg` : undefined} imageAlt={h1} ogType="article" lang={d.lang === 'hi' ? 'hi-IN' : 'en-IN'}>
+<Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={d.photo ?? (d.image ? `/images/og/${d.image}.jpg` : undefined)} imageAlt={d.photo ? (d.photoAlt ?? h1) : h1} ogType="article" lang={d.lang === 'hi' ? 'hi-IN' : 'en-IN'}>
   <section class="phero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
-      <div class:list={['phero-grid', { 'no-media': !d.image }]}>
+      <div class:list={['phero-grid', { 'no-media': !d.image && !d.photo }]}>
         <div>
           <p class="eyebrow">{d.tags[0] ? d.tags[0][0].toUpperCase() + d.tags[0].slice(1) : 'Guide'}</p>
           <h1>{h1}</h1>
           <p class="lead">{d.description}</p>
           <p class="updated" style="margin-top:18px">By {d.author}, {site.name} · {d.updated ? `Updated ${formatDate(d.updated)}` : formatDate(d.date)}</p>
         </div>
-        {d.image && <div class="phero-media"><Photo name={d.image} eager sizes="(max-width: 900px) 100vw, 480px" /></div>}
+        {(d.photo || d.image) && <div class="phero-media">{d.photo ? <Photo src={d.photo} alt={d.photoAlt ?? h1} eager /> : <Photo name={d.image} eager sizes="(max-width: 900px) 100vw, 480px" />}</div>}
       </div>
     </div>
   </section>

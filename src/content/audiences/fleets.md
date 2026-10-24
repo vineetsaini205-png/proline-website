@@ -128,7 +128,7 @@ We are based in Delhi and work in 10 states across North, South and West India, 
 
 ## What to send us
 
-On WhatsApp to +91 73038 87364, by email to Sales@prolineelectricalworks.com, or through the form on this page:
+On [WhatsApp](https://wa.me/917303887364), by email to Sales@prolineelectricalworks.com, or through the form on this page:
 
 1. Vehicle models and numbers, now and over the next year
 2. Kilometres a day and shift times for each vehicle type

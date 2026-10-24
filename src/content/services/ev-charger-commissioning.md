@@ -124,6 +124,8 @@ Operators and brands need the same result on every site, whoever does the work. 
 
 The job is done when the charger shows online in your CMS and a test session has completed. For brands, every unit your customers buy is commissioned and documented the same way, which helps when a warranty claim comes in later. See [charge point operators](/for/charge-point-operators/) and [charger brands](/for/charger-brands/).
 
+After handover, an [EV charger AMC](/services/ev-charger-amc/) repeats the key tests on planned visits and records them, so faults are caught early.
+
 We are based in Delhi and commission chargers in all 10 states we work in. We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
 
 Planning the installation too? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work your charger needs in a minute.
