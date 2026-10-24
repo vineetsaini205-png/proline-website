@@ -8,5 +8,6 @@ dist/
 __pycache__/
 *.pyc
 
-# Billing test page (local file paths)
+# Billing: keep the built Apps Script files (pasted into Google), not the local test page
+!billing/dist/
 billing/dist/test.html
