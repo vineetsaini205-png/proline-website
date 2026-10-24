@@ -1,4 +1,4 @@
-// Proline Billing 2026-10-24 20:23 — built from billing/src (shared.js + server.js). Edit the source, not this file.
+// Proline Billing 2026-10-24 23:16 — built from billing/src (shared.js + server.js). Edit the source, not this file.
 
 /*
  * Proline Billing — shared rules, used by the server (Code.gs) and the browser (Index.html).
@@ -114,19 +114,31 @@ var PB = (function () {
   }
 
   // ---- Financial year and numbers ------------------------------------------
-  /** "2026-10-24" → { start: 2026, short: "26-27", long: "2026-27" } (April to March). */
+  /** "2026-10-24" → { start: 2026, short: "26-27", compact: "2627", long: "2026-27" } (April to March). */
   function fy(dateStr) {
     var m = String(dateStr || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
     var y = m ? +m[1] : new Date().getFullYear(), mo = m ? +m[2] : new Date().getMonth() + 1;
     var start = mo >= 4 ? y : y - 1;
     var a = String(start).slice(2), b = String(start + 1).slice(2);
-    return { start: start, short: a + '-' + b, long: start + '-' + b };
+    return { start: start, short: a + '-' + b, compact: a + b, long: start + '-' + b };
   }
-  /** Document number from the series settings, e.g. PEW/26-27/0007. */
-  function formatNumber(prefix, fyShort, n, pad) {
+  /** The year part of a document number: "26-27" or, in the 2627 style, "2627". */
+  function fyTag(f, style) { return style === '2627' ? f.compact : f.short; }
+  /** Document number from the series settings, e.g. PEW/26-27/0007 or PEW/2627/07. */
+  function formatNumber(prefix, tag, n, pad) {
     var s = String(n);
     while (s.length < (pad || 4)) s = '0' + s;
-    return (prefix ? prefix + '/' : '') + fyShort + '/' + s;
+    return (prefix ? prefix + '/' : '') + tag + '/' + s;
+  }
+  /**
+   * The running number inside a document number of this series, in either year style:
+   * seqOf("PEW/2627/0005", "PEW", fy) → 5. Numbers from another series give null.
+   */
+  function seqOf(number, prefix, f) {
+    var esc = function (x) { return String(x).replace(/[.*+?^${}()|[\]\\\/-]/g, '\\$&'); };
+    var re = new RegExp('^' + (prefix ? esc(prefix) + '/' : '') + '(?:' + esc(f.short) + '|' + esc(f.compact) + ')/(\\d{1,9})$', 'i');
+    var m = String(number || '').trim().match(re);
+    return m ? +m[1] : null;
   }
   /** GST rule 46(b): up to 16 characters; letters, digits, "/" and "-" only. */
   function checkInvoiceNumber(no) {
@@ -182,6 +194,68 @@ var PB = (function () {
     };
   }
 
+  // ---- Reading imported rows (Excel, CSV, pasted) ------------------------------------
+  /** "Customer GSTIN" → "customergstin": header names compared without case, spaces or signs. */
+  function normKey(s) { return String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9%]/g, ''); }
+  var MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
+  /** Dates as typed in India: 28-09-2026, 28/9/26, 28 Sep 2026, 2026-09-28, or an Excel date. → "2026-09-28" or "". */
+  function parseDate(v) {
+    if (v == null || v === '') return '';
+    var z = function (n) { return (n < 10 ? '0' : '') + n; };
+    var ok = function (y, mo, d) {
+      if (y < 100) y += 2000;
+      if (!(mo >= 1 && mo <= 12 && d >= 1 && d <= 31)) return '';
+      var dt = new Date(Date.UTC(y, mo - 1, d));
+      return dt.getUTCMonth() === mo - 1 ? y + '-' + z(mo) + '-' + z(d) : '';
+    };
+    if (Object.prototype.toString.call(v) === '[object Date]') return isNaN(v) ? '' : ok(v.getFullYear(), v.getMonth() + 1, v.getDate());
+    if (typeof v === 'number' && v > 20000 && v < 80000) { var e = new Date(Date.UTC(1899, 11, 30) + v * 86400000); return ok(e.getUTCFullYear(), e.getUTCMonth() + 1, e.getUTCDate()); }
+    var t = String(v).trim(), m;
+    if ((m = t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/))) return ok(+m[1], +m[2], +m[3]);
+    if ((m = t.match(/^(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{2,4})$/))) return ok(+m[3], +m[2], +m[1]);
+    if ((m = t.match(/^(\d{1,2})[-\/ ]?([A-Za-z]{3,9})[-\/ ,]*(\d{2,4})$/))) {
+      var mo = MON[m[2].toLowerCase().slice(0, 4)] || MON[m[2].toLowerCase().slice(0, 3)];
+      if (mo) return ok(+m[3], mo, +m[1]);
+    }
+    return '';
+  }
+  /** "07", "7", "Delhi", "delhi (07)" → "07"; unknown → "". */
+  function stateCodeOf(v) {
+    var t = String(v == null ? '' : v).trim();
+    if (!t) return '';
+    var m = t.match(/\((\d{1,2})\)\s*$/) || t.match(/^(\d{1,2})$/);
+    if (m) { var c = (m[1].length === 1 ? '0' : '') + m[1]; return stateName(c) ? c : ''; }
+    var k = normKey(t);
+    for (var i = 0; i < STATES.length; i++) if (normKey(STATES[i][1]) === k) return STATES[i][0];
+    var alias = { orissa: '21', pondicherry: '34', jammukashmir: '01', jk: '01', andaman: '35', dnhdd: '26', newdelhi: '07', nct: '07', nctofdelhi: '07' };
+    return alias[k] || '';
+  }
+  /** "Tax invoice", "Invoice", "INV" → "INV"; "Proforma", "Performa", "PI" → "PI"; "PO", "Purchase order" → "PO". */
+  function docTypeOf(v) {
+    var k = normKey(v);
+    if (!k) return '';
+    if (k === 'pi' || k.indexOf('proforma') >= 0 || k.indexOf('performa') >= 0 || k.indexOf('preinvoice') >= 0) return 'PI';
+    if (k === 'po' || k.indexOf('purchase') >= 0) return 'PO';
+    if (k === 'inv' || k.indexOf('invoice') >= 0) return 'INV';
+    return '';
+  }
+  /** "Final", "Issued" → FINAL; "Cancelled", "Canceled" → CANCELLED; "Draft" or empty → DRAFT. */
+  function statusOf(v) {
+    var k = normKey(v);
+    if (!k || k === 'draft') return 'DRAFT';
+    if (k.indexOf('cancel') === 0) return 'CANCELLED';
+    if (k === 'final' || k === 'issued' || k === 'raised' || k === 'done' || k === 'finalised' || k === 'finalized') return 'FINAL';
+    return '';
+  }
+  /** "Yes", "Y", "TRUE", "1" → true; "No", "N", "FALSE", "0" → false; empty → the default. */
+  function yesNo(v, dflt) {
+    var k = normKey(v);
+    if (!k) return dflt;
+    if (k === 'yes' || k === 'y' || k === 'true' || k === '1') return true;
+    if (k === 'no' || k === 'n' || k === 'false' || k === '0') return false;
+    return dflt;
+  }
+
   /** Problems that stop a document from being finalised (empty list = fine). */
   function validate(doc, firm) {
     var p = [];
@@ -218,11 +292,111 @@ var PB = (function () {
     return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : '';
   }
 
+  // ---- Import templates (the app's "Import" page and the downloadable files use these) -----------------
+  var EX = 'EXAMPLE';
+  function exGstin(s14) { return s14 + gstinCheckChar(s14); }
+  var IMPORT = {
+    documents: {
+      title: 'Invoices, proformas and POs', file: 'Proline billing import - documents',
+      columns: ['Type', 'Doc no.', 'Status', 'Date', 'Customer or vendor', 'GSTIN', 'Address', 'City', 'PIN', 'State', 'Place of supply',
+        'Item', 'Item details', 'Goods or service', 'HSN/SAC', 'Qty', 'Unit', 'Rate', 'Discount %', 'GST %',
+        'Rates include GST', 'Round off', 'Reverse charge', 'Reference', 'Notes', 'Cancel reason'],
+      notes: [
+        ['Type', 'Invoice, Proforma or PO.'],
+        ['Doc no.', 'The same value on every line of one document. Final or Cancelled: the number it was issued with, e.g. PEW/2627/05. Draft: any label (1, 2, A…) just to group its lines; the number is given when you finalise it in the app.'],
+        ['Status', 'Draft (to finish in the app), Final or Issued (already issued, recorded as it is), or Cancelled (recorded as cancelled; its number can be given again).'],
+        ['Date', 'Day first: 28-09-2026, 28/09/2026 or 28 Sep 2026.'],
+        ['Customer or vendor', 'Name. An existing customer or vendor is matched by GSTIN or name; a new one is added. Rows that start with EXAMPLE are skipped.'],
+        ['GSTIN', 'Leave empty for an unregistered customer. The state is read from the GSTIN.'],
+        ['Address, City, PIN, State', 'Needed only for a new customer or vendor. State (name or code) is needed when there is no GSTIN.'],
+        ['Place of supply', 'State name or code. Empty: the customer’s state (for a PO: your state). Same state as yours → CGST + SGST; another state → IGST.'],
+        ['Item, Item details', 'One row per item line. Item details is printed under the item.'],
+        ['Goods or service', 'Goods or Service. Empty: Service when the code is a SAC (99…), otherwise Goods.'],
+        ['HSN/SAC', 'Goods: HSN, 4, 6 or 8 digits. Services: SAC, 6 digits starting 99.'],
+        ['Qty, Unit, Rate', 'Rate per unit in rupees, before GST unless Rates include GST is Yes.'],
+        ['Discount %, GST %', 'GST %: 0, 0.25, 3, 5, 12, 18, 28 or 40.'],
+        ['Rates include GST, Round off, Reverse charge', 'Yes or No. Empty: No, Yes, No.'],
+        ['Reference', 'Customer PO number (for a PO: the vendor’s quotation).'],
+        ['Notes, Cancel reason', 'Optional. Cancel reason is used for Cancelled rows.'],
+        ['Header fields', 'On the 2nd and later lines of one document only Type, Doc no. and the item columns are needed.']
+      ],
+      examples: [
+        ['Invoice', 'PEW/2627/05', 'Final', '28-09-2026', EX + ' Customer Pvt Ltd', exGstin('07AAACS1234A1Z'), '12 Sample Road, Sector 5', 'New Delhi', '110017', 'Delhi', '',
+          'AC EV charger 7.4 kW', 'Wall-mounted, Type 2 socket', 'Goods', '85044090', 1, 'Nos', 48500, '', 5, 'No', 'Yes', 'No', 'PO-778', '', ''],
+        ['Invoice', 'PEW/2627/05', '', '', EX + ' Customer Pvt Ltd', '', '', '', '', '', '',
+          'Installation and commissioning', 'Earthing, cabling, testing and handover', 'Service', '995461', 1, 'Job', 7500, '', 18, '', '', '', '', '', ''],
+        ['Proforma', '1', 'Draft', '25-10-2026', EX + ' Builders LLP', '', '5 Market Road', 'Noida', '201301', 'Uttar Pradesh', '',
+          'DC fast charger 60 kW', 'CCS2, dual gun', 'Goods', '85044090', 2, 'Nos', 650000, 3, 5, 'No', 'Yes', 'No', '', '50% advance', '']
+      ],
+      fields: {
+        type: ['type', 'doctype', 'documenttype', 'document'], ref: ['docno', 'documentno', 'docnumber', 'no', 'number', 'invoiceno', 'invoicenumber', 'invno', 'docref', 'ref'],
+        status: ['status'], date: ['date', 'docdate', 'invoicedate'],
+        party: ['customerorvendor', 'customer', 'vendor', 'party', 'partyname', 'customername', 'vendorname', 'billto', 'buyer', 'name'],
+        gstin: ['gstin', 'gstno', 'gstnumber', 'customergstin', 'vendorgstin'], address: ['address', 'billingaddress'], city: ['city', 'town'],
+        pin: ['pin', 'pincode', 'postalcode', 'zip'], state: ['state', 'statecode'], pos: ['placeofsupply', 'pos'],
+        item: ['item', 'itemname', 'product', 'particulars', 'service'], details: ['itemdetails', 'details', 'description', 'itemdescription', 'specification'],
+        kind: ['goodsorservice', 'goodsservice', 'itemtype', 'kind'], hsn: ['hsnsac', 'hsn', 'sac', 'hsncode', 'saccode', 'hsnsaccode'],
+        qty: ['qty', 'quantity'], unit: ['unit', 'uom', 'units'], rate: ['rate', 'price', 'unitprice', 'rateperunit'],
+        disc: ['discount%', 'discount', 'disc%', 'disc', 'discountpercent'], gst: ['gst%', 'gstrate', 'gstrate%', 'tax%', 'gstpercent', 'taxrate'],
+        incl: ['ratesincludegst', 'inclusiveofgst', 'inclgst', 'includesgst', 'priceincludesgst'], round: ['roundoff', 'round'], rc: ['reversecharge', 'rcm'],
+        reference: ['reference', 'customerpono', 'pono', 'yourref', 'quoteref', 'customerref'], notes: ['notes', 'note', 'remarks'],
+        reason: ['cancelreason', 'reason', 'cancellationreason']
+      }
+    },
+    parties: {
+      title: 'Customers and vendors', file: 'Proline billing import - customers and vendors',
+      columns: ['Name', 'Type', 'GSTIN', 'Label', 'Legal name', 'Address', 'City', 'PIN', 'State', 'Contact person', 'Phone', 'Email'],
+      notes: [
+        ['Name', 'One row per GST registration or address. Repeat the name on more rows for more GSTINs or sites. Rows that start with EXAMPLE are skipped.'],
+        ['Type', 'Customer, Vendor (for POs) or Both. Empty: Customer.'],
+        ['GSTIN', 'Leave empty if unregistered. The state is read from the GSTIN.'],
+        ['Label', 'Optional, e.g. Head office, Pune site.'],
+        ['Legal name', 'Only if different from the name, as on the GST certificate.'],
+        ['State', 'Name or code. Needed when there is no GSTIN.'],
+        ['Existing names', 'A name that already exists gets the new GSTINs or addresses added; nothing is deleted.']
+      ],
+      examples: [
+        [EX + ' Customer Pvt Ltd', 'Customer', exGstin('07AAACS1234A1Z'), 'Head office', EX + ' Customer Private Limited', '12 Sample Road, Sector 5', 'New Delhi', '110017', 'Delhi', 'Ms A. Sharma', '', 'accounts@example.com'],
+        [EX + ' Customer Pvt Ltd', 'Customer', exGstin('27AAACS1234A1Z'), 'Pune site', '', 'Tech Park, Hinjewadi', 'Pune', '411057', 'Maharashtra', '', '', ''],
+        [EX + ' Cable Supplier', 'Vendor', '', '', '', 'Industrial Area', 'Faridabad', '121003', 'Haryana', '', '', '']
+      ],
+      fields: {
+        name: ['name', 'partyname', 'customername', 'vendorname', 'customerorvendor', 'customer', 'vendor'], role: ['type', 'role'],
+        gstin: ['gstin', 'gstno', 'gstnumber'], label: ['label', 'addresslabel', 'site', 'branch'], legal: ['legalname', 'legalnameasgst', 'legalnameaspergst'],
+        address: ['address'], city: ['city', 'town'], pin: ['pin', 'pincode', 'postalcode', 'zip'], state: ['state', 'statecode'],
+        contact: ['contactperson', 'contact', 'person'], phone: ['phone', 'mobile', 'phoneno', 'contactno'], email: ['email', 'emailid', 'mail']
+      }
+    },
+    items: {
+      title: 'Items', file: 'Proline billing import - items',
+      columns: ['Name', 'Details', 'Goods or service', 'HSN/SAC', 'Unit', 'Rate', 'GST %', 'Category'],
+      notes: [
+        ['Name', 'One row per item. A name that already exists is updated. Rows that start with EXAMPLE are skipped.'],
+        ['Details', 'Optional, printed under the item name.'],
+        ['Goods or service', 'Goods or Service. Empty: Service when the code is a SAC (99…), otherwise Goods.'],
+        ['HSN/SAC', 'Goods: HSN, 4, 6 or 8 digits. Services: SAC, 6 digits starting 99. Check with your CA.'],
+        ['Unit, Rate', 'Rate per unit in rupees, before GST. Optional.'],
+        ['GST %', '0, 0.25, 3, 5, 12, 18, 28 or 40.']
+      ],
+      examples: [
+        [EX + ' Armoured copper cable 3C x 6 sq mm', '', 'Goods', '8544', 'Mtr', 310, 18, 'Electrical'],
+        [EX + ' Installation and commissioning', 'Earthing, cabling, testing and handover', 'Service', '995461', 'Job', 7500, 18, 'Services']
+      ],
+      fields: {
+        name: ['name', 'item', 'itemname', 'product', 'service'], details: ['details', 'description', 'itemdetails'],
+        kind: ['goodsorservice', 'goodsservice', 'type', 'itemtype', 'kind'], hsn: ['hsnsac', 'hsn', 'sac', 'hsncode', 'saccode'],
+        unit: ['unit', 'uom', 'units'], rate: ['rate', 'price', 'unitprice'], gst: ['gst%', 'gstrate', 'gstrate%', 'tax%', 'gstpercent', 'taxrate'],
+        category: ['category', 'group']
+      }
+    }
+  };
+
   return {
     STATES: STATES, UT_CODES: UT_CODES, GST_RATES: GST_RATES, UNITS: UNITS, TYPES: TYPES,
     stateName: stateName, r2: r2, num: num, money: money, words: words, amountInWords: amountInWords,
     gstinCheckChar: gstinCheckChar, checkGstin: checkGstin, checkPan: checkPan, checkHsn: checkHsn,
-    fy: fy, formatNumber: formatNumber, checkInvoiceNumber: checkInvoiceNumber,
+    fy: fy, fyTag: fyTag, formatNumber: formatNumber, seqOf: seqOf, checkInvoiceNumber: checkInvoiceNumber,
+    normKey: normKey, parseDate: parseDate, stateCodeOf: stateCodeOf, docTypeOf: docTypeOf, statusOf: statusOf, yesNo: yesNo, IMPORT: IMPORT,
     compute: compute, validate: validate, today: today, prettyDate: prettyDate
   };
 })();
@@ -235,8 +409,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PB;
  * - Data: tabs in this Sheet (Settings, Series, Parties, Registrations, Products, Documents, Register, Log).
  * - PDFs: made in the browser (pdfmake), saved here to Google Drive: Proline Billing / 2026-27 / Tax Invoices …
  * - Email: each finalised PDF is emailed to the address in Settings (Sales@prolineelectricalworks.com).
- * - Numbers: given only when a document is finalised, one after another per type and financial year,
- *   never reused. Drafts have no number, so abandoned drafts never leave gaps.
+ * - Numbers: given when a document is finalised: the next in its series (type + financial year), a
+ *   cancelled number given again, or one typed by hand (e.g. invoices issued before this app).
+ *   Drafts have no number, so abandoned drafts never leave gaps. The series continues after the
+ *   highest number recorded in it.
  *
  * Deploy: Deploy → New deployment → Web app → Execute as: Me, Who has access: Only myself.
  * Source of truth: billing/src in the website repository (built into Code.gs and Index.html).
@@ -254,7 +430,7 @@ var SHEETS = {
   Products: ['id', 'name', 'description', 'type', 'hsn', 'unit', 'rate', 'gstRate', 'category', 'active', 'updated'],
   Documents: ['id', 'type', 'status', 'number', 'fy', 'date', 'partyId', 'partyName', 'gstin', 'posCode', 'taxable', 'tax', 'payable',
     'pdfUrl', 'pdfFileId', 'emailedAt', 'createdAt', 'updatedAt', 'finalisedAt', 'cancelledAt', 'cancelReason', 'sourceId',
-    'json1', 'json2', 'json3', 'json4'],
+    'json1', 'json2', 'json3', 'json4', 'amendedAt', 'source'],
   Register: ['invoiceNumber', 'date', 'party', 'gstin', 'posCode', 'placeOfSupply', 'rate', 'taxable', 'igst', 'cgst', 'sgst', 'invoiceValue', 'status', 'docId'],
   Log: ['time', 'user', 'action', 'docId', 'details']
 };
@@ -275,7 +451,8 @@ var DEFAULT_SETTINGS = {
   'bank.name': '', 'bank.accountName': 'Proline Electrical Works', 'bank.accountNo': '', 'bank.ifsc': '', 'bank.branch': '', 'bank.upi': '',
   'sign.name': 'Vineet Saini', 'sign.designation': 'Proprietor',
   'brand.logoFileId': '', 'brand.signatureFileId': '',
-  'series.INV.prefix': 'PEW', 'series.PI.prefix': 'PEW-PI', 'series.PO.prefix': 'PEW-PO', 'series.pad': '4',
+  'series.INV.prefix': 'PEW', 'series.PI.prefix': 'PEW-PI', 'series.PO.prefix': 'PEW-PO', 'series.pad': '4', 'series.fyStyle': '26-27',
+  'series.INV.reuse': '', 'series.PI.reuse': '', 'series.PO.reuse': '',
   'pdf.copies': 'Original',
   'terms.INV': '1. Payment is due by the due date shown. Please quote the invoice number when you pay.\n2. Warranty on chargers, batteries and other equipment is as per the manufacturer\'s terms.\n3. Goods once supplied are not taken back except under the manufacturer\'s warranty.\n4. Subject to Delhi jurisdiction.',
   'terms.PI': '1. This is a proforma invoice and not a tax invoice. A tax invoice will be issued on supply.\n2. Prices are valid until the date shown.\n3. Work starts after the advance payment is received.\n4. Subject to Delhi jurisdiction.',
@@ -325,6 +502,7 @@ function setup() {
 // ---------------------------------------------------------------- API used by Index.html
 function apiBootstrap() {
   ensureSetup_();
+  ensureHeaders_();
   return {
     settings: settings_(),
     parties: parties_(),
@@ -354,12 +532,16 @@ function apiSaveSettings(obj) {
   ['INV', 'PI', 'PO'].forEach(function (t) {
     var p = clean['series.' + t + '.prefix'];
     if (p != null && !/^[A-Za-z0-9\-]{0,10}$/.test(p)) throw new Error('A number prefix may use letters, digits and "-", up to 10 characters.');
+    if (clean['series.' + t + '.reuse'] != null) clean['series.' + t + '.reuse'] = splitList_(clean['series.' + t + '.reuse']).join(', ');
   });
-  if (clean['series.INV.prefix'] != null || clean['series.pad'] != null) {
+  if (clean['series.fyStyle'] != null && ['26-27', '2627'].indexOf(clean['series.fyStyle']) < 0) throw new Error('Choose how the year is written in numbers.');
+  if (clean['series.pad'] != null && !/^[1-6]$/.test(clean['series.pad'])) throw new Error('Choose how many digits the number has.');
+  if (clean['series.INV.prefix'] != null || clean['series.pad'] != null || clean['series.fyStyle'] != null) {
     var cur = settings_();
     var pre = clean['series.INV.prefix'] != null ? clean['series.INV.prefix'] : cur.series.INV.prefix;
     var pad = +(clean['series.pad'] || cur.series.pad || 4);
-    var sample = PB.formatNumber(pre, '26-27', Math.pow(10, pad) - 1, pad);
+    var style = clean['series.fyStyle'] || cur.series.fyStyle;
+    var sample = PB.formatNumber(pre, PB.fyTag(PB.fy(PB.today()), style), Math.pow(10, Math.max(pad, 3)) - 1, pad);
     var e = PB.checkInvoiceNumber(sample);
     if (e) throw new Error(e);
   }
@@ -505,8 +687,9 @@ function apiDeleteDraft(id) {
 }
 
 /**
- * Finalises a document: checks it, gives it the next number in its series and locks it.
- * The browser then makes the PDF and calls apiStorePdf.
+ * Finalises a document: checks it, gives it a number and locks it. The browser then makes the PDF
+ * and calls apiStorePdf. doc.numbering.mode: 'auto' (next in series, the default), 'reuse' (a
+ * cancelled number given again) or 'manual' (typed, e.g. an invoice issued before this app).
  */
 function apiFinalise(doc) {
   doc = normaliseDoc_(doc);
@@ -518,18 +701,13 @@ function apiFinalise(doc) {
   try {
     var existing = doc.id ? findRow_('Documents', doc.id) : null;
     if (existing && existing.status !== 'DRAFT') throw new Error('This document is already final (' + existing.number + ').');
-    var fy = PB.fy(doc.date);
-    var series = seriesRow_(doc.type, fy.short);
-    var next = (+series.last || 0) + 1;
-    var number = PB.formatNumber(s.series[doc.type].prefix, fy.short, next, +s.series.pad || 4);
-    if (doc.type === 'INV') { var e = PB.checkInvoiceNumber(number); if (e) throw new Error(e); }
-    if (rows_('Documents').some(function (d) { return d.type === doc.type && d.number === number; })) {
-      throw new Error('Number ' + number + ' is already used. Check the series in Settings.');
-    }
+    var f = PB.fy(doc.date);
+    var pick = pickNumber_(s, doc, f, existing ? existing.id : '');
     doc.id = doc.id || newId_('d');
     doc.status = 'FINAL';
-    doc.number = number;
-    doc.fy = fy.long;
+    doc.number = pick.number;
+    doc.fy = f.long;
+    doc.numbering = { mode: pick.mode, number: pick.number };
     doc.meta = doc.meta || {};
     doc.meta.createdAt = existing ? existing.createdAt : stamp_();
     doc.meta.updatedAt = stamp_();
@@ -538,14 +716,74 @@ function apiFinalise(doc) {
     doc.bank = s.bank;
     doc.sign = s.sign;
     doc.calc = calcFor_(doc);
-    writeSeries_(series, next);
+    bumpSeries_(s, doc.type, f, pick.number);
+    if (pick.mode === 'reuse') dropReuse_(doc.type, pick.number);
     writeDoc_(existing ? existing._row : 0, doc);
     if (doc.type === 'INV') writeRegister_(doc);
-    log_('finalise', doc.id, number + ' ' + doc.party.name + ' ₹' + PB.money(doc.calc.payable));
+    log_('finalise', doc.id, pick.number + (pick.mode !== 'auto' ? ' (' + pick.mode + ')' : '') + ' ' + doc.party.name + ' ₹' + PB.money(doc.calc.payable));
   } finally {
     lock.releaseLock();
   }
   return { doc: doc, summary: docSummary_(findRow_('Documents', doc.id)), series: seriesStatus_() };
+}
+
+/**
+ * Amends a final document: new contents (and, if asked, a new number), same document. Keeps a
+ * history with the reason, renames the old PDF in Drive instead of deleting it, and rewrites the
+ * Register rows. For an invoice already filed in GSTR-1, a credit or debit note is usually needed instead.
+ */
+function apiAmend(doc, reason) {
+  reason = String(reason || '').trim();
+  if (!reason) throw new Error('Give a reason for the amendment.');
+  doc = normaliseDoc_(doc);
+  var s = settings_();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    var r = doc.id ? findRow_('Documents', doc.id) : null;
+    if (!r || r.status !== 'FINAL') throw new Error('Only a final document can be amended.');
+    var before = docFromRow_(r);
+    doc.firm = before.firm || s.firm; doc.bank = before.bank || s.bank; doc.sign = before.sign || s.sign;
+    var problems = PB.validate(doc, doc.firm);
+    if (problems.length) throw new Error('Please fix these first:\n• ' + problems.join('\n• '));
+    var f = PB.fy(doc.date);
+    var number = before.number;
+    var wanted = String((doc.numbering && doc.numbering.mode === 'manual' && doc.numbering.number) || '').trim();
+    if (wanted && wanted !== before.number) {
+      checkTypedNumber_(doc.type, wanted, f, doc.id);
+      number = wanted;
+    }
+    var calc = calcFor_(doc);
+    var history = (before.meta && before.meta.amendments) || [];
+    history.push({ at: stamp_(), reason: reason, number: before.number, newNumber: number !== before.number ? number : '',
+      payable: (before.calc || {}).payable, newPayable: calc.payable });
+    doc.status = 'FINAL';
+    doc.number = number;
+    doc.fy = f.long;
+    doc.numbering = { mode: number === before.number ? 'keep' : 'manual', number: number };
+    doc.meta = before.meta || {};
+    doc.meta.amendments = history;
+    doc.meta.amendedAt = stamp_();
+    doc.meta.updatedAt = stamp_();
+    doc.calc = calc;
+    if (number !== before.number) bumpSeries_(s, doc.type, f, number);
+    writeDoc_(r._row, doc);
+    if (doc.type === 'INV') {
+      deleteWhere_('Register', function (g) { return g.docId === doc.id; });
+      writeRegister_(doc);
+    }
+    // Keep the old PDF, renamed; the browser saves the new one next.
+    var row = findRow_('Documents', doc.id);
+    if (row.pdfFileId) {
+      try { var old = DriveApp.getFileById(row.pdfFileId); old.setName(old.getName().replace(/\.pdf$/i, '') + ' (before amendment ' + history.length + ').pdf'); } catch (e) { /* gone */ }
+    }
+    row.pdfFileId = ''; row.pdfUrl = ''; row.emailedAt = '';
+    writeRow_('Documents', row._row, row);
+    log_('amend', doc.id, before.number + (number !== before.number ? ' → ' + number : '') + ': ' + reason + ' (₹' + PB.money((before.calc || {}).payable) + ' → ₹' + PB.money(calc.payable) + ')');
+  } finally {
+    lock.releaseLock();
+  }
+  return { doc: docFromRow_(findRow_('Documents', doc.id)), summary: docSummary_(findRow_('Documents', doc.id)), series: seriesStatus_() };
 }
 
 /** Saves the PDF made in the browser to Drive and, if asked, emails it. */
@@ -602,7 +840,7 @@ function apiCancel(id, reason) {
   writeDoc_(r._row, doc);
   rows_('Register').forEach(function (g) { if (g.docId === id) { g.status = 'CANCELLED'; writeRow_('Register', g._row, g); } });
   log_('cancel', id, doc.number + ': ' + reason);
-  return { doc: doc, summary: docSummary_(findRow_('Documents', id)) };
+  return { doc: doc, summary: docSummary_(findRow_('Documents', id)), series: seriesStatus_() };
 }
 
 /** Sets where a series continues from, e.g. 45 so the next invoice is …/0046. Never below a used number. */
@@ -620,22 +858,140 @@ function apiSetSeries(type, fyShort, last) {
   return seriesStatus_();
 }
 
-/** Checks every series for gaps or duplicates between its first and last number used in this app. */
+/** Checks every series for gaps or duplicates between its first and last number recorded in this app. */
 function apiCheckSeries() {
+  var s = settings_();
   var by = {};
   rows_('Documents').forEach(function (d) {
-    if (!d.number) return;
-    var m = d.number.match(/(\d+)$/);
-    var k = PB.TYPES[d.type].title + ' ' + PB.fy(d.date).long;
-    (by[k] = by[k] || []).push(m ? +m[1] : 0);
+    if (!d.number || d.status === 'DRAFT') return;
+    var f = PB.fy(d.date);
+    var seq = PB.seqOf(d.number, s.series[d.type].prefix, f);
+    var k = PB.TYPES[d.type].title + ' ' + f.long;
+    var g = by[k] = by[k] || { all: {}, live: {}, other: 0 };
+    if (seq == null) { g.other++; return; }
+    g.all[seq] = (g.all[seq] || 0) + 1;
+    if (d.status === 'FINAL') g.live[seq] = (g.live[seq] || 0) + 1;
   });
   return Object.keys(by).map(function (k) {
-    var nums = by[k].sort(function (a, b) { return a - b; });
-    var dup = nums.filter(function (n, i) { return i && n === nums[i - 1]; });
+    var g = by[k];
+    var nums = Object.keys(g.all).map(Number).sort(function (a, b) { return a - b; });
+    var dup = Object.keys(g.live).filter(function (n) { return g.live[n] > 1; }).map(Number);
+    var reissued = Object.keys(g.all).filter(function (n) { return g.all[n] > 1 && g.live[n] === 1; }).map(Number);
     var gaps = [];
     for (var i = 1; i < nums.length; i++) for (var n = nums[i - 1] + 1; n < nums[i]; n++) gaps.push(n);
-    return { series: k, count: nums.length, first: nums[0], last: nums[nums.length - 1], gaps: gaps, duplicates: dup };
+    return { series: k, count: nums.length, first: nums[0] || 0, last: nums[nums.length - 1] || 0, gaps: gaps, duplicates: dup, reissued: reissued, other: g.other };
   });
+}
+
+// ---------------------------------------------------------------- import (Excel, CSV, pasted rows)
+/** Items: added, or updated when the name already exists. */
+function apiImportProducts(list) {
+  var have = {};
+  rows_('Products').forEach(function (r) { have[r.name.toLowerCase()] = r.id; });
+  var added = 0, updated = 0;
+  (list || []).forEach(function (p, i) {
+    try {
+      var id = have[String(p.name || '').trim().toLowerCase()];
+      apiSaveProduct({ id: id || '', name: p.name, description: p.description, type: p.type, hsn: p.hsn, unit: p.unit, rate: p.rate, gstRate: p.gstRate, category: p.category, active: true });
+      if (id) updated++; else added++;
+      have[String(p.name).trim().toLowerCase()] = id || 'new';
+    } catch (e) { throw new Error('Row ' + (p.row || i + 1) + ' (' + (p.name || 'no name') + '): ' + cleanErr_(e)); }
+  });
+  CACHE_.Products = null;
+  log_('import', '', added + ' items added, ' + updated + ' updated');
+  return { products: rows_('Products').map(productOut_), added: added, updated: updated };
+}
+
+/** Customers and vendors: new names are added; for a name that exists, new GSTINs or addresses are added to it. */
+function apiImportParties(list) {
+  var added = 0, updated = 0, ids = {};
+  (list || []).forEach(function (p, i) {
+    try {
+      var name = String(p.name || '').trim();
+      var cur = null;
+      parties_().forEach(function (x) { if (x.name.toLowerCase() === name.toLowerCase()) cur = x; });
+      if (!cur) {
+        var made = apiSaveParty({ name: name, role: p.role, contact: p.contact, phone: p.phone, email: p.email, registrations: p.registrations });
+        ids[name.toLowerCase()] = made.id; added++;
+        return;
+      }
+      var regs = cur.registrations.slice();
+      var key = function (r) { return r.gstin ? 'G' + String(r.gstin).toUpperCase() : 'A' + String(r.address || '').toLowerCase().replace(/\s+/g, ' ') + '|' + r.stateCode; };
+      var seen = {}; regs.forEach(function (r) { seen[key(r)] = 1; });
+      var more = (p.registrations || []).filter(function (r) { if (r.gstin) r.gstin = String(r.gstin).toUpperCase(); return !seen[key(r)]; });
+      if (more.length || (p.role && p.role !== cur.role && cur.role !== 'Both')) {
+        var role = p.role && p.role !== cur.role ? 'Both' : cur.role;
+        apiSaveParty({ id: cur.id, name: cur.name, role: role, contact: cur.contact || p.contact, phone: cur.phone || p.phone, email: cur.email || p.email,
+          pan: cur.pan, notes: cur.notes, registrations: regs.concat(more) });
+        updated++;
+      }
+      ids[name.toLowerCase()] = cur.id;
+    } catch (e) { throw new Error('Row ' + (p.row || i + 1) + ' (' + (p.name || 'no name') + '): ' + cleanErr_(e)); }
+  });
+  log_('import', '', added + ' customers/vendors added, ' + updated + ' updated');
+  return { parties: parties_(), added: added, updated: updated, ids: ids };
+}
+
+/**
+ * Documents from a spreadsheet. Drafts get no number. Final and cancelled ones are recorded with the
+ * number they were issued with (e.g. invoices raised before this app): no email, no PDF until asked for.
+ * Everything is checked first; nothing is saved if any document has a problem.
+ */
+function apiImportDocuments(list) {
+  var s = settings_();
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  var out = [];
+  try {
+    var docs = (list || []).map(function (d) { return { src: d, doc: normaliseDoc_(d) }; });
+    var errors = [], seen = {};
+    docs.forEach(function (x) {
+      var d = x.doc, ref = x.src.ref || d.number || '';
+      try {
+        if (['DRAFT', 'FINAL', 'CANCELLED'].indexOf(d.status) < 0) throw new Error('status must be Draft, Final or Cancelled.');
+        if (d.status !== 'DRAFT') {
+          var problems = PB.validate(d, s.firm);
+          if (problems.length) throw new Error(problems.join(' '));
+          var f = PB.fy(d.date);
+          d.number = String(d.number || '').trim();
+          if (!d.number) throw new Error('a final or cancelled document needs its number.');
+          if (d.type === 'INV') { var e = PB.checkInvoiceNumber(d.number); if (e) throw new Error(e); }
+          if (d.status === 'FINAL') {
+            var k = d.type + '|' + f.long + '|' + d.number.toUpperCase();
+            if (seen[k]) throw new Error(d.number + ' is twice in the file as final.');
+            seen[k] = 1;
+            if (liveNumber_(d.type, d.number, f, '')) throw new Error(d.number + ' is already used by a final document in this app.');
+          }
+        }
+      } catch (e) { errors.push(PB.TYPES[d.type].short + ' ' + ref + ': ' + cleanErr_(e)); }
+    });
+    if (errors.length) throw new Error('Nothing was imported. Please fix these:\n• ' + errors.slice(0, 30).join('\n• ') + (errors.length > 30 ? '\n…and ' + (errors.length - 30) + ' more' : ''));
+    docs.forEach(function (x) {
+      var d = x.doc, now = stamp_();
+      d.id = newId_('d');
+      d.meta = d.meta || {};
+      d.meta.createdAt = now; d.meta.updatedAt = now; d.meta.imported = true;
+      if (d.status === 'DRAFT') { d.number = ''; }
+      else {
+        var f = PB.fy(d.date);
+        d.fy = f.long;
+        d.numbering = { mode: 'manual', number: d.number };
+        d.firm = s.firm; d.bank = s.bank; d.sign = s.sign;
+        d.meta.finalisedAt = now;
+        if (d.status === 'CANCELLED') { d.meta.cancelledAt = now; d.meta.cancelReason = String(x.src.cancelReason || '').trim() || 'Cancelled (recorded from import)'; }
+        bumpSeries_(s, d.type, f, d.number);
+      }
+      d.calc = calcFor_(d);
+      writeDoc_(0, d);
+      var row = findRow_('Documents', d.id); row.source = 'import'; writeRow_('Documents', row._row, row);
+      if (d.type === 'INV' && d.status !== 'DRAFT') writeRegister_(d);
+      out.push(docSummary_(findRow_('Documents', d.id)));
+    });
+    log_('import', '', out.length + ' documents');
+  } finally {
+    lock.releaseLock();
+  }
+  return { summaries: out, series: seriesStatus_() };
 }
 
 // ---------------------------------------------------------------- internals: documents
@@ -677,7 +1033,8 @@ function writeDoc_(row, doc) {
     createdAt: meta.createdAt || stamp_(), updatedAt: meta.updatedAt || stamp_(), finalisedAt: meta.finalisedAt || '',
     cancelledAt: meta.cancelledAt || '', cancelReason: meta.cancelReason || '', sourceId: meta.sourceId || '',
     json1: json.slice(0, JSON_CHUNK), json2: json.slice(JSON_CHUNK, JSON_CHUNK * 2),
-    json3: json.slice(JSON_CHUNK * 2, JSON_CHUNK * 3), json4: json.slice(JSON_CHUNK * 3)
+    json3: json.slice(JSON_CHUNK * 2, JSON_CHUNK * 3), json4: json.slice(JSON_CHUNK * 3),
+    amendedAt: meta.amendedAt || '', source: old.source || ''
   });
 }
 
@@ -693,7 +1050,8 @@ function docFromRow_(r) {
 function docSummary_(r) {
   return { id: r.id, type: r.type, status: r.status, number: r.number, fy: r.fy, date: r.date, partyId: r.partyId, partyName: r.partyName,
     gstin: r.gstin, posCode: r.posCode, taxable: +r.taxable || 0, tax: +r.tax || 0, payable: +r.payable || 0, pdfUrl: r.pdfUrl,
-    emailedAt: r.emailedAt, updatedAt: r.updatedAt, finalisedAt: r.finalisedAt, cancelReason: r.cancelReason };
+    emailedAt: r.emailedAt, updatedAt: r.updatedAt, finalisedAt: r.finalisedAt, cancelReason: r.cancelReason, amendedAt: r.amendedAt || '',
+    imported: r.source === 'import' };
 }
 
 function writeRegister_(doc) {
@@ -707,7 +1065,7 @@ function writeRegister_(doc) {
     var b = byRate[k];
     writeRow_('Register', 0, { invoiceNumber: doc.number, date: doc.date, party: doc.party.name, gstin: doc.party.gstin || 'Unregistered',
       posCode: doc.pos.code, placeOfSupply: doc.pos.name, rate: b.rate, taxable: PB.r2(b.taxable), igst: PB.r2(b.igst), cgst: PB.r2(b.cgst),
-      sgst: PB.r2(b.sgst), invoiceValue: doc.calc.payable, status: 'FINAL', docId: doc.id });
+      sgst: PB.r2(b.sgst), invoiceValue: doc.calc.payable, status: doc.status === 'CANCELLED' ? 'CANCELLED' : 'FINAL', docId: doc.id });
   });
 }
 
@@ -744,12 +1102,83 @@ function writeSeries_(row, last) {
   row.updated = stamp_();
   writeRow_('Series', row._row || 0, row);
 }
-function maxUsed_(type, fyShort) {
-  var max = 0;
+function numberFor_(s, type, f, n) {
+  return PB.formatNumber(s.series[type].prefix, PB.fyTag(f, s.series.fyStyle), n, +s.series.pad || 4);
+}
+function sameNo_(a, b) { return String(a || '').trim().toUpperCase() === String(b || '').trim().toUpperCase(); }
+/** The final document of this type and year that uses this number, if any. */
+function liveNumber_(type, number, f, exceptId) {
+  var hit = null;
   rows_('Documents').forEach(function (d) {
-    if (d.type !== type || !d.number || PB.fy(d.date).short !== fyShort) return;
-    var m = d.number.match(/(\d+)$/);
-    if (m && +m[1] > max) max = +m[1];
+    if (d.type === type && d.status === 'FINAL' && d.id !== exceptId && sameNo_(d.number, number) && PB.fy(d.date).long === f.long) hit = d;
+  });
+  return hit;
+}
+function splitList_(v) {
+  var seen = {}, out = [];
+  String(v || '').split(/[\n,;]+/).forEach(function (x) { x = x.trim(); if (x && !seen[x.toUpperCase()]) { seen[x.toUpperCase()] = 1; out.push(x); } });
+  return out;
+}
+/** Numbers that may be given again: listed in Settings, or cancelled in this app, and not used by a final document. */
+function reusable_(s, type, f) {
+  var list = splitList_(s.series[type].reuse).filter(function (n) {
+    return PB.seqOf(n, s.series[type].prefix, f) != null || n.indexOf(f.compact) >= 0 || n.indexOf(f.short) >= 0;
+  });
+  rows_('Documents').forEach(function (d) {
+    if (d.type === type && d.status === 'CANCELLED' && d.number && PB.fy(d.date).long === f.long) list.push(d.number);
+  });
+  var seen = {};
+  return list.filter(function (n) { var k = n.toUpperCase(); if (seen[k]) return false; seen[k] = 1; return !liveNumber_(type, n, f, ''); })
+    .sort(function (a, b) { return (PB.seqOf(a, s.series[type].prefix, f) || 0) - (PB.seqOf(b, s.series[type].prefix, f) || 0) || a.localeCompare(b); });
+}
+function dropReuse_(type, number) {
+  var key = 'series.' + type + '.reuse', raw = settingsRaw_();
+  var left = splitList_(raw[key]).filter(function (n) { return !sameNo_(n, number); });
+  var o = {}; o[key] = left.join(', '); saveSettingsRaw_(o);
+}
+function checkTypedNumber_(type, number, f, exceptId) {
+  if (!number) throw new Error('Type the number, or choose “Next in series”.');
+  if (number.length > 30) throw new Error('That number is too long.');
+  if (type === 'INV') { var e = PB.checkInvoiceNumber(number); if (e) throw new Error(e); }
+  var clash = liveNumber_(type, number, f, exceptId);
+  if (clash) throw new Error('Number ' + clash.number + ' is already used by a final ' + PB.TYPES[type].short.toLowerCase() + ' (' + clash.partyName + ', ' + PB.prettyDate(clash.date) + ').');
+}
+/** Picks the number for a document being finalised. */
+function pickNumber_(s, doc, f, exceptId) {
+  var mode = (doc.numbering && doc.numbering.mode) || 'auto';
+  var typed = String((doc.numbering && doc.numbering.number) || '').trim();
+  if (mode === 'reuse') {
+    var free = reusable_(s, doc.type, f).filter(function (n) { return sameNo_(n, typed); })[0];
+    if (!free) throw new Error('Number ' + (typed || '(none)') + ' is no longer free to give again. Choose another number.');
+    checkTypedNumber_(doc.type, free, f, exceptId);
+    return { mode: 'reuse', number: free };
+  }
+  if (mode === 'manual') {
+    checkTypedNumber_(doc.type, typed, f, exceptId);
+    return { mode: 'manual', number: typed };
+  }
+  var next = (+seriesRow_(doc.type, f.short).last || 0) + 1;
+  var number = numberFor_(s, doc.type, f, next);
+  var taken = function (no) { return rows_('Documents').some(function (d) { return d.type === doc.type && d.status !== 'DRAFT' && sameNo_(d.number, no) && PB.fy(d.date).long === f.long; }); };
+  while (taken(number)) { next++; number = numberFor_(s, doc.type, f, next); }
+  if (doc.type === 'INV') { var e = PB.checkInvoiceNumber(number); if (e) throw new Error(e); }
+  return { mode: 'auto', number: number };
+}
+/** The series continues after the highest number recorded in it (auto, typed, imported). */
+function bumpSeries_(s, type, f, number) {
+  var seq = PB.seqOf(number, s.series[type].prefix, f);
+  if (seq == null) return;
+  var row = seriesRow_(type, f.short);
+  if (seq > (+row.last || 0)) writeSeries_(row, seq);
+}
+function maxUsed_(type, fyShort) {
+  var s = settings_(), max = 0;
+  rows_('Documents').forEach(function (d) {
+    if (d.type !== type || !d.number || d.status === 'DRAFT') return;
+    var f = PB.fy(d.date);
+    if (f.short !== fyShort) return;
+    var seq = PB.seqOf(d.number, s.series[type].prefix, f);
+    if (seq != null && seq > max) max = seq;
   });
   return max;
 }
@@ -759,7 +1188,7 @@ function seriesStatus_() {
   var out = {};
   Object.keys(PB.TYPES).forEach(function (t) {
     var r = seriesRow_(t, cur.short);
-    out[t] = { fy: cur.short, last: +r.last || 0, next: PB.formatNumber(s.series[t].prefix, cur.short, (+r.last || 0) + 1, +s.series.pad || 4) };
+    out[t] = { fy: cur.short, fyLong: cur.long, last: +r.last || 0, next: numberFor_(s, t, cur, (+r.last || 0) + 1), reuse: reusable_(s, t, cur) };
   });
   return out;
 }
@@ -855,6 +1284,17 @@ function ensureSetup_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss.getSheetByName('Settings') || !ss.getSheetByName('Documents')) setup();
 }
+/** Adds header cells for columns added in later versions (e.g. Documents: amendedAt, source). */
+function ensureHeaders_() {
+  Object.keys(SHEETS).forEach(function (name) {
+    var sh = sheet_(name), h = SHEETS[name];
+    var have = sh.getRange(1, 1, 1, h.length).getValues()[0];
+    if (have.some(function (v, i) { return String(v) !== h[i]; })) {
+      sh.getRange(1, 1, 1, h.length).setNumberFormat('@').setValues([h]).setFontWeight('bold').setBackground('#E4EDF7');
+    }
+  });
+}
+function cleanErr_(e) { return String((e && e.message) || e).replace(/^Error:\s*/, ''); }
 function rows_(name) {
   if (CACHE_[name]) return CACHE_[name];
   var sh = sheet_(name), h = SHEETS[name], last = sh.getLastRow();

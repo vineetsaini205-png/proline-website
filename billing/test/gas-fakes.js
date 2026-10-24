@@ -64,6 +64,7 @@ var FAKE = { sheets: [], folders: {}, files: {}, mails: [], seq: 1, log: [] };
   File.prototype.getBlob = function () { return this.blob; };
   File.prototype.getName = function () { return this.blob.name; };
   File.prototype.setTrashed = function (t) { this.trashed = t; return this; };
+  File.prototype.setName = function (n) { this.blob.name = n; return this; };
 
   function Folder(name, parent) { this.id = id('folder'); this.name = name; this.parent = parent; this.trashed = false; FAKE.folders[this.id] = this; }
   Folder.prototype.getId = function () { return this.id; };

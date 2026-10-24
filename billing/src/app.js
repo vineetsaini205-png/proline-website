@@ -5,8 +5,11 @@
   // ---------------------------------------------------------------- state
   var S = {
     settings: null, parties: [], products: [], docs: [], series: {}, images: null, sheetUrl: '', driveUrl: '', user: '',
-    view: 'docs', filter: { type: 'ALL', status: 'ALL', fy: '', q: '' }, doc: null, dirty: false, errors: []
+    view: 'docs', filter: { type: 'ALL', status: 'ALL', fy: '', q: '' }, doc: null, dirty: false, errors: [],
+    amending: false, amendBase: null, imp: { kind: 'documents', parsed: null }
   };
+  /** The open document can be changed: a draft, or a final one being amended. */
+  function editable() { return !!(S.doc && (S.doc.status === 'DRAFT' || S.amending)); }
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var main = function () { return $('#main'); };
@@ -86,7 +89,7 @@
   // ---------------------------------------------------------------- navigation
   function go(view) {
     if (S.view === 'doc' && S.dirty && view !== 'doc' && !window.confirm('Leave without saving your changes?')) return;
-    if (view !== 'doc') { S.doc = null; S.dirty = false; S.errors = []; }
+    if (view !== 'doc') { S.doc = null; S.dirty = false; S.errors = []; S.amending = false; S.amendBase = null; }
     S.view = view;
     $$('.tabs button').forEach(function (b) { b.classList.toggle('on', b.dataset.view === view); });
     render();
@@ -98,6 +101,7 @@
     else if (v === 'parties') main().innerHTML = viewParties();
     else if (v === 'items') main().innerHTML = viewItems();
     else if (v === 'settings') main().innerHTML = viewSettings();
+    else if (v === 'import') main().innerHTML = viewImport();
     else if (v === 'doc') { main().innerHTML = viewDoc(); refreshTotals(); }
   }
 
@@ -119,7 +123,11 @@
     var drafts = S.docs.filter(function (d) { return d.status === 'DRAFT'; }).length;
     var seriesLine = ['INV', 'PI', 'PO'].map(function (t) { return '<div><span class="muted">' + esc(PB.TYPES[t].short) + '</span> <b>' + esc((S.series[t] || {}).next || '') + '</b></div>'; }).join('');
     var rows = list.map(function (d) {
-      return '<tr data-open="' + esc(d.id) + '" tabindex="0"><td>' + typeBadge(d.type) + '</td><td class="nowrap"><b>' + esc(d.number || 'Draft') + '</b></td><td class="nowrap">' + esc(PB.prettyDate(d.date)) + '</td><td>' + esc(d.partyName || '—') + '</td><td class="num nowrap">' + rupees(d.payable) + '</td><td>' + statusPill(d.status) + (d.status === 'FINAL' && !d.pdfUrl ? ' <span class="pill s-warn">PDF missing</span>' : '') + '</td><td>' + (d.pdfUrl ? '<a href="' + esc(d.pdfUrl) + '" target="_blank" rel="noopener" data-stop>PDF</a>' : '') + '</td></tr>';
+      var id = esc(d.id);
+      var acts = d.status === 'FINAL' ? '<span class="row-acts"><button class="btn small" data-row-action="amend" data-id="' + id + '">Amend</button><button class="btn small danger ghost" data-row-action="cancel" data-id="' + id + '">Cancel</button></span>' : '';
+      return '<tr data-open="' + id + '" tabindex="0"><td>' + typeBadge(d.type) + '</td><td class="nowrap"><b>' + esc(d.number || 'Draft') + '</b></td><td class="nowrap">' + esc(PB.prettyDate(d.date)) + '</td><td>' + esc(d.partyName || '—') + '</td><td class="num nowrap">' + rupees(d.payable) + '</td><td>' + statusPill(d.status) +
+        (d.amendedAt ? ' <span class="pill">Amended</span>' : '') + (d.imported && d.status !== 'DRAFT' ? ' <span class="pill">Imported</span>' : '') +
+        (d.status === 'FINAL' && !d.pdfUrl && !d.imported ? ' <span class="pill s-warn">PDF missing</span>' : '') + '</td><td>' + (d.pdfUrl ? '<a href="' + esc(d.pdfUrl) + '" target="_blank" rel="noopener" data-stop>PDF</a>' : '') + '</td><td class="nowrap">' + acts + '</td></tr>';
     }).join('');
     return '' +
       '<section class="tiles">' +
@@ -133,9 +141,10 @@
       '<select data-fstatus aria-label="Status">' + options([['ALL', 'Any status'], ['DRAFT', 'Drafts'], ['FINAL', 'Final'], ['CANCELLED', 'Cancelled']], f.status) + '</select>' +
       '<select data-ffy aria-label="Financial year"><option value="">All years</option>' + options(Object.keys(fys).sort().reverse(), f.fy) + '</select>' +
       '<input type="search" data-fq placeholder="Search name, number or GSTIN" value="' + esc(f.q) + '">' +
+      '<button class="btn small" data-view="import">Import from Excel</button>' +
       '</div>' +
-      (rows ? '<div class="table-wrap"><table class="list"><thead><tr><th>Type</th><th>Number</th><th>Date</th><th>Customer / vendor</th><th class="num">Amount</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-        : '<div class="empty"><p>No documents yet.</p><p class="muted">Start with <b>+ Invoice</b>, <b>+ Proforma</b> or <b>+ PO</b> at the top. Add your firm details in <a href="#" data-view="settings">Settings</a> first.</p></div>') +
+      (rows ? '<div class="table-wrap"><table class="list"><thead><tr><th>Type</th><th>Number</th><th>Date</th><th>Customer / vendor</th><th class="num">Amount</th><th>Status</th><th></th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+        : '<div class="empty"><p>No documents yet.</p><p class="muted">Start with <b>+ Invoice</b>, <b>+ Proforma</b> or <b>+ PO</b> at the top, or <a href="#" data-view="import">import from Excel</a>. Add your firm details in <a href="#" data-view="settings">Settings</a> first.</p></div>') +
       '</section>';
   }
 
@@ -264,7 +273,8 @@
     var s = S.settings, g = s.firm.gstin ? PB.checkGstin(s.firm.gstin) : null;
     var series = ['INV', 'PI', 'PO'].map(function (t) {
       var st = S.series[t] || {};
-      return '<div class="series-row"><b>' + esc(PB.TYPES[t].title) + '</b><span>Next: <code>' + esc(st.next || '') + '</code></span>' +
+      return '<div class="series-row"><b>' + esc(PB.TYPES[t].title) + '</b><span>Next: <code>' + esc(st.next || '') + '</code>' +
+        ((st.reuse || []).length ? '<br><span class="muted small">Can be given again: ' + esc(st.reuse.join(', ')) + '</span>' : '') + '</span>' +
         '<span class="inline">Continue after <input data-series-last="' + t + '" inputmode="numeric" value="' + esc(st.last || 0) + '" size="5"> <button class="btn small" data-action="series-set" data-type="' + t + '">Set</button></span></div>';
     }).join('');
     return '<section class="card"><div class="head-row"><h1>Settings</h1><span class="grow"></span><button class="btn primary" data-action="settings-save">Save settings</button></div>' +
@@ -287,11 +297,16 @@
       '<div><b>Signature</b><div class="imgbox" id="img-signature">' + imgPreview('signature') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="signature"><button class="link" data-action="img-remove" data-kind="signature">Remove</button></div>' +
       sField('sign.name', 'Signatory name') + sField('sign.designation', 'Designation') +
       '</div><p class="muted small">PNG or JPG, under 1.5 MB. A signature on a white or clear background looks best.</p></section>' +
-      '<section class="card"><h2>Numbering</h2><p class="muted">Each type has its own series per financial year (April–March). A number is given only when you finalise, so there are no gaps. If you already issued numbers this year in another system, set where the series continues.</p><div class="grid3">' +
-      sField('series.INV.prefix', 'Tax invoice prefix', { hint: 'Max 16 characters in all, e.g. PEW/26-27/0001' }) + sField('series.PI.prefix', 'Proforma prefix') + sField('series.PO.prefix', 'PO prefix') +
-      sField('series.pad', 'Digits in the number', { select: options([['3', '3 (001)'], ['4', '4 (0001)'], ['5', '5 (00001)']], s.series.pad) }) +
+      '<section class="card"><h2>Numbering</h2><p class="muted">Each type has its own series per financial year (April–March). A document gets its number when you finalise it: the next in the series, a cancelled number given again, or one you type (for documents issued before this app). The series always continues after the highest number recorded in it.</p><div class="grid3">' +
+      sField('series.INV.prefix', 'Tax invoice prefix', { hint: 'A tax invoice number can have at most 16 characters' }) + sField('series.PI.prefix', 'Proforma prefix') + sField('series.PO.prefix', 'PO prefix') +
+      sField('series.fyStyle', 'Year in the number', { select: options([['26-27', '26-27, e.g. PEW/26-27/0001'], ['2627', '2627, e.g. PEW/2627/07']], s.series.fyStyle) }) +
+      sField('series.pad', 'Digits in the number', { select: options([['1', '1, e.g. 7'], ['2', '2, e.g. 07'], ['3', '3, e.g. 007'], ['4', '4, e.g. 0007'], ['5', '5, e.g. 00007']], s.series.pad) }) +
       sField('pdf.copies', 'Tax invoice copies in the PDF', { select: options([['Original', 'Original only'], ['Original + Duplicate', 'Original + duplicate'], ['Original + Duplicate + Triplicate', 'Original + duplicate + triplicate (goods)']], s.pdf.copies) }) +
-      '</div><div class="series">' + series + '</div><button class="btn" data-action="series-check">Check all series for gaps</button><div id="series-result"></div></section>' +
+      '</div><div class="series">' + series + '</div>' +
+      '<h3>Cancelled numbers you can give again</h3><p class="muted small">Numbers of documents cancelled outside this app, separated by commas, e.g. PEW/2627/0002, PEW/2627/0003. Documents cancelled in this app are offered by themselves. Each number is offered under Number until it is used.</p><div class="grid3">' +
+      sField('series.INV.reuse', 'Tax invoices', { textarea: true, rows: 2 }) + sField('series.PI.reuse', 'Proformas', { textarea: true, rows: 2 }) + sField('series.PO.reuse', 'Purchase orders', { textarea: true, rows: 2 }) +
+      '</div><p class="hint warn">GST rule 46: each invoice number is used once in a financial year. Give a cancelled number again only if that invoice was never sent or reported in GSTR-1. Ask your CA if unsure.</p>' +
+      '<div class="actions left"><button class="btn" data-action="series-check">Check all series for gaps</button></div><div id="series-result"></div></section>' +
       '<section class="card"><h2>Default notes and terms</h2><div class="grid2">' +
       sField('notes.INV', 'Note on tax invoices', { textarea: true, rows: 2 }) + sField('terms.INV', 'Terms on tax invoices', { textarea: true }) +
       sField('notes.PI', 'Note on proformas', { textarea: true, rows: 2 }) + sField('terms.PI', 'Terms on proformas', { textarea: true }) +
@@ -347,12 +362,14 @@
   function partiesFor(type) { return S.parties.filter(function (p) { return type === 'PO' ? p.role !== 'Customer' : p.role !== 'Vendor'; }).sort(function (a, b) { return a.name.localeCompare(b.name); }); }
 
   function viewDoc() {
-    var d = S.doc, T = PB.TYPES[d.type], ro = d.status !== 'DRAFT', isPO = d.type === 'PO';
+    var d = S.doc, T = PB.TYPES[d.type], ro = !editable(), isPO = d.type === 'PO';
     var dis = ro ? ' disabled' : '';
     var party = d.party || {};
     var p = party.id ? S.parties.filter(function (x) { return x.id === party.id; })[0] : null;
     var regs = p ? p.registrations : [];
-    var title = (d.number ? T.title + ' ' + d.number : 'New ' + T.title.toLowerCase());
+    var title = S.amending ? 'Amending ' + T.title.toLowerCase() + ' ' + d.number : (d.number ? T.title + ' ' + d.number : 'New ' + T.title.toLowerCase());
+    var hist = (d.meta && d.meta.amendments) || [];
+    var histNote = hist.length ? '<p class="muted small">Amended ' + (hist.length === 1 ? 'once' : hist.length + ' times') + '. Last: ' + esc(PB.prettyDate(String(hist[hist.length - 1].at).slice(0, 10))) + ', ' + esc(hist[hist.length - 1].reason) + '</p>' : '';
     var sameLabel = isPO ? 'Our address' : 'Same as bill to';
     var refsHtml = {
       INV: refField('refs.poNumber', 'Customer PO no.') + refField('refs.poDate', 'PO date', 'date') + refField('refs.dueDate', 'Due date', 'date') + refField('refs.eWayBill', 'E-way bill no.') + refField('refs.vehicleNo', 'Vehicle no.') + refField('refs.piNumber', 'Proforma ref.'),
@@ -366,7 +383,8 @@
     var vendorHint = (isPO && party.name && !party.gstin) ? '<span class="hint warn">Unregistered vendor: they usually cannot charge GST, so set GST to 0%.</span>' : '';
 
     var head = '<div class="doc-head"><div><button class="link" data-view="docs">← Documents</button><h1>' + esc(title) + ' ' + statusPill(d.status) + '</h1>' +
-      (d.status === 'CANCELLED' && d.meta && d.meta.cancelReason ? '<p class="bad">Cancelled: ' + esc(d.meta.cancelReason) + '</p>' : '') + '</div>' + docActions(d) + '</div>';
+      (d.status === 'CANCELLED' && d.meta && d.meta.cancelReason ? '<p class="bad">Cancelled: ' + esc(d.meta.cancelReason) + '</p>' : '') + histNote +
+      (S.amending ? '<p class="hint warn">You are changing an issued document. Amend only if it is not yet reported in your GSTR-1; after filing, use a credit or debit note. Ask your CA if unsure.</p>' : '') + '</div>' + docActions(d) + '</div>';
     var errs = S.errors.length ? '<div class="alert"><b>Please fix these before finalising:</b><ul>' + S.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div>' : '';
 
     var partyCard = '<section class="card"><h2>' + (isPO ? 'Vendor' : 'Customer') + '</h2><div class="grid2">' +
@@ -376,7 +394,7 @@
         '<br>' + (party.gstin ? 'GSTIN <b>' + esc(party.gstin) + '</b>' : '<span class="muted">Unregistered (no GSTIN)</span>') + (p && !ro ? ' · <button class="link" data-action="party-edit-doc">Edit</button>' : '') + '</div>' : '') + vendorHint +
       '<datalist id="dl-parties">' + partiesFor(d.type).map(function (x) { return '<option value="' + esc(x.name) + '">'; }).join('') + '</datalist></section>';
 
-    var detailsCard = '<section class="card"><h2>Details</h2><div class="grid3">' +
+    var detailsCard = '<section class="card"><h2>Details</h2><div class="grid3">' + numberField(d, ro) +
       '<label>Date<input type="date" data-f="date" value="' + esc(d.date) + '"' + dis + '></label>' +
       '<label>Place of supply<select data-pos' + dis + '>' + stateOptions(d.pos && d.pos.code, 'Choose the state') + '</select>' + posHint + '</label>' +
       (isPO ? '<div></div>' : '<label>Reverse charge<select data-f="reverseCharge" data-bool' + dis + '>' + options([['false', 'No'], ['true', 'Yes']], String(!!d.reverseCharge)) + '</select></label>') +
@@ -393,7 +411,7 @@
     var lines = d.items.map(function (it, i) { return lineHtml(it, i, ro); }).join('');
     var itemsCard = '<section class="card"><div class="head-row"><h2>Items</h2><span class="grow"></span><span class="muted small" id="tax-mode"></span></div>' +
       '<div class="lines-head"><span>Item or service</span><span>HSN/SAC</span><span>Qty and unit</span><span>Rate (₹)</span><span>Disc %</span><span>GST</span><span class="num">Amount</span></div>' +
-      '<div id="lines">' + lines + '</div>' + (ro ? '' : '<button class="btn ghost" data-action="line-add">+ Add a line</button>') +
+      '<div id="lines">' + lines + '</div>' + (ro ? '' : '<div class="actions left"><button class="btn ghost" data-action="line-add">+ Add a line</button><button class="btn ghost" data-action="lines-paste">Paste lines from Excel</button></div>') +
       '<datalist id="dl-products">' + S.products.filter(function (x) { return x.active; }).map(function (x) { return '<option value="' + esc(x.name) + '">'; }).join('') + '</datalist>' +
       '<div class="totals" id="totals"></div></section>';
 
@@ -414,6 +432,41 @@
     return head + errs + partyCard + detailsCard + itemsCard + annexCard + notesCard + '<div class="sticky-actions">' + docActions(d) + '</div>';
   }
 
+  var WARN = {
+    reuse: 'This number was cancelled before. GST rule 46 needs each invoice number to be used once in a financial year, so give it again only if that invoice was never sent or reported in GSTR-1. Ask your CA if unsure.',
+    manual: 'Type a number only for a document already issued outside this app, or to fill a gap. It must not be used twice in a financial year. Later documents continue after the highest number in the series.',
+    amend: 'The customer may already have the old number. The old number stays in the amendment history.'
+  };
+  /** Number: next in series, a cancelled number given again, or typed. When amending: keep or change it. */
+  function numberField(d, ro) {
+    if (ro) return '';
+    var st = S.series[d.type] || {}, f = PB.fy(d.date || PB.today());
+    var n = d.numbering || { mode: S.amending ? 'keep' : 'auto' };
+    var opts = [];
+    if (S.amending) opts.push(['keep', 'Keep ' + d.number]);
+    else {
+      opts.push(['auto', st.fy === f.short ? 'Next in series: ' + st.next : 'Next in the ' + f.long + ' series']);
+      if (st.fy === f.short) (st.reuse || []).forEach(function (no) { opts.push(['reuse:' + no, no + ' (cancelled, give again)']); });
+    }
+    opts.push(['manual', S.amending ? 'Change the number…' : 'Type a number…']);
+    var sel = n.mode === 'reuse' ? 'reuse:' + n.number : n.mode;
+    var html = '<label>Number<select data-numsel>' + options(opts, sel) + '</select>';
+    if (n.mode === 'manual') html += '<input data-numtext value="' + esc(n.number || '') + '" placeholder="e.g. ' + esc(st.next || '') + '" autocapitalize="characters" aria-label="Number">';
+    if (n.mode === 'reuse') html += '<span class="hint warn">' + esc(WARN.reuse) + '</span>';
+    if (n.mode === 'manual') html += '<span class="hint warn">' + esc(S.amending ? WARN.amend : WARN.manual) + '</span>';
+    return html + '</label>';
+  }
+  function numberProblem(d) {
+    var n = d.numbering || {};
+    if (n.mode !== 'manual' && n.mode !== 'reuse') return '';
+    var no = String(n.number || '').trim();
+    if (!no) return 'Type the number, or choose “Next in series”.';
+    if (d.type === 'INV') { var e = PB.checkInvoiceNumber(no); if (e) return e; }
+    var f = PB.fy(d.date);
+    var clash = S.docs.filter(function (x) { return x.type === d.type && x.status === 'FINAL' && x.id !== d.id && String(x.number).toUpperCase() === no.toUpperCase() && (x.fy || PB.fy(x.date).long) === f.long; })[0];
+    return clash ? 'Number ' + clash.number + ' is already used by a final ' + PB.TYPES[d.type].short.toLowerCase() + ' (' + clash.partyName + ').' : '';
+  }
+
   function lineHtml(it, i, ro) {
     var dis = ro ? ' disabled' : '';
     // Each field has a small caption that shows only on phones (desktop has the header row).
@@ -431,7 +484,11 @@
 
   function docActions(d) {
     var b = [];
-    if (d.status === 'DRAFT') {
+    if (S.amending && d.status === 'FINAL') {
+      b.push('<button class="btn primary" data-action="amend-save">Save amendment</button>');
+      b.push('<button class="btn" data-action="doc-preview">Preview PDF</button>');
+      b.push('<button class="btn" data-action="amend-discard">Discard changes</button>');
+    } else if (d.status === 'DRAFT') {
       b.push('<button class="btn" data-action="doc-save">Save draft</button>');
       b.push('<button class="btn" data-action="doc-preview">Preview PDF</button>');
       b.push('<button class="btn primary" data-action="doc-finalise">Finalise</button>');
@@ -444,6 +501,7 @@
       if (url) b.push('<button class="btn" data-action="doc-email">Email…</button>');
       b.push('<button class="btn" data-action="doc-duplicate">Duplicate</button>');
       if (d.type === 'PI' && d.status === 'FINAL') b.push('<button class="btn" data-action="doc-to-invoice">Make tax invoice</button>');
+      if (d.status === 'FINAL') b.push('<button class="btn" data-action="doc-amend">Amend…</button>');
       if (d.status === 'FINAL') b.push('<button class="btn danger ghost" data-action="doc-cancel">Cancel…</button>');
     }
     return '<div class="actions">' + b.join('') + '</div>';
@@ -497,10 +555,10 @@
   // so pages are drawn with pdf.js, loaded only when needed.
   var PDFJS_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
   var PDFJS_WORKER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-  function loadScript(src) {
+  function loadScript(src, failMsg) {
     return new Promise(function (resolve, reject) {
       var el = document.createElement('script');
-      el.src = src; el.onload = resolve; el.onerror = function () { reject(new Error('Could not load the PDF viewer. Use Download instead.')); };
+      el.src = src; el.onload = resolve; el.onerror = function () { reject(new Error(failMsg || 'Could not load the PDF viewer. Use Download instead.')); };
       document.head.appendChild(el);
     });
   }
@@ -512,7 +570,7 @@
     busy(true, 'Making the PDF…');
     try {
       await loadImages();
-      var pdf = makePdf(doc, doc.status === 'DRAFT' ? 'DRAFT' : (doc.status === 'CANCELLED' ? 'CANCELLED' : null));
+      var pdf = makePdf(doc, doc.status === 'DRAFT' ? 'DRAFT' : (doc.status === 'CANCELLED' ? 'CANCELLED' : (S.amending ? 'PREVIEW' : null)));
       var buf = await new Promise(function (resolve) { pdf.getBuffer(resolve); });
       var url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
       var name = PBPDF.fileName(doc);
@@ -558,6 +616,363 @@
     if (i >= 0) S.docs[i] = sum; else S.docs.unshift(sum);
   }
 
+
+  // ---------------------------------------------------------------- import from Excel, CSV or pasted rows
+  var XLSX_URLS = ['https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js', 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js'];
+  async function xlsxLib() {
+    if (window.XLSX) return window.XLSX;
+    for (var i = 0; i < XLSX_URLS.length; i++) {
+      try { await loadScript(XLSX_URLS[i], 'x'); if (window.XLSX) return window.XLSX; } catch (e) { /* try the next copy */ }
+    }
+    throw new Error('Could not load the Excel reader. Save the file as CSV, or copy the rows in Excel and paste them here.');
+  }
+  function cellStr(v) { return v == null ? '' : String(v).trim(); }
+  function cellNum(v) {
+    if (typeof v === 'number') return v;
+    var t = String(v == null ? '' : v).replace(/[^\d.\-]/g, '');
+    return t === '' || t === '-' || t === '.' ? NaN : parseFloat(t);
+  }
+  function hsnStr(v) { return cellStr(v).replace(/\.0+$/, '').replace(/\s+/g, ''); }
+  /** Rows from CSV or from cells copied in Excel (tab-separated). Handles quoted cells. */
+  function parseDelimited(text) {
+    text = String(text || '').replace(/^﻿/, '');
+    var first = text.split(/\r?\n/)[0] || '';
+    var delim = first.indexOf('\t') >= 0 ? '\t' : (first.split(';').length > first.split(',').length ? ';' : ',');
+    var rows = [], row = [], cell = '', q = false;
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += ch;
+      } else if (ch === '"' && cell === '') q = true;
+      else if (ch === delim) { row.push(cell); cell = ''; }
+      else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+      else cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(function (r) { return r.some(function (c) { return String(c).trim() !== ''; }); });
+  }
+  /** Finds the header row (first 10 rows) and which column holds each field. */
+  function headerMap(rows, kind, minHits) {
+    var F = PB.IMPORT[kind].fields;
+    for (var i = 0; i < Math.min(rows.length, 10); i++) {
+      var map = {}, hits = 0;
+      (rows[i] || []).forEach(function (cell, c) {
+        var k = PB.normKey(cell);
+        if (!k) return;
+        Object.keys(F).forEach(function (f) { if (map[f] == null && F[f].indexOf(k) >= 0) { map[f] = c; hits++; } });
+      });
+      if (hits >= (minHits || 3)) return { headerRow: i, map: map };
+    }
+    return null;
+  }
+  function buildImport(kind, rows, source) {
+    var t = headerMap(rows, kind);
+    if (!t) return { kind: kind, source: source, items: [], skipped: 0, problems: ['The header row was not found. Keep the template’s first row (' + PB.IMPORT[kind].columns.slice(0, 5).join(', ') + ' …).'] };
+    var data = rows.slice(t.headerRow + 1).map(function (r, i) {
+      return { n: t.headerRow + 2 + i, get: function (f) { return t.map[f] != null ? r[t.map[f]] : ''; }, blank: !r.some(function (c) { return cellStr(c) !== ''; }) };
+    }).filter(function (r) { return !r.blank; });
+    var out = kind === 'documents' ? buildDocs(data) : kind === 'parties' ? buildParties(data) : buildItems(data);
+    out.kind = kind; out.source = source;
+    return out;
+  }
+  function isExample(v) { return /^example\b/i.test(cellStr(v)); }
+  /** One GST registration / address from a row. */
+  function regOf(get) {
+    var gstin = cellStr(get('gstin')).toUpperCase().replace(/\s+/g, '');
+    var base = { label: cellStr(get('label')), legalName: cellStr(get('legal')), address: cellStr(get('address')), city: cellStr(get('city')), pin: hsnStr(get('pin')) };
+    if (gstin) {
+      var g = PB.checkGstin(gstin);
+      if (!g.ok) return { problem: 'GSTIN ' + gstin + ': ' + g.error, bad: true };
+      base.gstin = gstin; base.stateCode = g.stateCode; return { reg: base };
+    }
+    var sc = PB.stateCodeOf(get('state'));
+    if (!sc) return { problem: 'a new customer or vendor needs its State (name or code) or GSTIN.' };
+    base.gstin = ''; base.stateCode = sc; return { reg: base };
+  }
+  function buildItems(data) {
+    var problems = [], items = [], skipped = 0;
+    data.forEach(function (r) {
+      var name = cellStr(r.get('name'));
+      if (isExample(name)) { skipped++; return; }
+      if (!name) { problems.push('Row ' + r.n + ': the name is empty.'); return; }
+      var hsn = hsnStr(r.get('hsn')), kv = cellStr(r.get('kind'));
+      var type = /serv/i.test(kv) ? 'Service' : /good/i.test(kv) ? 'Goods' : (/^99\d{4}$/.test(hsn) ? 'Service' : 'Goods');
+      var gr = cellNum(r.get('gst')), rate = cellNum(r.get('rate'));
+      if (PB.GST_RATES.indexOf(gr) < 0) problems.push('Row ' + r.n + ' (' + name + '): GST % must be one of ' + PB.GST_RATES.join(', ') + '.');
+      if (hsn) { var e = PB.checkHsn(hsn, type); if (e) problems.push('Row ' + r.n + ' (' + name + '): ' + e + '.'); }
+      items.push({ row: r.n, name: name, description: cellStr(r.get('details')), type: type, hsn: hsn, unit: cellStr(r.get('unit')) || 'Nos', rate: isNaN(rate) ? 0 : rate, gstRate: gr, category: cellStr(r.get('category')) });
+    });
+    var have = {}; S.products.forEach(function (p) { have[p.name.toLowerCase()] = 1; });
+    var upd = items.filter(function (x) { return have[x.name.toLowerCase()]; }).length;
+    return { problems: problems, items: items, skipped: skipped, summary: items.length + ' item' + (items.length === 1 ? '' : 's') + ': ' + (items.length - upd) + ' new, ' + upd + ' to update' };
+  }
+  function buildParties(data) {
+    var problems = [], by = {}, order = [], skipped = 0;
+    data.forEach(function (r) {
+      var name = cellStr(r.get('name'));
+      if (isExample(name)) { skipped++; return; }
+      if (!name) { problems.push('Row ' + r.n + ': the name is empty.'); return; }
+      var rv = PB.normKey(r.get('role'));
+      var role = !rv || rv.indexOf('cust') === 0 ? 'Customer' : (rv.indexOf('vend') === 0 || rv === 'supplier') ? 'Vendor' : rv === 'both' ? 'Both' : '';
+      if (!role) problems.push('Row ' + r.n + ' (' + name + '): Type must be Customer, Vendor or Both.');
+      var ro = regOf(r.get);
+      if (ro.problem) problems.push('Row ' + r.n + ' (' + name + '): ' + ro.problem);
+      var k = name.toLowerCase(), p = by[k];
+      if (!p) { p = by[k] = { row: r.n, name: name, role: role || 'Customer', contact: '', phone: '', email: '', registrations: [] }; order.push(k); }
+      else if (role && p.role !== role) p.role = 'Both';
+      ['contact', 'phone', 'email'].forEach(function (f) { if (!p[f]) p[f] = cellStr(r.get(f)); });
+      if (ro.reg) p.registrations.push(ro.reg);
+    });
+    var items = order.map(function (k) { var p = by[k]; if (p.registrations.length) p.registrations[0].isDefault = true; return p; });
+    var have = {}; S.parties.forEach(function (p) { have[p.name.toLowerCase()] = 1; });
+    var upd = items.filter(function (x) { return have[x.name.toLowerCase()]; }).length;
+    return { problems: problems, items: items, skipped: skipped, summary: items.length + ' customer' + (items.length === 1 ? '' : 's') + ' or vendor' + (items.length === 1 ? '' : 's') + ': ' + (items.length - upd) + ' new, ' + upd + ' already here (new GSTINs or addresses are added)' };
+  }
+  function lineFromRow(r, type, status, label, problems, warnings) {
+    var name = cellStr(r.get('item')), hsn = hsnStr(r.get('hsn')), kv = cellStr(r.get('kind'));
+    var itype = /serv/i.test(kv) ? 'Service' : /good/i.test(kv) ? 'Goods' : (/^99\d{4}$/.test(hsn) ? 'Service' : 'Goods');
+    var qty = cellNum(r.get('qty')), rate = cellNum(r.get('rate')), gr = cellNum(r.get('gst')), disc = cellNum(r.get('disc'));
+    var p = S.products.filter(function (x) { return x.name.toLowerCase() === name.toLowerCase(); })[0];
+    if (p) { if (!hsn) hsn = p.hsn; if (isNaN(gr)) gr = p.gstRate; if (isNaN(rate) && p.rate) rate = p.rate; if (!kv) itype = p.type; }
+    var where = label + ', row ' + r.n + ' (' + name + ')';
+    if (isNaN(qty)) qty = 1;
+    if (!(qty > 0)) problems.push(where + ': Qty must be more than 0.');
+    if (isNaN(rate)) { if (status === 'DRAFT') rate = ''; else problems.push(where + ': the Rate is empty.'); }
+    if (isNaN(gr) && status === 'DRAFT') { gr = 18; warnings.push(where + ': GST % was empty, set to 18%. Check it in the draft.'); }
+    if (PB.GST_RATES.indexOf(gr) < 0) problems.push(where + ': GST % must be one of ' + PB.GST_RATES.join(', ') + '.');
+    if (type === 'INV' && status !== 'DRAFT') { var e = PB.checkHsn(hsn, itype); if (e) problems.push(where + ': ' + e + '.'); }
+    return { productId: p ? p.id : '', name: name, description: cellStr(r.get('details')) || (p ? p.description || '' : ''), type: itype, hsn: hsn,
+      qty: qty, unit: cellStr(r.get('unit')) || (p ? p.unit : 'Nos'), rate: rate, discountPct: isNaN(disc) ? '' : disc, gstRate: gr };
+  }
+  function docFromGroup(g, problems, warnings) {
+    var r = g.first, T = PB.TYPES[g.type];
+    var label = T.short + ' ' + g.ref + ' (row ' + r.n + ')';
+    var status = PB.statusOf(r.get('status'));
+    if (!status) { problems.push(label + ': Status must be Draft, Final, Issued or Cancelled.'); return null; }
+    var dv = cellStr(r.get('date')), date = PB.parseDate(r.get('date'));
+    if (!date) {
+      if (status === 'DRAFT' && !dv) date = PB.today();
+      else { problems.push(label + ': ' + (dv ? 'the Date “' + dv + '” is not a date. Write it day first, e.g. 28-09-2026.' : 'the Date is empty.')); return null; }
+    }
+    var partyName = cellStr(r.get('party'));
+    if (!partyName) { problems.push(label + ': the ' + (g.type === 'PO' ? 'vendor' : 'customer') + ' is empty.'); return null; }
+    var posRaw = cellStr(r.get('pos')), pos = PB.stateCodeOf(posRaw);
+    if (posRaw && !pos) problems.push(label + ': the Place of supply “' + posRaw + '” is not a state.');
+    if (status !== 'DRAFT' && g.type === 'INV') { var ne = PB.checkInvoiceNumber(g.ref); if (ne) problems.push(label + ': ' + ne); }
+    var items = g.lines.map(function (lr) { return lineFromRow(lr, g.type, status, label, problems, warnings); });
+    if (!items.length) { problems.push(label + ': no item lines.'); return null; }
+    var refV = cellStr(r.get('reference'));
+    var ro = regOf(r.get);
+    if (ro.bad) problems.push(label + ': ' + ro.problem);
+    return {
+      label: label, cancelReason: cellStr(r.get('reason')),
+      who: { name: partyName, gstin: ro.reg ? ro.reg.gstin : '', stateCode: ro.reg ? ro.reg.stateCode : '', reg: ro.reg || null, regProblem: ro.problem || '' },
+      doc: {
+        type: g.type, status: status, number: status === 'DRAFT' ? '' : g.ref, date: date, party: {}, pos: { code: pos }, posAuto: !pos,
+        reverseCharge: PB.yesNo(r.get('rc'), false), pricesIncludeGst: PB.yesNo(r.get('incl'), false), roundOff: PB.yesNo(r.get('round'), true),
+        refs: refV ? (g.type === 'PO' ? { quoteRef: refV } : { poNumber: refV }) : {}, shipTo: { same: true }, items: items,
+        notes: cellStr(r.get('notes')) || (S.settings.notes[g.type] || ''), terms: S.settings.terms[g.type] || '',
+        annexure: { enabled: false, title: 'Annexure A', intro: '', rows: [], notes: '' }, meta: {}
+      }
+    };
+  }
+  /** An existing customer or vendor for a document row: by GSTIN first, then by name. */
+  function findParty(who, type) {
+    var list = partiesFor(type);
+    if (who.gstin) {
+      for (var i = 0; i < list.length; i++) {
+        var hit = list[i].registrations.filter(function (rg) { return String(rg.gstin || '').toUpperCase() === who.gstin; })[0];
+        if (hit) return { p: list[i], reg: hit };
+      }
+    }
+    var p = list.filter(function (x) { return x.name.toLowerCase() === who.name.toLowerCase(); })[0];
+    if (!p || who.gstin) return null;
+    var reg = p.registrations.filter(function (rg) { return who.stateCode && rg.stateCode === who.stateCode; })[0] ||
+      p.registrations.filter(function (rg) { return rg.isDefault; })[0] || p.registrations[0];
+    return reg ? { p: p, reg: reg } : null;
+  }
+  function partySnapshot(p, r) {
+    return { id: p.id, name: p.name, regId: r.id, label: r.label, gstin: r.gstin || '', legalName: r.legalName || '', address: r.address || '', city: r.city || '',
+      stateCode: r.stateCode || '', pin: r.pin || '', email: p.email || '', phone: p.phone || '', contact: p.contact || '' };
+  }
+  function buildDocs(data) {
+    var problems = [], warnings = [], groups = {}, order = [], skipped = 0;
+    data.forEach(function (r) {
+      if (isExample(r.get('party')) || isExample(r.get('item'))) { skipped++; return; }
+      var type = PB.docTypeOf(r.get('type')), ref = cellStr(r.get('ref'));
+      if (!type) { problems.push('Row ' + r.n + ': Type must be Invoice, Proforma or PO.'); return; }
+      if (!ref) { problems.push('Row ' + r.n + ': Doc no. is empty. Write the same value on every line of one document.'); return; }
+      var key = type + '|' + ref.toUpperCase(), g = groups[key];
+      if (!g) { g = groups[key] = { type: type, ref: ref, first: r, lines: [] }; order.push(key); }
+      if (cellStr(r.get('item'))) g.lines.push(r);
+      else if (cellStr(r.get('qty')) || cellStr(r.get('rate'))) problems.push('Row ' + r.n + ': the Item is empty.');
+    });
+    var docs = order.map(function (k) { return docFromGroup(groups[k], problems, warnings); }).filter(Boolean);
+    var seen = {};
+    docs.forEach(function (x) {
+      var d = x.doc;
+      if (d.status !== 'FINAL') return;
+      var fyl = PB.fy(d.date).long, k = d.type + '|' + fyl + '|' + d.number.toUpperCase();
+      if (seen[k]) problems.push(x.label + ': number ' + d.number + ' is twice in the file as final.');
+      seen[k] = 1;
+      var clash = S.docs.filter(function (o) { return o.type === d.type && o.status === 'FINAL' && String(o.number).toUpperCase() === d.number.toUpperCase() && (o.fy || PB.fy(o.date).long) === fyl; })[0];
+      if (clash) problems.push(x.label + ': number ' + d.number + ' is already used in this app (' + clash.partyName + ').');
+    });
+    // Customers and vendors: matched, or added (new ones, or a new GSTIN for one that exists).
+    var by = {}, newParties = [];
+    docs.forEach(function (x) {
+      var w = x.who, role = x.doc.type === 'PO' ? 'Vendor' : 'Customer';
+      x.match = findParty(w, x.doc.type);
+      if (x.match) return;
+      if (!w.reg) { if (w.regProblem && !/^GSTIN/.test(w.regProblem)) problems.push(x.label + ': ' + w.regProblem); return; }
+      var same = S.parties.filter(function (p) { return p.name.toLowerCase() === w.name.toLowerCase(); })[0];
+      var k = w.name.toLowerCase();
+      if (!by[k]) { by[k] = { row: 0, name: same ? same.name : w.name, role: role, registrations: [] }; newParties.push(by[k]); }
+      else if (by[k].role !== role) by[k].role = 'Both';
+      var dup = by[k].registrations.some(function (rg) { return (rg.gstin && rg.gstin === w.reg.gstin) || (!rg.gstin && !w.reg.gstin && rg.address === w.reg.address && rg.stateCode === w.reg.stateCode); });
+      if (!dup) by[k].registrations.push(w.reg);
+    });
+    newParties.forEach(function (p) { p.registrations[0].isDefault = true; });
+    var counts = {}, order2 = [];
+    docs.forEach(function (x) { var k = x.doc.type + '|' + x.doc.status; if (!counts[k]) { counts[k] = 0; order2.push(k); } counts[k]++; });
+    var label2 = function (k) {
+      var t = k.split('|')[0], st = k.split('|')[1], n = counts[k];
+      var name = t === 'PO' ? 'PO' : PB.TYPES[t].short.toLowerCase();
+      return n + ' ' + name + (n === 1 ? '' : 's') + ' ' + ({ DRAFT: 'to finish (draft)', FINAL: 'issued', CANCELLED: 'cancelled' }[st]);
+    };
+    return { problems: problems, warnings: warnings, items: docs, newParties: newParties, skipped: skipped,
+      summary: docs.length + ' document' + (docs.length === 1 ? '' : 's') + (docs.length ? ': ' + order2.map(label2).join(', ') : '') +
+        (newParties.length ? '. Customers or vendors to add: ' + newParties.map(function (p) { return p.name; }).join(', ') : '') };
+  }
+  function previewCalc(x) {
+    var d = x.doc, reg = x.match ? x.match.reg : (x.who.reg || {});
+    var firmState = String(S.settings.firm.stateCode || '07');
+    var pos = d.pos.code || (d.type === 'PO' ? firmState : reg.stateCode || '');
+    return PB.compute(Object.assign({}, d, { pos: { code: pos } }), d.type === 'PO' ? String(reg.stateCode || '') : firmState);
+  }
+  var IMPORT_HELP = {
+    documents: '<p>One row per item line. Lines with the same <b>Type</b> and <b>Doc no.</b> make one document.</p><ul class="checks">' +
+      '<li><b>Final</b> or <b>Issued</b>: already issued (for example before this app). Recorded with its own number, not emailed, no PDF until you ask for one.</li>' +
+      '<li><b>Cancelled</b>: recorded as cancelled. Its number can be given again later.</li>' +
+      '<li><b>Draft</b>: opens in the app to check and finalise. It gets its number then.</li>' +
+      '<li>New customers and vendors are added. Each series continues after its highest number.</li></ul>',
+    parties: '<p>One row per GST registration or address. Repeat the name for a customer with several GSTINs or sites. A name that already exists gets the new GSTINs or addresses added; nothing is removed.</p>',
+    items: '<p>One row per item or service. A name that already exists is updated with the new code, unit, rate and GST rate.</p>'
+  };
+  function viewImport() {
+    var k = S.imp.kind, T = PB.IMPORT[k];
+    return '<section class="card"><div class="head-row"><h1>Import from Excel</h1></div>' +
+      '<p class="muted">Fill the template in Excel or Google Sheets. Upload it as .xlsx or .csv, or copy the rows with the header row and paste them here. You see everything before it is saved.</p>' +
+      '<div class="seg">' + [['documents', 'Invoices, proformas, POs'], ['parties', 'Customers and vendors'], ['items', 'Items']].map(function (o) {
+        return '<button data-impkind="' + o[0] + '" class="' + (k === o[0] ? 'on' : '') + '">' + o[1] + '</button>';
+      }).join('') + '</div></section>' +
+      '<section class="card"><h2>' + esc(T.title) + '</h2>' + IMPORT_HELP[k] +
+      '<div class="actions left"><button class="btn" data-action="tpl-xlsx">Download template (.xlsx)</button><button class="btn" data-action="tpl-csv">Download template (.csv)</button></div>' +
+      '<div class="grid2"><label>Upload the filled file (.xlsx, .xls or .csv)<input type="file" accept=".xlsx,.xls,.csv,.txt" data-impfile></label>' +
+      '<label>Or paste rows copied from Excel, with the header row<textarea data-imppaste rows="4" placeholder="Paste here"></textarea></label></div>' +
+      '<div class="actions left"><button class="btn" data-action="imp-read-paste">Read the pasted rows</button></div></section>' +
+      (S.imp.parsed && S.imp.parsed.kind === k ? previewHtml() : '');
+  }
+  function previewHtml() {
+    var P = S.imp.parsed, k = P.kind, blocked = P.problems.length > 0;
+    var out = '<section class="card" id="imp-preview"><div class="head-row"><h2>Check before importing</h2><span class="grow"></span><button class="btn small" data-action="imp-clear">Clear</button></div>' +
+      (P.source ? '<p class="muted small">From ' + esc(P.source) + '</p>' : '') +
+      (P.summary ? '<p><b>' + esc(P.summary) + '</b></p>' : '') +
+      (P.skipped ? '<p class="muted small">' + P.skipped + ' EXAMPLE row' + (P.skipped === 1 ? '' : 's') + ' skipped.</p>' : '') +
+      (blocked ? '<div class="alert"><b>Nothing can be imported until these are fixed in the file:</b><ul>' + P.problems.slice(0, 40).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') +
+        (P.problems.length > 40 ? '<li>…and ' + (P.problems.length - 40) + ' more</li>' : '') + '</ul></div>' : '') +
+      ((P.warnings || []).length ? '<ul class="checks">' + P.warnings.map(function (w) { return '<li class="bad">' + esc(w) + '</li>'; }).join('') + '</ul>' : '');
+    var rows = '';
+    if (k === 'documents') {
+      rows = '<thead><tr><th>Type</th><th>Number</th><th>Status</th><th>Date</th><th>Customer / vendor</th><th class="num">Lines</th><th class="num">Total</th></tr></thead><tbody>' +
+        P.items.map(function (x) {
+          var d = x.doc, c = previewCalc(x);
+          return '<tr><td>' + typeBadge(d.type) + '</td><td class="nowrap">' + esc(d.number || 'given at finalise') + '</td><td>' + statusPill(d.status) + '</td><td class="nowrap">' + esc(PB.prettyDate(d.date)) + '</td><td>' + esc(x.match ? x.match.p.name : x.who.name) +
+            (x.match ? '' : ' <span class="pill">new</span>') + '</td><td class="num">' + d.items.length + '</td><td class="num nowrap">' + rupees(c.payable) + '</td></tr>';
+        }).join('') + '</tbody>';
+    } else if (k === 'parties') {
+      rows = '<thead><tr><th>Name</th><th>Type</th><th>GSTINs and addresses</th></tr></thead><tbody>' + P.items.map(function (p) {
+        return '<tr><td><b>' + esc(p.name) + '</b></td><td>' + esc(p.role) + '</td><td>' + p.registrations.map(function (r) { return esc([r.label, r.gstin || 'Unregistered', PB.stateName(r.stateCode)].filter(Boolean).join(' · ')); }).join('<br>') + '</td></tr>';
+      }).join('') + '</tbody>';
+    } else {
+      rows = '<thead><tr><th>Item</th><th>Type</th><th>HSN/SAC</th><th>Unit</th><th class="num">Rate</th><th class="num">GST</th></tr></thead><tbody>' + P.items.map(function (p) {
+        return '<tr><td><b>' + esc(p.name) + '</b></td><td>' + esc(p.type) + '</td><td>' + esc(p.hsn) + '</td><td>' + esc(p.unit) + '</td><td class="num">' + (p.rate ? rupees(p.rate) : '—') + '</td><td class="num">' + esc(p.gstRate) + '%</td></tr>';
+      }).join('') + '</tbody>';
+    }
+    if (P.items.length) out += '<div class="table-wrap"><table class="list preview">' + rows + '</table></div>';
+    out += '<div class="actions left"><button class="btn primary" data-action="imp-run"' + (blocked || !P.items.length ? ' disabled' : '') + '>Import ' + (P.items.length || '') + '</button></div></section>';
+    return out;
+  }
+  async function readImportFile(file) {
+    if (!file) return;
+    var kind = S.imp.kind;
+    try {
+      var rows;
+      if (/\.(csv|txt|tsv)$/i.test(file.name)) rows = parseDelimited(await file.text());
+      else {
+        var X = await run('Reading the file…', xlsxLib);
+        var wb = X.read(await file.arrayBuffer(), { type: 'array' });
+        var name = wb.SheetNames.filter(function (n) { return !/how to fill|instruction/i.test(n); })[0] || wb.SheetNames[0];
+        rows = X.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: true, defval: '' });
+      }
+      S.imp.parsed = buildImport(kind, rows, file.name);
+    } catch (e) { S.imp.parsed = { kind: kind, problems: [cleanMsg(e)], items: [], skipped: 0 }; }
+    render();
+    var pv = $('#imp-preview'); if (pv) pv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function csvOf(rows) {
+    return rows.map(function (r) { return r.map(function (c) { var v = c == null ? '' : String(c); return /[",\n;]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n');
+  }
+  function saveBlob(name, blob) {
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { a.remove(); URL.revokeObjectURL(url); }, 4000);
+  }
+  async function downloadTemplate(kind, fmt) {
+    var T = PB.IMPORT[kind], rows = [T.columns].concat(T.examples);
+    if (fmt === 'csv') { saveBlob(T.file + '.csv', new Blob(['﻿' + csvOf(rows)], { type: 'text/csv;charset=utf-8' })); return; }
+    var X = await run('Preparing the template…', xlsxLib);
+    var wb = X.utils.book_new();
+    var ws = X.utils.aoa_to_sheet(rows);
+    ws['!cols'] = T.columns.map(function (h, i) {
+      var w = rows.reduce(function (a, r) { return Math.max(a, String(r[i] == null ? '' : r[i]).length); }, 0);
+      return { wch: Math.min(Math.max(10, w + 2), 40) };
+    });
+    X.utils.book_append_sheet(wb, ws, 'Fill here');
+    var notes = X.utils.aoa_to_sheet([['Column', 'What to write']].concat(T.notes).concat([[''], ['Rows that start with EXAMPLE', 'are skipped when you import. Delete them or type over them.']]));
+    notes['!cols'] = [{ wch: 30 }, { wch: 110 }];
+    X.utils.book_append_sheet(wb, notes, 'How to fill');
+    X.writeFile(wb, T.file + '.xlsx');
+  }
+  /** Adds item lines pasted from Excel to the open document. */
+  function pasteLines(rows) {
+    if (!rows.length) return 0;
+    var ORDER = ['item', 'details', 'hsn', 'qty', 'unit', 'rate', 'gst', 'disc'];
+    var t = headerMap(rows, 'documents', 2), getters;
+    if (t && t.map.item != null) getters = rows.slice(t.headerRow + 1).map(function (r) { return function (f) { return t.map[f] != null ? r[t.map[f]] : ''; }; });
+    else getters = rows.map(function (r) { return function (f) { var i = ORDER.indexOf(f); return i >= 0 ? r[i] : ''; }; });
+    var d = S.doc, added = 0;
+    if (d.items.length === 1 && !String(d.items[0].name || '').trim()) d.items = [];
+    getters.forEach(function (get) {
+      var name = cellStr(get('item'));
+      if (!name) return;
+      var line = blankLine();
+      applyProduct(line, name);
+      line.name = name;
+      var det = cellStr(get('details')); if (det) line.description = det;
+      var hsn = hsnStr(get('hsn')); if (hsn) { line.hsn = hsn; line.type = /^99\d{4}$/.test(hsn) ? 'Service' : 'Goods'; }
+      var q = cellNum(get('qty')); if (!isNaN(q)) line.qty = q;
+      var u = cellStr(get('unit')); if (u) line.unit = u;
+      var r = cellNum(get('rate')); if (!isNaN(r)) line.rate = r;
+      var g = cellNum(get('gst')); if (PB.GST_RATES.indexOf(g) >= 0) line.gstRate = g;
+      var dc = cellNum(get('disc')); if (!isNaN(dc)) line.discountPct = dc;
+      d.items.push(line); added++;
+    });
+    if (!d.items.length) d.items.push(blankLine());
+    return added;
+  }
+
   // ---------------------------------------------------------------- document actions
   var actions = {
     'doc-save': async function () {
@@ -568,21 +983,55 @@
     'doc-finalise': async function () {
       var d = S.doc;
       S.errors = PB.validate(d, S.settings.firm);
+      var np = numberProblem(d); if (np) S.errors.push(np);
       if (S.errors.length) { render(); window.scrollTo(0, 0); return; }
       var T = PB.TYPES[d.type], fy = PB.fy(d.date), st = S.series[d.type] || {};
-      var num = st.fy === fy.short ? st.next : 'the next number in ' + fy.long;
-      var c = calc(d);
-      var mail = S.settings.email.onFinalise !== 'no' && S.settings.email.to ? ' and emailed to ' + S.settings.email.to : '';
-      var ok = await confirmBox('Finalise this ' + T.title.toLowerCase() + '?', 'It gets number ' + num + ' and can no longer be changed (you can cancel it later).\n\nTotal: ' + rupees(c.payable) + '\nThe PDF is saved to Google Drive' + mail + '.', 'Finalise');
-      if (!ok) return;
+      var n = d.numbering || { mode: 'auto' };
+      var num = n.mode === 'auto' ? (st.fy === fy.short ? st.next : 'the next number in ' + fy.long) : n.number;
+      var to = S.settings.email.onFinalise !== 'no' && S.settings.email.to ? S.settings.email.to : '';
+      var choice = await finaliseBox(T, num, calc(d), to, n.mode !== 'manual');
+      if (!choice) return;
       var res = await run('Finalising…', function () { return call('apiFinalise', d); });
       S.doc = res.doc; S.dirty = false; S.errors = []; upsertSummary(res.summary); if (res.series) S.series = res.series;
       render();
       try {
-        var r2 = await run('Saving the PDF to Drive…', function () { return storePdf(S.doc, true); });
+        var r2 = await run('Saving the PDF to Drive…', function () { return storePdf(S.doc, choice.email); });
         toast(S.doc.number + ' is final. PDF saved' + (r2.emailed ? ' and emailed.' : '.'));
       } catch (e) { toast('The document is final, but the PDF was not saved. Use “Save the PDF to Drive”.', 'error'); }
       render();
+    },
+    'doc-amend': function () { startAmend(); },
+    'amend-discard': function () {
+      S.doc = S.amendBase || S.doc; S.amending = false; S.amendBase = null; S.dirty = false; S.errors = [];
+      render(); toast('Changes discarded');
+    },
+    'amend-save': async function () {
+      var d = S.doc, base = S.amendBase || {};
+      S.errors = PB.validate(d, d.firm || S.settings.firm);
+      var np = d.numbering && d.numbering.mode === 'manual' ? numberProblem(d) : ''; if (np) S.errors.push(np);
+      if (S.errors.length) { render(); window.scrollTo(0, 0); return; }
+      var c = calc(d), was = base.calc ? base.calc.payable : null;
+      var newNo = d.numbering && d.numbering.mode === 'manual' && d.numbering.number && d.numbering.number !== d.number ? d.numbering.number : '';
+      var to = S.settings.email.onFinalise !== 'no' && S.settings.email.to ? S.settings.email.to : '';
+      var summary = 'Number: ' + d.number + (newNo ? ' → ' + newNo : ' (unchanged)') + '\nTotal: ' + (was != null && was !== c.payable ? rupees(was) + ' → ' : '') + rupees(c.payable) +
+        '\n\nA new PDF is saved to Drive. The old PDF is kept there, renamed.';
+      modal('<h2>Save the amendment?</h2><p class="pre">' + esc(summary) + '</p><form id="amend-form"><label>Reason (kept in the history)<input name="reason" required placeholder="e.g. Quantity corrected; customer GSTIN fixed"></label>' +
+        (to ? '<label class="check"><input type="checkbox" name="email" checked> Email the amended PDF to ' + esc(to) + '</label>' : '') +
+        '<div class="actions"><button type="button" class="btn" data-close>Back</button><button class="btn primary">Save amendment</button></div></form>', function (root) {
+        $('#amend-form', root).onsubmit = async function (e) {
+          e.preventDefault();
+          var f = e.target.elements, reason = f.reason.value, email = !!(f.email && f.email.checked);
+          var res = await run('Saving the amendment…', function () { return call('apiAmend', d, reason); });
+          closeModal();
+          S.doc = res.doc; S.amending = false; S.amendBase = null; S.dirty = false; S.errors = []; upsertSummary(res.summary); if (res.series) S.series = res.series;
+          render();
+          try {
+            var r2 = await run('Saving the new PDF to Drive…', function () { return storePdf(S.doc, email); });
+            toast(S.doc.number + ' amended. New PDF saved' + (r2.emailed ? ' and emailed.' : '.'));
+          } catch (err) { toast('Amended, but the PDF was not saved. Use “Save the PDF to Drive”.', 'error'); }
+          render();
+        };
+      });
     },
     'doc-storepdf': async function () {
       var r = await run('Saving the PDF to Drive…', function () { return storePdf(S.doc, true); });
@@ -616,19 +1065,7 @@
         };
       });
     },
-    'doc-cancel': function () {
-      var d = S.doc;
-      modal('<h2>Cancel ' + esc(d.number) + '?</h2><p>The number stays used and the document is marked CANCELLED, with a cancelled copy of the PDF. For an invoice already filed in GSTR-1, ask your CA about a credit note instead.</p><form id="cancel-form"><label>Reason<input name="reason" required placeholder="e.g. Wrong customer GSTIN; reissued as …"></label><div class="actions"><button type="button" class="btn" data-close>Back</button><button class="btn danger">Cancel the document</button></div></form>', function (root) {
-        $('#cancel-form', root).onsubmit = async function (e) {
-          e.preventDefault();
-          var reason = e.target.elements.reason.value;
-          var res = await run('Cancelling…', function () { return call('apiCancel', d.id, reason); });
-          S.doc = res.doc; upsertSummary(res.summary); closeModal();
-          try { await run('Saving the cancelled PDF…', function () { return storePdf(S.doc, true); }); } catch (err) { /* shown */ }
-          toast(d.number + ' cancelled'); render();
-        };
-      });
-    },
+    'doc-cancel': function () { cancelFlow(S.doc); },
     'line-add': function () { S.doc.items.push(blankLine()); S.dirty = true; render(); var l = $$('#lines .line'); if (l.length) $('[data-k="name"]', l[l.length - 1]).focus(); },
     'party-new-doc': function () { openParty(null, function (saved) { applyParty(saved); render(); }); },
     'party-edit-doc': function () { openParty(S.doc.party.id, function (saved) { applyParty(saved, S.doc.party.regId); render(); }); },
@@ -657,14 +1094,114 @@
       var res = await run('Checking…', function () { return call('apiCheckSeries'); });
       $('#series-result').innerHTML = res.length ? '<ul class="checks">' + res.map(function (r) {
         var ok = !r.gaps.length && !r.duplicates.length;
-        return '<li class="' + (ok ? 'good' : 'bad') + '">' + (ok ? '✓ ' : '⚠ ') + esc(r.series) + ': ' + r.count + ' numbers, ' + r.first + ' to ' + r.last + (r.gaps.length ? '. Missing: ' + r.gaps.slice(0, 20).join(', ') : '') + (r.duplicates.length ? '. Used twice: ' + r.duplicates.join(', ') : '') + (ok ? ', no gaps' : '') + '</li>';
+        return '<li class="' + (ok ? 'good' : 'bad') + '">' + (ok ? '✓ ' : '⚠ ') + esc(r.series) + ': ' + r.count + ' numbers, ' + r.first + ' to ' + r.last + (r.gaps.length ? '. Not in this app: ' + r.gaps.slice(0, 20).join(', ') + (r.gaps.length > 20 ? '…' : '') : '') + (r.duplicates.length ? '. Used twice: ' + r.duplicates.join(', ') : '') + (ok ? ', no gaps' : '') +
+          (r.reissued && r.reissued.length ? '. Given again after cancelling: ' + r.reissued.join(', ') : '') + (r.other ? '. ' + r.other + ' number(s) outside this series' : '') + '</li>';
       }).join('') + '</ul>' : '<p class="muted">No final documents yet.</p>';
+    },
+    'imp-read-paste': function () {
+      var ta = $('[data-imppaste]'), text = ta ? ta.value : '';
+      if (!text.trim()) { toast('Paste the rows first, with the header row.', 'error'); return; }
+      try { S.imp.parsed = buildImport(S.imp.kind, parseDelimited(text), 'pasted rows'); }
+      catch (e) { S.imp.parsed = { kind: S.imp.kind, problems: [cleanMsg(e)], items: [], skipped: 0 }; }
+      render();
+      var pv = $('#imp-preview'); if (pv) pv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    'imp-clear': function () { S.imp.parsed = null; render(); },
+    'tpl-xlsx': function () { return downloadTemplate(S.imp.kind, 'xlsx'); },
+    'tpl-csv': function () { return downloadTemplate(S.imp.kind, 'csv'); },
+    'imp-run': async function () {
+      var P = S.imp.parsed;
+      if (!P || P.problems.length || !P.items.length) return;
+      if (P.kind === 'items') {
+        var ri = await run('Importing items…', function () { return call('apiImportProducts', P.items); });
+        S.products = ri.products; S.imp.parsed = null; toast(ri.added + ' items added, ' + ri.updated + ' updated'); render(); return;
+      }
+      if (P.kind === 'parties') {
+        var rp = await run('Importing customers and vendors…', function () { return call('apiImportParties', P.items); });
+        S.parties = rp.parties; S.imp.parsed = null; toast(rp.added + ' added, ' + rp.updated + ' updated'); render(); return;
+      }
+      var recorded = P.items.filter(function (x) { return x.doc.status !== 'DRAFT'; }).length;
+      if (recorded && !(await confirmBox('Record ' + recorded + ' issued or cancelled document' + (recorded === 1 ? '' : 's') + '?',
+        'They are saved with the numbers in the file, as they were issued. They are not emailed, and no PDF is made until you open one and choose “Save the PDF to Drive”. Each series continues after its highest number.', 'Import'))) return;
+      if (P.newParties.length) {
+        var np = await run('Adding customers and vendors…', function () { return call('apiImportParties', P.newParties); });
+        S.parties = np.parties;
+      }
+      var list = [];
+      for (var i = 0; i < P.items.length; i++) {
+        var x = P.items[i], found = findParty(x.who, x.doc.type);
+        if (!found) { showError(new Error(x.label + ': the customer or vendor could not be matched. No documents were imported.')); return; }
+        x.doc.party = partySnapshot(found.p, found.reg);
+        if (!x.doc.pos.code) x.doc.pos = { code: x.doc.type === 'PO' ? String(S.settings.firm.stateCode || '07') : found.reg.stateCode };
+        var item = clone(x.doc); item.ref = x.label; item.cancelReason = x.cancelReason;
+        list.push(item);
+      }
+      var res = await run('Importing documents…', function () { return call('apiImportDocuments', list); });
+      res.summaries.forEach(upsertSummary); S.series = res.series; S.imp.parsed = null;
+      toast(res.summaries.length + ' document' + (res.summaries.length === 1 ? '' : 's') + ' imported');
+      go('docs');
+    },
+    'lines-paste': function () {
+      modal('<h2>Paste lines from Excel</h2><p class="muted">Copy the rows in Excel and paste them here. With a header row, columns are matched by name (Item, Item details, HSN/SAC, Qty, Unit, Rate, GST %, Discount %). Without one, use this order: Item, Details, HSN/SAC, Qty, Unit, Rate, GST %, Discount %.</p>' +
+        '<form id="paste-form"><textarea name="rows" rows="8" placeholder="Paste here" aria-label="Rows"></textarea><div class="actions"><button type="button" class="btn" data-close>Cancel</button><button class="btn primary">Add the lines</button></div></form>', function (root) {
+        $('#paste-form', root).onsubmit = function (e) {
+          e.preventDefault();
+          var added = pasteLines(parseDelimited(e.target.elements.rows.value));
+          if (!added) { toast('No lines found. Each line needs an item name.', 'error'); return; }
+          closeModal(); S.dirty = true; render(); toast(added + ' line' + (added === 1 ? '' : 's') + ' added');
+        };
+      });
     },
     'img-remove': async function (el) {
       S.images = await run('Saving…', function () { return call('apiRemoveImage', el.dataset.kind); });
       render();
     }
   };
+  function finaliseBox(T, num, c, to, emailDefault) {
+    return new Promise(function (resolve) {
+      modal('<h2>Finalise this ' + esc(T.title.toLowerCase()) + '?</h2><p class="pre">' + esc('It gets number ' + num + ' and is locked. You can amend or cancel it later.\n\nTotal: ' + rupees(c.payable) + '\nThe PDF is saved to Google Drive.') + '</p>' +
+        (to ? '<label class="check"><input type="checkbox" id="fb-email"' + (emailDefault ? ' checked' : '') + '> Email the PDF to ' + esc(to) + '</label>' : '') +
+        '<div class="actions"><button class="btn" data-close>Back</button><button class="btn primary" id="cb-ok">Finalise</button></div>', function (root) {
+        $('#cb-ok', root).onclick = function () { var em = $('#fb-email', root); closeModal.after = null; closeModal(); resolve({ email: !!(em && em.checked) }); };
+        closeModal.after = function () { resolve(null); };
+      });
+    });
+  }
+  function cancelFlow(d) {
+    var to = S.settings.email.onFinalise !== 'no' && S.settings.email.to ? S.settings.email.to : '';
+    modal('<h2>Cancel ' + esc(d.number) + '?</h2><p>The number stays recorded and the document is marked CANCELLED, with a cancelled copy of the PDF. The number can be given again to a new document (choose it under Number). For an invoice already filed in GSTR-1, ask your CA about a credit note instead.</p>' +
+      '<form id="cancel-form"><label>Reason<input name="reason" required placeholder="e.g. Wrong customer GSTIN; reissued as …"></label>' +
+      (to ? '<label class="check"><input type="checkbox" name="email" checked> Email the cancelled PDF to ' + esc(to) + '</label>' : '') +
+      '<div class="actions"><button type="button" class="btn" data-close>Back</button><button class="btn danger">Cancel the document</button></div></form>', function (root) {
+      $('#cancel-form', root).onsubmit = async function (e) {
+        e.preventDefault();
+        var f = e.target.elements, reason = f.reason.value, email = !!(f.email && f.email.checked);
+        var res = await run('Cancelling…', function () { return call('apiCancel', d.id, reason); });
+        upsertSummary(res.summary); if (res.series) S.series = res.series; closeModal();
+        if (S.view === 'doc' && S.doc && S.doc.id === d.id) S.doc = res.doc;
+        try { await run('Saving the cancelled PDF…', function () { return storePdf(res.doc, email); }); } catch (err) { /* shown */ }
+        toast(d.number + ' cancelled'); render();
+      };
+    });
+  }
+  async function startAmend() {
+    var d = S.doc;
+    if (!d || d.status !== 'FINAL') return;
+    var ok = await confirmBox('Amend ' + d.number + '?', 'Use this to correct a document already issued. It keeps its number (you can change it), gets the new contents and a new PDF. The old PDF is kept in Drive, renamed, and the change is recorded with your reason.\n\nGST: change an invoice only if it is not yet reported in your GSTR-1. After filing, a change in value needs a credit or debit note, and other corrections go in a GSTR-1 amendment. Ask your CA if unsure.', 'Start amending');
+    if (!ok) return;
+    S.amendBase = clone(S.doc);
+    S.amending = true;
+    S.doc.numbering = { mode: 'keep', number: S.doc.number };
+    S.dirty = false; S.errors = [];
+    render(); window.scrollTo(0, 0);
+  }
+  async function rowAction(kind, id) {
+    try {
+      if (kind === 'amend') { await openDoc(id); await startAmend(); }
+      else if (kind === 'cancel') { var doc = await run('Opening…', function () { return call('apiGetDocument', id); }); cancelFlow(doc); }
+    } catch (e) { /* already shown */ }
+  }
+
   function copyDoc(src, type) {
     var d = clone(src);
     var fresh = newDoc(type);
@@ -686,6 +1223,10 @@
     if (el) { e.preventDefault(); go(el.dataset.view); return; }
     el = e.target.closest('[data-new]');
     if (el) { openNew(el.dataset.new); return; }
+    el = e.target.closest('[data-row-action]');
+    if (el) { e.preventDefault(); rowAction(el.dataset.rowAction, el.dataset.id); return; }
+    el = e.target.closest('[data-impkind]');
+    if (el) { S.imp = { kind: el.dataset.impkind, parsed: null }; render(); return; }
     if (e.target.closest('[data-stop]')) return;
     el = e.target.closest('[data-open]');
     if (el) { openDoc(el.dataset.open).catch(function () {}); return; }
@@ -749,7 +1290,8 @@
       if (gg && gg.ok) { $('[data-s="firm.stateCode"]').value = gg.stateCode; var p = $('[data-s="firm.pan"]'); if (p && !p.value) p.value = gg.pan; }
       return;
     }
-    if (S.view !== 'doc' || !S.doc || S.doc.status !== 'DRAFT') return;
+    if (S.view !== 'doc' || !editable()) return;
+    if (t.matches('[data-numtext]')) { S.doc.numbering = { mode: 'manual', number: t.value.trim() }; S.dirty = true; return; }
     var line = t.closest('.line');
     if (line && t.dataset.k) {
       var it = S.doc.items[+line.dataset.i];
@@ -773,8 +1315,16 @@
       S.images = await run('Uploading…', function () { return call('apiUploadImage', t.dataset.upload, dataUrl); });
       toast('Image saved'); render(); return;
     }
-    if (S.view !== 'doc' || !S.doc || S.doc.status !== 'DRAFT') return;
+    if (t.matches('[data-impfile]')) { readImportFile(t.files && t.files[0]); return; }
+    if (S.view !== 'doc' || !editable()) return;
     var d = S.doc;
+    if (t.matches('[data-numsel]')) {
+      var v = t.value, prev = d.numbering || {};
+      if (v.indexOf('reuse:') === 0) d.numbering = { mode: 'reuse', number: v.slice(6) };
+      else if (v === 'manual') d.numbering = { mode: 'manual', number: prev.mode === 'manual' ? prev.number : (S.amending ? d.number : '') };
+      else d.numbering = { mode: v, number: v === 'keep' ? d.number : '' };
+      S.dirty = true; render(); return;
+    }
     if (t.matches('[data-party-pick]')) {
       var p = partiesFor(d.type).filter(function (x) { return x.name.toLowerCase() === t.value.trim().toLowerCase(); })[0];
       if (p) { applyParty(p); render(); }

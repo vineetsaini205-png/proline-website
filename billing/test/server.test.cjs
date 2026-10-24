@@ -9,7 +9,8 @@ load('gas-fakes.js');
 load('../src/shared.js');
 load('../src/server.js');
 /* global setup, apiBootstrap, apiSaveSettings, apiAddStarterProducts, apiSaveParty, apiDeleteParty, apiSaveDraft, apiFinalise, apiStorePdf,
-   apiSetSeries, apiCheckSeries, apiCancel, apiDeleteDraft, apiGetDocument, apiEmailDocument, FAKE, PB */
+   apiSetSeries, apiCheckSeries, apiCancel, apiDeleteDraft, apiGetDocument, apiEmailDocument, apiAmend, apiImportDocuments,
+   apiImportParties, apiImportProducts, seriesRow_, reusable_, settings_, FAKE, PB */
 
 let n = 0;
 const t = (name, fn) => { try { fn(); n++; } catch (e) { console.error('FAIL', name); throw e; } };
@@ -174,6 +175,136 @@ t('bootstrap lists newest first', () => {
   const b = apiBootstrap();
   assert.equal(b.documents.length, 5);
   assert.equal(b.documents[0].type, 'PO');
+});
+
+
+// ---- numbering in the owner's style, past invoices, reused numbers, amendments, imports
+const b64 = (txt) => Buffer.from(txt).toString('base64');
+t('number format: year written 2627, two digits; the series counts numbers in either year style', () => {
+  const st = apiSaveSettings({ 'series.fyStyle': '2627', 'series.pad': '2' });
+  assert.equal(st.series.INV.next, 'PEW/' + PB.fy(today).compact + '/47', 'continues after PEW/26-27/0046');
+  assert.throws(() => apiSaveSettings({ 'series.fyStyle': '2026' }), /year/);
+  assert.throws(() => apiSaveSettings({ 'series.pad': '9' }), /digits/);
+});
+
+const past = '2025-09-28', f25 = PB.fy(past);
+function pastParty() { const r = cust.registrations[0]; return { id: cust.id, name: cust.name, gstin: r.gstin, address: r.address, city: r.city, stateCode: r.stateCode, pin: r.pin }; }
+function pastDoc(extra) {
+  return Object.assign({ type: 'INV', date: past, party: pastParty(), pos: { code: '07' }, roundOff: false,
+    items: [{ name: '5 core 4 sq mm copper cable', type: 'Goods', hsn: '8544', qty: 8, unit: 'Mtr', rate: 395, gstRate: 18 }] }, extra || {});
+}
+const ids = {};
+t('import past invoices: issued and cancelled ones keep their numbers; the series continues after the highest', () => {
+  const mails = FAKE.mails.length;
+  const res = apiImportDocuments([
+    pastDoc({ status: 'FINAL', number: 'PEW/2526/0001' }),
+    pastDoc({ status: 'CANCELLED', number: 'PEW/2526/0002', cancelReason: 'Wrong rate' }),
+    pastDoc({ status: 'CANCELLED', number: 'PEW/2526/0003' }),
+    pastDoc({ status: 'CANCELLED', number: 'PEW/2526/0004' }),
+    pastDoc({ status: 'FINAL', number: 'PEW/2526/05' }),
+    pastDoc({ status: 'FINAL', number: 'PEW/2526/06' }),
+    pastDoc({ status: 'DRAFT', number: 'ignored', date: today })
+  ]);
+  assert.equal(res.summaries.length, 7);
+  res.summaries.forEach((x) => { ids[x.number || 'draft'] = x.id; });
+  assert.ok(res.summaries.every((x) => x.imported));
+  assert.equal(res.summaries[6].number, '', 'a draft gets no number');
+  assert.equal(+seriesRow_('INV', f25.short).last, 6);
+  assert.deepEqual(reusable_(settings_(), 'INV', f25), ['PEW/2526/0002', 'PEW/2526/0003', 'PEW/2526/0004']);
+  const reg = raw('Register').slice(1).filter((r) => String(r[0]).startsWith('PEW/2526'));
+  assert.equal(reg.length, 6);
+  assert.equal(reg.filter((r) => r[12] === 'CANCELLED').length, 3);
+  assert.equal(apiGetDocument(ids['PEW/2526/0002']).meta.cancelReason, 'Wrong rate');
+  assert.equal(FAKE.mails.length, mails, 'recorded invoices are not emailed');
+});
+
+t('import is all-or-nothing and refuses a number already used', () => {
+  const before = raw('Documents').length;
+  assert.throws(() => apiImportDocuments([pastDoc({ status: 'FINAL', number: 'PEW/2526/07' }), pastDoc({ status: 'FINAL', number: 'PEW/2526/05' })]), /Nothing was imported[\s\S]*already used/);
+  assert.throws(() => apiImportDocuments([pastDoc({ status: 'FINAL', number: '' })]), /needs its number/);
+  assert.equal(raw('Documents').length, before);
+  assert.equal(+seriesRow_('INV', f25.short).last, 6);
+});
+
+t('finalise: next in series, a cancelled number given again, or a number typed by hand', () => {
+  const a = apiFinalise(pastDoc());
+  assert.equal(a.doc.number, 'PEW/2526/07');
+  ids['PEW/2526/07'] = a.doc.id;
+  const b = apiFinalise(pastDoc({ numbering: { mode: 'reuse', number: 'PEW/2526/0002' } }));
+  assert.equal(b.doc.number, 'PEW/2526/0002');
+  assert.ok(!reusable_(settings_(), 'INV', f25).includes('PEW/2526/0002'));
+  assert.throws(() => apiFinalise(pastDoc({ numbering: { mode: 'reuse', number: 'PEW/2526/0002' } })), /no longer free/);
+  assert.throws(() => apiFinalise(pastDoc({ numbering: { mode: 'manual', number: 'PEW/2526/05' } })), /already used/);
+  assert.throws(() => apiFinalise(pastDoc({ numbering: { mode: 'manual', number: 'PEW/2526/A B' } })), /letters, digits/);
+  const c = apiFinalise(pastDoc({ numbering: { mode: 'manual', number: 'PEW/2526/12' } }));
+  assert.equal(c.doc.number, 'PEW/2526/12');
+  assert.equal(+seriesRow_('INV', f25.short).last, 12, 'series moves past a typed number');
+  assert.equal(apiFinalise(pastDoc()).doc.number, 'PEW/2526/13');
+  apiSaveSettings({ 'series.INV.reuse': 'PEW/2526/0008, pew/2526/0008\nPEW/2526/0009; OTHER/1' });
+  assert.equal(settings_().series.INV.reuse, 'PEW/2526/0008, PEW/2526/0009, OTHER/1');
+  assert.deepEqual(reusable_(settings_(), 'INV', f25), ['PEW/2526/0003', 'PEW/2526/0004', 'PEW/2526/0008', 'PEW/2526/0009']);
+  apiFinalise(pastDoc({ numbering: { mode: 'reuse', number: 'PEW/2526/0008' } }));
+  assert.equal(settings_().series.INV.reuse, 'PEW/2526/0009, OTHER/1', 'a listed number is taken off the list once used');
+  const chk = apiCheckSeries().find((x) => x.series === 'Tax Invoice 2025-26');
+  assert.deepEqual(chk.duplicates, []);
+  assert.deepEqual(chk.reissued, [2]);
+});
+
+t('amend: new contents and a history; the old PDF is kept, renamed; the register is rewritten', () => {
+  const id = ids['PEW/2526/07'];
+  const pdf = apiStorePdf(id, b64('%PDF first'), { email: false });
+  const doc = apiGetDocument(id);
+  doc.items[0].qty = 10;
+  assert.throws(() => apiAmend(doc, ' '), /reason/);
+  const res = apiAmend(doc, 'Quantity corrected');
+  assert.equal(res.doc.number, 'PEW/2526/07');
+  assert.equal(res.doc.calc.taxable, 3950);
+  assert.equal(res.doc.meta.amendments.length, 1);
+  assert.equal(res.doc.meta.amendments[0].payable, 3728.8);
+  assert.match(FAKE.files[pdf.pdfFileId].getName(), /\(before amendment 1\)\.pdf$/);
+  assert.equal(FAKE.files[pdf.pdfFileId].trashed, false);
+  assert.equal(res.summary.pdfUrl, '');
+  assert.ok(res.summary.amendedAt);
+  const again = apiStorePdf(id, b64('%PDF amended'), { email: false });
+  assert.equal(FAKE.files[pdf.pdfFileId].trashed, false, 'saving the new PDF keeps the old one');
+  assert.notEqual(again.pdfFileId, pdf.pdfFileId);
+  const reg = raw('Register').slice(1).filter((r) => r[13] === id);
+  assert.equal(reg.length, 1);
+  assert.equal(+reg[0][7], 3950);
+  const d2 = apiGetDocument(id);
+  d2.numbering = { mode: 'manual', number: 'PEW/2526/05' };
+  assert.throws(() => apiAmend(d2, 'Number'), /already used/);
+  d2.numbering = { mode: 'manual', number: 'PEW/2526/20' };
+  const r2 = apiAmend(d2, 'Number corrected');
+  assert.equal(r2.doc.number, 'PEW/2526/20');
+  assert.equal(r2.doc.meta.amendments.length, 2);
+  assert.equal(+seriesRow_('INV', f25.short).last, 20);
+  assert.throws(() => apiAmend(apiGetDocument(ids['PEW/2526/0003']), 'x'), /Only a final/);
+});
+
+t('import customers and vendors: new ones added, new GSTINs added to an existing name', () => {
+  const res = apiImportParties([
+    { row: 2, name: 'Sample Customer', role: 'Customer', registrations: [{ label: 'Bengaluru', gstin: gst('29AAACS1234A1Z').toLowerCase(), address: 'HSR Layout', city: 'Bengaluru' }] },
+    { row: 3, name: 'Imported Buyer LLP', role: 'Customer', phone: '98100', registrations: [{ address: '5 Market', city: 'Noida', stateCode: '09' }] },
+    { row: 4, name: 'Imported Buyer LLP', role: 'Customer', registrations: [{ address: '5 Market', city: 'Noida', stateCode: '09' }] }
+  ]);
+  assert.equal(res.added, 1);
+  assert.equal(res.updated, 1);
+  const sc = res.parties.find((p) => p.name === 'Sample Customer');
+  assert.equal(sc.registrations.length, 3);
+  assert.equal(res.parties.find((p) => p.name === 'Imported Buyer LLP').registrations.length, 1, 'the same address is not added twice');
+  assert.throws(() => apiImportParties([{ row: 7, name: 'Bad', registrations: [{ gstin: '07AAACS1234A1ZZ' }] }]), /Row 7 \(Bad\).*GSTIN/);
+});
+
+t('import items: new ones added, same name updated', () => {
+  const res = apiImportProducts([
+    { row: 2, name: 'Armoured copper cable', type: 'Goods', hsn: '8544', unit: 'Mtr', rate: 310, gstRate: 18 },
+    { row: 3, name: 'Earthing kit', type: 'Goods', hsn: '8538', unit: 'Set', rate: 3500, gstRate: 18, category: 'Electrical' }
+  ]);
+  assert.equal(res.updated, 1);
+  assert.equal(res.added, 1);
+  assert.equal(res.products.find((p) => p.name === 'Armoured copper cable').rate, 310);
+  assert.throws(() => apiImportProducts([{ row: 9, name: 'Odd', type: 'Goods', hsn: '12', gstRate: 18 }]), /Row 9 \(Odd\)/);
 });
 
 console.log(`${n} server checks passed`);

@@ -112,19 +112,31 @@ var PB = (function () {
   }
 
   // ---- Financial year and numbers ------------------------------------------
-  /** "2026-10-24" → { start: 2026, short: "26-27", long: "2026-27" } (April to March). */
+  /** "2026-10-24" → { start: 2026, short: "26-27", compact: "2627", long: "2026-27" } (April to March). */
   function fy(dateStr) {
     var m = String(dateStr || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
     var y = m ? +m[1] : new Date().getFullYear(), mo = m ? +m[2] : new Date().getMonth() + 1;
     var start = mo >= 4 ? y : y - 1;
     var a = String(start).slice(2), b = String(start + 1).slice(2);
-    return { start: start, short: a + '-' + b, long: start + '-' + b };
+    return { start: start, short: a + '-' + b, compact: a + b, long: start + '-' + b };
   }
-  /** Document number from the series settings, e.g. PEW/26-27/0007. */
-  function formatNumber(prefix, fyShort, n, pad) {
+  /** The year part of a document number: "26-27" or, in the 2627 style, "2627". */
+  function fyTag(f, style) { return style === '2627' ? f.compact : f.short; }
+  /** Document number from the series settings, e.g. PEW/26-27/0007 or PEW/2627/07. */
+  function formatNumber(prefix, tag, n, pad) {
     var s = String(n);
     while (s.length < (pad || 4)) s = '0' + s;
-    return (prefix ? prefix + '/' : '') + fyShort + '/' + s;
+    return (prefix ? prefix + '/' : '') + tag + '/' + s;
+  }
+  /**
+   * The running number inside a document number of this series, in either year style:
+   * seqOf("PEW/2627/0005", "PEW", fy) → 5. Numbers from another series give null.
+   */
+  function seqOf(number, prefix, f) {
+    var esc = function (x) { return String(x).replace(/[.*+?^${}()|[\]\\\/-]/g, '\\$&'); };
+    var re = new RegExp('^' + (prefix ? esc(prefix) + '/' : '') + '(?:' + esc(f.short) + '|' + esc(f.compact) + ')/(\\d{1,9})$', 'i');
+    var m = String(number || '').trim().match(re);
+    return m ? +m[1] : null;
   }
   /** GST rule 46(b): up to 16 characters; letters, digits, "/" and "-" only. */
   function checkInvoiceNumber(no) {
@@ -180,6 +192,68 @@ var PB = (function () {
     };
   }
 
+  // ---- Reading imported rows (Excel, CSV, pasted) ------------------------------------
+  /** "Customer GSTIN" → "customergstin": header names compared without case, spaces or signs. */
+  function normKey(s) { return String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9%]/g, ''); }
+  var MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12 };
+  /** Dates as typed in India: 28-09-2026, 28/9/26, 28 Sep 2026, 2026-09-28, or an Excel date. → "2026-09-28" or "". */
+  function parseDate(v) {
+    if (v == null || v === '') return '';
+    var z = function (n) { return (n < 10 ? '0' : '') + n; };
+    var ok = function (y, mo, d) {
+      if (y < 100) y += 2000;
+      if (!(mo >= 1 && mo <= 12 && d >= 1 && d <= 31)) return '';
+      var dt = new Date(Date.UTC(y, mo - 1, d));
+      return dt.getUTCMonth() === mo - 1 ? y + '-' + z(mo) + '-' + z(d) : '';
+    };
+    if (Object.prototype.toString.call(v) === '[object Date]') return isNaN(v) ? '' : ok(v.getFullYear(), v.getMonth() + 1, v.getDate());
+    if (typeof v === 'number' && v > 20000 && v < 80000) { var e = new Date(Date.UTC(1899, 11, 30) + v * 86400000); return ok(e.getUTCFullYear(), e.getUTCMonth() + 1, e.getUTCDate()); }
+    var t = String(v).trim(), m;
+    if ((m = t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/))) return ok(+m[1], +m[2], +m[3]);
+    if ((m = t.match(/^(\d{1,2})[-\/. ](\d{1,2})[-\/. ](\d{2,4})$/))) return ok(+m[3], +m[2], +m[1]);
+    if ((m = t.match(/^(\d{1,2})[-\/ ]?([A-Za-z]{3,9})[-\/ ,]*(\d{2,4})$/))) {
+      var mo = MON[m[2].toLowerCase().slice(0, 4)] || MON[m[2].toLowerCase().slice(0, 3)];
+      if (mo) return ok(+m[3], mo, +m[1]);
+    }
+    return '';
+  }
+  /** "07", "7", "Delhi", "delhi (07)" → "07"; unknown → "". */
+  function stateCodeOf(v) {
+    var t = String(v == null ? '' : v).trim();
+    if (!t) return '';
+    var m = t.match(/\((\d{1,2})\)\s*$/) || t.match(/^(\d{1,2})$/);
+    if (m) { var c = (m[1].length === 1 ? '0' : '') + m[1]; return stateName(c) ? c : ''; }
+    var k = normKey(t);
+    for (var i = 0; i < STATES.length; i++) if (normKey(STATES[i][1]) === k) return STATES[i][0];
+    var alias = { orissa: '21', pondicherry: '34', jammukashmir: '01', jk: '01', andaman: '35', dnhdd: '26', newdelhi: '07', nct: '07', nctofdelhi: '07' };
+    return alias[k] || '';
+  }
+  /** "Tax invoice", "Invoice", "INV" → "INV"; "Proforma", "Performa", "PI" → "PI"; "PO", "Purchase order" → "PO". */
+  function docTypeOf(v) {
+    var k = normKey(v);
+    if (!k) return '';
+    if (k === 'pi' || k.indexOf('proforma') >= 0 || k.indexOf('performa') >= 0 || k.indexOf('preinvoice') >= 0) return 'PI';
+    if (k === 'po' || k.indexOf('purchase') >= 0) return 'PO';
+    if (k === 'inv' || k.indexOf('invoice') >= 0) return 'INV';
+    return '';
+  }
+  /** "Final", "Issued" → FINAL; "Cancelled", "Canceled" → CANCELLED; "Draft" or empty → DRAFT. */
+  function statusOf(v) {
+    var k = normKey(v);
+    if (!k || k === 'draft') return 'DRAFT';
+    if (k.indexOf('cancel') === 0) return 'CANCELLED';
+    if (k === 'final' || k === 'issued' || k === 'raised' || k === 'done' || k === 'finalised' || k === 'finalized') return 'FINAL';
+    return '';
+  }
+  /** "Yes", "Y", "TRUE", "1" → true; "No", "N", "FALSE", "0" → false; empty → the default. */
+  function yesNo(v, dflt) {
+    var k = normKey(v);
+    if (!k) return dflt;
+    if (k === 'yes' || k === 'y' || k === 'true' || k === '1') return true;
+    if (k === 'no' || k === 'n' || k === 'false' || k === '0') return false;
+    return dflt;
+  }
+
   /** Problems that stop a document from being finalised (empty list = fine). */
   function validate(doc, firm) {
     var p = [];
@@ -216,11 +290,111 @@ var PB = (function () {
     return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : '';
   }
 
+  // ---- Import templates (the app's "Import" page and the downloadable files use these) -----------------
+  var EX = 'EXAMPLE';
+  function exGstin(s14) { return s14 + gstinCheckChar(s14); }
+  var IMPORT = {
+    documents: {
+      title: 'Invoices, proformas and POs', file: 'Proline billing import - documents',
+      columns: ['Type', 'Doc no.', 'Status', 'Date', 'Customer or vendor', 'GSTIN', 'Address', 'City', 'PIN', 'State', 'Place of supply',
+        'Item', 'Item details', 'Goods or service', 'HSN/SAC', 'Qty', 'Unit', 'Rate', 'Discount %', 'GST %',
+        'Rates include GST', 'Round off', 'Reverse charge', 'Reference', 'Notes', 'Cancel reason'],
+      notes: [
+        ['Type', 'Invoice, Proforma or PO.'],
+        ['Doc no.', 'The same value on every line of one document. Final or Cancelled: the number it was issued with, e.g. PEW/2627/05. Draft: any label (1, 2, A…) just to group its lines; the number is given when you finalise it in the app.'],
+        ['Status', 'Draft (to finish in the app), Final or Issued (already issued, recorded as it is), or Cancelled (recorded as cancelled; its number can be given again).'],
+        ['Date', 'Day first: 28-09-2026, 28/09/2026 or 28 Sep 2026.'],
+        ['Customer or vendor', 'Name. An existing customer or vendor is matched by GSTIN or name; a new one is added. Rows that start with EXAMPLE are skipped.'],
+        ['GSTIN', 'Leave empty for an unregistered customer. The state is read from the GSTIN.'],
+        ['Address, City, PIN, State', 'Needed only for a new customer or vendor. State (name or code) is needed when there is no GSTIN.'],
+        ['Place of supply', 'State name or code. Empty: the customer’s state (for a PO: your state). Same state as yours → CGST + SGST; another state → IGST.'],
+        ['Item, Item details', 'One row per item line. Item details is printed under the item.'],
+        ['Goods or service', 'Goods or Service. Empty: Service when the code is a SAC (99…), otherwise Goods.'],
+        ['HSN/SAC', 'Goods: HSN, 4, 6 or 8 digits. Services: SAC, 6 digits starting 99.'],
+        ['Qty, Unit, Rate', 'Rate per unit in rupees, before GST unless Rates include GST is Yes.'],
+        ['Discount %, GST %', 'GST %: 0, 0.25, 3, 5, 12, 18, 28 or 40.'],
+        ['Rates include GST, Round off, Reverse charge', 'Yes or No. Empty: No, Yes, No.'],
+        ['Reference', 'Customer PO number (for a PO: the vendor’s quotation).'],
+        ['Notes, Cancel reason', 'Optional. Cancel reason is used for Cancelled rows.'],
+        ['Header fields', 'On the 2nd and later lines of one document only Type, Doc no. and the item columns are needed.']
+      ],
+      examples: [
+        ['Invoice', 'PEW/2627/05', 'Final', '28-09-2026', EX + ' Customer Pvt Ltd', exGstin('07AAACS1234A1Z'), '12 Sample Road, Sector 5', 'New Delhi', '110017', 'Delhi', '',
+          'AC EV charger 7.4 kW', 'Wall-mounted, Type 2 socket', 'Goods', '85044090', 1, 'Nos', 48500, '', 5, 'No', 'Yes', 'No', 'PO-778', '', ''],
+        ['Invoice', 'PEW/2627/05', '', '', EX + ' Customer Pvt Ltd', '', '', '', '', '', '',
+          'Installation and commissioning', 'Earthing, cabling, testing and handover', 'Service', '995461', 1, 'Job', 7500, '', 18, '', '', '', '', '', ''],
+        ['Proforma', '1', 'Draft', '25-10-2026', EX + ' Builders LLP', '', '5 Market Road', 'Noida', '201301', 'Uttar Pradesh', '',
+          'DC fast charger 60 kW', 'CCS2, dual gun', 'Goods', '85044090', 2, 'Nos', 650000, 3, 5, 'No', 'Yes', 'No', '', '50% advance', '']
+      ],
+      fields: {
+        type: ['type', 'doctype', 'documenttype', 'document'], ref: ['docno', 'documentno', 'docnumber', 'no', 'number', 'invoiceno', 'invoicenumber', 'invno', 'docref', 'ref'],
+        status: ['status'], date: ['date', 'docdate', 'invoicedate'],
+        party: ['customerorvendor', 'customer', 'vendor', 'party', 'partyname', 'customername', 'vendorname', 'billto', 'buyer', 'name'],
+        gstin: ['gstin', 'gstno', 'gstnumber', 'customergstin', 'vendorgstin'], address: ['address', 'billingaddress'], city: ['city', 'town'],
+        pin: ['pin', 'pincode', 'postalcode', 'zip'], state: ['state', 'statecode'], pos: ['placeofsupply', 'pos'],
+        item: ['item', 'itemname', 'product', 'particulars', 'service'], details: ['itemdetails', 'details', 'description', 'itemdescription', 'specification'],
+        kind: ['goodsorservice', 'goodsservice', 'itemtype', 'kind'], hsn: ['hsnsac', 'hsn', 'sac', 'hsncode', 'saccode', 'hsnsaccode'],
+        qty: ['qty', 'quantity'], unit: ['unit', 'uom', 'units'], rate: ['rate', 'price', 'unitprice', 'rateperunit'],
+        disc: ['discount%', 'discount', 'disc%', 'disc', 'discountpercent'], gst: ['gst%', 'gstrate', 'gstrate%', 'tax%', 'gstpercent', 'taxrate'],
+        incl: ['ratesincludegst', 'inclusiveofgst', 'inclgst', 'includesgst', 'priceincludesgst'], round: ['roundoff', 'round'], rc: ['reversecharge', 'rcm'],
+        reference: ['reference', 'customerpono', 'pono', 'yourref', 'quoteref', 'customerref'], notes: ['notes', 'note', 'remarks'],
+        reason: ['cancelreason', 'reason', 'cancellationreason']
+      }
+    },
+    parties: {
+      title: 'Customers and vendors', file: 'Proline billing import - customers and vendors',
+      columns: ['Name', 'Type', 'GSTIN', 'Label', 'Legal name', 'Address', 'City', 'PIN', 'State', 'Contact person', 'Phone', 'Email'],
+      notes: [
+        ['Name', 'One row per GST registration or address. Repeat the name on more rows for more GSTINs or sites. Rows that start with EXAMPLE are skipped.'],
+        ['Type', 'Customer, Vendor (for POs) or Both. Empty: Customer.'],
+        ['GSTIN', 'Leave empty if unregistered. The state is read from the GSTIN.'],
+        ['Label', 'Optional, e.g. Head office, Pune site.'],
+        ['Legal name', 'Only if different from the name, as on the GST certificate.'],
+        ['State', 'Name or code. Needed when there is no GSTIN.'],
+        ['Existing names', 'A name that already exists gets the new GSTINs or addresses added; nothing is deleted.']
+      ],
+      examples: [
+        [EX + ' Customer Pvt Ltd', 'Customer', exGstin('07AAACS1234A1Z'), 'Head office', EX + ' Customer Private Limited', '12 Sample Road, Sector 5', 'New Delhi', '110017', 'Delhi', 'Ms A. Sharma', '', 'accounts@example.com'],
+        [EX + ' Customer Pvt Ltd', 'Customer', exGstin('27AAACS1234A1Z'), 'Pune site', '', 'Tech Park, Hinjewadi', 'Pune', '411057', 'Maharashtra', '', '', ''],
+        [EX + ' Cable Supplier', 'Vendor', '', '', '', 'Industrial Area', 'Faridabad', '121003', 'Haryana', '', '', '']
+      ],
+      fields: {
+        name: ['name', 'partyname', 'customername', 'vendorname', 'customerorvendor', 'customer', 'vendor'], role: ['type', 'role'],
+        gstin: ['gstin', 'gstno', 'gstnumber'], label: ['label', 'addresslabel', 'site', 'branch'], legal: ['legalname', 'legalnameasgst', 'legalnameaspergst'],
+        address: ['address'], city: ['city', 'town'], pin: ['pin', 'pincode', 'postalcode', 'zip'], state: ['state', 'statecode'],
+        contact: ['contactperson', 'contact', 'person'], phone: ['phone', 'mobile', 'phoneno', 'contactno'], email: ['email', 'emailid', 'mail']
+      }
+    },
+    items: {
+      title: 'Items', file: 'Proline billing import - items',
+      columns: ['Name', 'Details', 'Goods or service', 'HSN/SAC', 'Unit', 'Rate', 'GST %', 'Category'],
+      notes: [
+        ['Name', 'One row per item. A name that already exists is updated. Rows that start with EXAMPLE are skipped.'],
+        ['Details', 'Optional, printed under the item name.'],
+        ['Goods or service', 'Goods or Service. Empty: Service when the code is a SAC (99…), otherwise Goods.'],
+        ['HSN/SAC', 'Goods: HSN, 4, 6 or 8 digits. Services: SAC, 6 digits starting 99. Check with your CA.'],
+        ['Unit, Rate', 'Rate per unit in rupees, before GST. Optional.'],
+        ['GST %', '0, 0.25, 3, 5, 12, 18, 28 or 40.']
+      ],
+      examples: [
+        [EX + ' Armoured copper cable 3C x 6 sq mm', '', 'Goods', '8544', 'Mtr', 310, 18, 'Electrical'],
+        [EX + ' Installation and commissioning', 'Earthing, cabling, testing and handover', 'Service', '995461', 'Job', 7500, 18, 'Services']
+      ],
+      fields: {
+        name: ['name', 'item', 'itemname', 'product', 'service'], details: ['details', 'description', 'itemdetails'],
+        kind: ['goodsorservice', 'goodsservice', 'type', 'itemtype', 'kind'], hsn: ['hsnsac', 'hsn', 'sac', 'hsncode', 'saccode'],
+        unit: ['unit', 'uom', 'units'], rate: ['rate', 'price', 'unitprice'], gst: ['gst%', 'gstrate', 'gstrate%', 'tax%', 'gstpercent', 'taxrate'],
+        category: ['category', 'group']
+      }
+    }
+  };
+
   return {
     STATES: STATES, UT_CODES: UT_CODES, GST_RATES: GST_RATES, UNITS: UNITS, TYPES: TYPES,
     stateName: stateName, r2: r2, num: num, money: money, words: words, amountInWords: amountInWords,
     gstinCheckChar: gstinCheckChar, checkGstin: checkGstin, checkPan: checkPan, checkHsn: checkHsn,
-    fy: fy, formatNumber: formatNumber, checkInvoiceNumber: checkInvoiceNumber,
+    fy: fy, fyTag: fyTag, formatNumber: formatNumber, seqOf: seqOf, checkInvoiceNumber: checkInvoiceNumber,
+    normKey: normKey, parseDate: parseDate, stateCodeOf: stateCodeOf, docTypeOf: docTypeOf, statusOf: statusOf, yesNo: yesNo, IMPORT: IMPORT,
     compute: compute, validate: validate, today: today, prettyDate: prettyDate
   };
 })();

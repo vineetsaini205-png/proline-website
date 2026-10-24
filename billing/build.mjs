@@ -2,7 +2,7 @@
 //   dist/Code.gs     = shared.js + server.js
 //   dist/Index.html  = index.html with shared.js, pdf.js and app.js inlined
 //   dist/test.html   = the same page wired to in-memory fakes (for local tests only, never deployed)
-// Usage: node billing/build.mjs [--pdfmake-dir <dir with pdfmake.min.js and vfs_fonts.js>]
+// Usage: node billing/build.mjs [--pdfmake-dir <dir with pdfmake.min.js and vfs_fonts.js>] [--pdfjs-dir <dir>] [--xlsx-path <xlsx.full.min.js>]
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -29,6 +29,7 @@ writeFileSync(join(dist, 'Index.html'), page);
 const args = process.argv.slice(2);
 const pm = args.includes('--pdfmake-dir') ? args[args.indexOf('--pdfmake-dir') + 1] : null;
 const pj = args.includes('--pdfjs-dir') ? args[args.indexOf('--pdfjs-dir') + 1] : null;
+const xl = args.includes('--xlsx-path') ? args[args.indexOf('--xlsx-path') + 1] : null;  // SheetJS, so the test page works offline
 const fakes = readFileSync(join(here, 'test', 'gas-fakes.js'), 'utf8');
 const runner = `
 window.google = { script: { run: (function make(ok, fail) {
@@ -45,7 +46,7 @@ window.google = { script: { run: (function make(ok, fail) {
   } });
 })() } };`;
 let testPage = html
-  .replace('  <!--TEST_HOOK-->\n', `  <script>\n${fakes}\n</script>\n  <script>\n${shared}\n${server}\n</script>\n  <script>${runner}</script>\n`)
+  .replace('  <!--TEST_HOOK-->\n', () => `  <script>\n${fakes}\n</script>\n  <script>\n${shared}\n${server}\n</script>\n  <script>${runner}</script>\n`)
   .replace('/*SHARED*/', () => shared).replace('/*PDF*/', () => pdf).replace('/*APP*/', () => app);
 if (pm) {
   testPage = testPage
@@ -58,5 +59,6 @@ if (pj) {
     .replace('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js', 'file://' + join(pj, 'pdf.min.js'))
     .replace('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js', 'file://' + join(pj, 'pdf.worker.min.js'));
 }
+if (xl) testPage = testPage.replace('  <script>\n' + fakes, () => '  <script src="file://' + xl + '"></script>\n  <script>\n' + fakes);
 writeFileSync(join(dist, 'test.html'), testPage);
 console.log(`built ${join(dist, 'Code.gs')} (${code.length} chars), Index.html (${page.length} chars), test.html`);

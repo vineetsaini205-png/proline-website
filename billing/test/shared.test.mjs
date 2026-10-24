@@ -133,4 +133,39 @@ t('validation messages', () => {
   assert.ok(bad.length >= 8, bad.join('\n'));
 });
 
+t('numbers in the 2627 style, and reading numbers back', () => {
+  const f = PB.fy('2026-10-25');
+  assert.equal(f.compact, '2627');
+  assert.equal(PB.formatNumber('PEW', PB.fyTag(f, '2627'), 7, 2), 'PEW/2627/07');
+  assert.equal(PB.formatNumber('PEW', PB.fyTag(f, '26-27'), 7, 4), 'PEW/26-27/0007');
+  assert.equal(PB.seqOf('PEW/2627/0001', 'PEW', f), 1);
+  assert.equal(PB.seqOf('pew/26-27/12', 'PEW', f), 12);
+  assert.equal(PB.seqOf('PEW-PI/2627/3', 'PEW', f), null, 'another series');
+  assert.equal(PB.seqOf('PEW/2526/9', 'PEW', f), null, 'another year');
+  assert.equal(PB.seqOf('PEW-PI/2627/384', 'PEW-PI', f), 384);
+});
+
+t('reading imported cells: dates day first, states, types, statuses', () => {
+  assert.equal(PB.parseDate('28-09-2026'), '2026-09-28');
+  assert.equal(PB.parseDate('28/9/26'), '2026-09-28');
+  assert.equal(PB.parseDate('28 Sep 2026'), '2026-09-28');
+  assert.equal(PB.parseDate('05-sept-26'), '2026-09-05');
+  assert.equal(PB.parseDate(46293), '2026-09-28', 'an Excel date number');
+  assert.equal(PB.parseDate('31-02-2026'), '', 'no 31 February');
+  assert.equal(PB.stateCodeOf('Delhi'), '07');
+  assert.equal(PB.stateCodeOf('7'), '07');
+  assert.equal(PB.stateCodeOf('Karnataka (29)'), '29');
+  assert.equal(PB.stateCodeOf('Narnia'), '');
+  assert.equal(PB.docTypeOf('Tax invoice'), 'INV');
+  assert.equal(PB.docTypeOf('Performa-Invoice'), 'PI');
+  assert.equal(PB.docTypeOf('Pre-invoice'), 'PI');
+  assert.equal(PB.docTypeOf('Purchase order'), 'PO');
+  assert.equal(PB.statusOf('issued'), 'FINAL');
+  assert.equal(PB.statusOf('Canceled'), 'CANCELLED');
+  assert.equal(PB.statusOf(''), 'DRAFT');
+  assert.equal(PB.yesNo('Y', false), true);
+  assert.equal(PB.yesNo('', true), true);
+  Object.values(PB.IMPORT).forEach((T) => T.examples.forEach((r) => assert.equal(r.length, T.columns.length)));
+});
+
 console.log(`${n} checks passed`);

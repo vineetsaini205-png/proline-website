@@ -183,6 +183,11 @@
       table.list tr { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
       table.list td { border: 0; padding: 0; }
     }
+    .actions.left { justify-content: flex-start; margin: 10px 0; }
+    .row-acts { display: inline-flex; gap: 6px; }
+    table.list.preview tbody tr { cursor: default; }
+    table.list.preview tbody tr:hover { background: none; }
+    @media (max-width: 600px) { .row-acts { grid-column: 1 / -1; } .seg { display: flex; flex-wrap: wrap; } }
     @media print { .bar, .sticky-actions, .actions { display: none; } }
   </style>
 </head>
@@ -193,6 +198,7 @@
       <button data-view="docs" class="on">Documents</button>
       <button data-view="parties">Customers &amp; vendors</button>
       <button data-view="items">Items</button>
+      <button data-view="import">Import</button>
       <button data-view="settings">Settings</button>
     </nav>
     <span id="user"></span>

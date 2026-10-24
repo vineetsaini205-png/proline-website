@@ -180,12 +180,164 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await page.waitForFunction(() => /Cancelled/.test(document.querySelector('.doc-head').textContent), null, { timeout: 20000 });
   await idle();
 
+  // ---- Numbering in the owner's style (PEW/2627/07), past invoices pasted from Excel, reuse, amend, cancel from the list
+  await page.click('.tabs [data-view="settings"]');
+  await page.selectOption('[data-s="series.fyStyle"]', '2627');
+  await page.selectOption('[data-s="series.pad"]', '2');
+  await page.click('.sticky-actions [data-action="settings-save"]');
+  await page.waitForFunction(() => /Settings saved/.test(document.getElementById('toast').textContent));
+  await idle();
+  const fyC = await page.evaluate(() => PB.fy(PB.today()).compact);
+  assert.equal(await page.evaluate(() => PBApp.S.series.INV.next), 'PEW/' + fyC + '/03', 'the 26-27 style numbers count in the same series');
+
+  const dmy = await page.evaluate(() => { const t = PB.today().split('-'); return t[2] + '-' + t[1] + '-' + t[0]; });
+  const puneGstin = await gst('27AAACS1234A1Z');
+  const H = ['Type', 'Doc no.', 'Status', 'Date', 'Customer or vendor', 'GSTIN', 'Address', 'City', 'PIN', 'State', 'Place of supply', 'Item', 'Item details', 'Goods or service', 'HSN/SAC', 'Qty', 'Unit', 'Rate', 'Discount %', 'GST %', 'Rates include GST', 'Round off', 'Reverse charge', 'Reference', 'Notes', 'Cancel reason'];
+  const row = (o) => H.map((h) => (o[h] == null ? '' : o[h])).join('\t');
+  const base = { Type: 'Invoice', Date: dmy, 'Customer or vendor': 'Sample Customer Pvt Ltd', GSTIN: puneGstin, Item: 'Armoured copper cable', 'Goods or service': 'Goods', 'HSN/SAC': '8544', Qty: 45, Unit: 'Mtr', Rate: 310, 'GST %': 18, 'Round off': 'No' };
+  const pasteRows = (rows) => [H.join('\t')].concat(rows.map(row)).join('\n');
+  await page.click('.tabs [data-view="import"]');
+  await page.waitForSelector('[data-imppaste]');
+  // A number already used makes the import refuse everything.
+  await page.fill('[data-imppaste]', pasteRows([{ ...base, 'Doc no.': 'PEW/26-27/0002', Status: 'Final' }]));
+  await page.click('[data-action="imp-read-paste"]');
+  await page.waitForSelector('#imp-preview .alert');
+  assert.match(await page.textContent('#imp-preview .alert'), /already used in this app/);
+  assert.equal(await page.$eval('[data-action="imp-run"]', (b) => b.disabled), true);
+  await page.fill('[data-imppaste]', pasteRows([
+    { ...base, 'Doc no.': `PEW/${fyC}/05`, Status: 'Issued' },
+    { Type: 'Invoice', 'Doc no.': `PEW/${fyC}/05`, Item: 'Installation and commissioning of EV charger', 'HSN/SAC': '995461', Qty: 1, Unit: 'Job', Rate: 7500, 'GST %': 18 },
+    { ...base, 'Doc no.': `PEW/${fyC}/06`, Status: 'Canceled', 'Cancel reason': 'Wrong rate' },
+    { ...base, 'Doc no.': `PEW/${fyC}/07`, Status: 'Final' },
+    { Type: 'Proforma', 'Doc no.': 'A', Status: 'Draft', Date: dmy, 'Customer or vendor': 'Imported Buyer LLP', Address: '5 Market Road', City: 'Noida', State: 'Uttar Pradesh', Item: 'DC fast charger', Qty: 1, Rate: 650000, 'GST %': 5, 'HSN/SAC': '85044090' },
+    { ...base, 'Doc no.': 'X', 'Customer or vendor': 'EXAMPLE Customer Pvt Ltd', Status: 'Final' }
+  ]));
+  await page.click('[data-action="imp-read-paste"]');
+  await page.waitForFunction(() => document.querySelector('#imp-preview') && !document.querySelector('#imp-preview .alert'));
+  const prev = await page.textContent('#imp-preview');
+  assert.match(prev, /4 documents/);
+  assert.match(prev, /1 EXAMPLE row skipped/);
+  assert.match(prev, /Imported Buyer LLP/);
+  await shot('11-import-preview');
+  const mailsBeforeImport = await page.evaluate(() => FAKE.mails.length);
+  await page.click('[data-action="imp-run"]');
+  await page.waitForSelector('#cb-ok');
+  await page.click('#cb-ok');
+  await page.waitForFunction(() => /4 documents imported/.test(document.getElementById('toast').textContent), null, { timeout: 20000 });
+  await idle();
+  assert.equal(await page.evaluate(() => PBApp.S.series.INV.next), 'PEW/' + fyC + '/08');
+  assert.deepEqual(await page.evaluate(() => PBApp.S.series.INV.reuse), ['PEW/26-27/0001', 'PEW/' + fyC + '/06']);
+  assert.equal(await page.evaluate(() => PBApp.S.parties.some((p) => p.name === 'Imported Buyer LLP')), true);
+  assert.equal(await page.evaluate(() => FAKE.mails.length), mailsBeforeImport, 'imported documents are not emailed');
+
+  // A new invoice takes a cancelled number again, chosen from the Number list.
+  await page.click('.new [data-new="INV"]');
+  await page.waitForSelector('[data-numsel]');
+  await idle();
+  const numOpts = await page.$$eval('[data-numsel] option', (o) => o.map((x) => x.textContent));
+  assert.equal(numOpts[0], 'Next in series: PEW/' + fyC + '/08');
+  assert.ok(numOpts.includes('PEW/' + fyC + '/06 (cancelled, give again)'), numOpts.join(' | '));
+  assert.equal(numOpts[numOpts.length - 1], 'Type a number…');
+  await page.fill('[data-party-pick]', 'Sample Customer Pvt Ltd');
+  await page.dispatchEvent('[data-party-pick]', 'change');
+  await page.waitForSelector('[data-reg-pick]');
+  // Paste two lines copied from Excel.
+  await page.click('[data-action="lines-paste"]');
+  await page.fill('#paste-form [name="rows"]', 'Item\tHSN/SAC\tQty\tUnit\tRate\tGST %\nArmoured copper cable\t8544\t20\tMtr\t310\t18\nEarthing kit\t8538\t1\tSet\t3500\t18');
+  await page.click('#paste-form .btn.primary');
+  await page.waitForFunction(() => document.querySelectorAll('#lines .line').length === 2);
+  assert.match(await page.textContent('#totals .grand'), /11,446\.00/);
+  await page.selectOption('[data-numsel]', 'reuse:PEW/' + fyC + '/06');
+  assert.match(await page.textContent('.hint.warn'), /GST rule 46/);
+  await page.click('.doc-head [data-action="doc-finalise"]');
+  await page.waitForSelector('#cb-ok');
+  assert.match(await page.textContent('#modal-body'), new RegExp('PEW/' + fyC + '/06'));
+  await page.click('#cb-ok');
+  await page.waitForFunction((n) => document.querySelector('.doc-head h1') && document.querySelector('.doc-head h1').textContent.includes(n), 'PEW/' + fyC + '/06', { timeout: 20000 });
+  await page.waitForFunction(() => /Open PDF in Drive/.test(document.querySelector('.doc-head').textContent), null, { timeout: 20000 });
+  await idle();
+  assert.deepEqual(await page.evaluate(() => PBApp.S.series.INV.reuse), ['PEW/26-27/0001']);
+
+  // Typing a number that is already used is stopped before finalising.
+  await page.click('.new [data-new="INV"]');
+  await page.waitForSelector('[data-numsel]');
+  await idle();
+  await page.fill('[data-party-pick]', 'Sample Customer Pvt Ltd');
+  await page.dispatchEvent('[data-party-pick]', 'change');
+  await page.waitForSelector('[data-reg-pick]');
+  await page.fill('.line[data-i="0"] [data-k="name"]', 'Armoured copper cable');
+  await page.dispatchEvent('.line[data-i="0"] [data-k="name"]', 'change');
+  await page.selectOption('[data-numsel]', 'manual');
+  await page.fill('[data-numtext]', 'PEW/' + fyC + '/05');
+  await page.click('.doc-head [data-action="doc-finalise"]');
+  await page.waitForSelector('.alert');
+  assert.match(await page.textContent('.alert'), /already used/);
+  await page.click('.tabs [data-view="docs"]');
+
+  // Amend from the list: same number, new contents, marked Amended.
+  await page.waitForSelector('tr[data-open]');
+  const inv05 = await page.evaluate((n) => PBApp.S.docs.find((d) => d.number === n).id, 'PEW/' + fyC + '/05');
+  await page.click(`[data-row-action="amend"][data-id="${inv05}"]`);
+  await page.waitForSelector('#cb-ok');
+  await page.click('#cb-ok');
+  await page.waitForSelector('[data-action="amend-save"]');
+  assert.match(await page.textContent('.doc-head h1'), /Amending/);
+  await page.fill('.line[data-i="0"] [data-k="qty"]', '50');
+  await page.click('.doc-head [data-action="amend-save"]');
+  await page.fill('#amend-form [name="reason"]', 'Cable length corrected');
+  await page.click('#amend-form .btn.primary');
+  await page.waitForFunction(() => /amended/.test(document.getElementById('toast').textContent), null, { timeout: 20000 });
+  await idle();
+  assert.match(await page.textContent('.doc-head'), /Amended once/);
+  await shot('12-amended');
+  await page.click('.tabs [data-view="docs"]');
+  await page.waitForSelector('tr[data-open]');
+  assert.match(await page.textContent(`tr[data-open="${inv05}"]`), /Amended/);
+
+  // Cancel from the list.
+  const inv07 = await page.evaluate((n) => PBApp.S.docs.find((d) => d.number === n).id, 'PEW/' + fyC + '/07');
+  await page.click(`[data-row-action="cancel"][data-id="${inv07}"]`);
+  await page.waitForSelector('#cancel-form');
+  await page.fill('#cancel-form [name="reason"]', 'Order withdrawn');
+  await page.click('#cancel-form .btn.danger');
+  await page.waitForFunction((id) => PBApp.S.docs.find((d) => d.id === id).status === 'CANCELLED', inv07, { timeout: 20000 });
+  await idle();
+  assert.ok((await page.evaluate(() => PBApp.S.series.INV.reuse)).includes('PEW/' + fyC + '/07'));
+  await shot('13-documents-after-import');
+
+  // Templates download as .csv and .xlsx; an items .xlsx can be uploaded.
+  await page.click('.tabs [data-view="import"]');
+  await page.click('[data-impkind="items"]');
+  const [dlCsv] = await Promise.all([page.waitForEvent('download'), page.click('[data-action="tpl-csv"]')]);
+  assert.equal(dlCsv.suggestedFilename(), 'Proline billing import - items.csv');
+  const [dlX] = await Promise.all([page.waitForEvent('download'), page.click('[data-action="tpl-xlsx"]')]);
+  assert.equal(dlX.suggestedFilename(), 'Proline billing import - items.xlsx');
+  const XLSX = require('xlsx');
+  const tplPath = path.join(out, 'items-template.xlsx');
+  await dlX.saveAs(tplPath);
+  const twb = XLSX.readFile(tplPath);
+  assert.deepEqual(twb.SheetNames, ['Fill here', 'How to fill']);
+  const filled = XLSX.utils.sheet_to_json(twb.Sheets['Fill here'], { header: 1 });
+  filled.push(['Surge protector Type 2', 'For DB box', 'Goods', 8536, 'Nos', 2400, 18, 'Electrical']);
+  const upWb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(upWb, XLSX.utils.aoa_to_sheet(filled), 'Fill here');
+  const upPath = path.join(out, 'items-filled.xlsx');
+  XLSX.writeFile(upWb, upPath);
+  await page.setInputFiles('[data-impfile]', upPath);
+  await page.waitForSelector('#imp-preview');
+  assert.match(await page.textContent('#imp-preview'), /1 item: 1 new/);
+  assert.match(await page.textContent('#imp-preview'), /2 EXAMPLE rows skipped/);
+  await page.click('[data-action="imp-run"]');
+  await page.waitForFunction(() => /1 items added/.test(document.getElementById('toast').textContent));
+  assert.ok(await page.evaluate(() => PBApp.S.products.some((p) => p.name === 'Surge protector Type 2' && p.hsn === '8536')));
+
   // Series check: no gaps.
   await page.click('.tabs [data-view="settings"]');
   await page.click('[data-action="series-check"]');
   await page.waitForSelector('#series-result li');
   const check = await page.textContent('#series-result');
-  assert.ok(!/Missing/.test(check), check);
+  assert.ok(!/Used twice/.test(check), check);
+  assert.match(check, /Given again after cancelling: 6/);
   await shot('09-settings-series');
 
   // Phone layout.
@@ -199,6 +351,6 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   assert.equal(overflow, false, 'no sideways scrolling on a phone');
 
   assert.deepEqual(errors, []);
-  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, series check, phone layout');
+  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, templates, xlsx upload, series check, phone layout');
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });
