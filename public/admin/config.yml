@@ -1,0 +1,259 @@
+# Sveltia CMS settings for prolineelectricalworks.com/admin
+# Each signed-in person needs a free GitHub account with access to the repository.
+# Field names must match src/content.config.ts and the JSON files in src/data/.
+
+backend:
+  name: github
+  repo: vineetsaini205-png/proline-website
+  branch: main
+  # After deploying the sign-in helper (see docs/GO-LIVE.md, step 6), put its address here:
+  # base_url: https://sveltia-cms-auth.YOUR-ACCOUNT.workers.dev
+  commit_messages:
+    create: "Add {{collection}} “{{slug}}” (admin)"
+    update: "Update {{collection}} “{{slug}}” (admin)"
+    delete: "Delete {{collection}} “{{slug}}” (admin)"
+
+site_url: https://prolineelectricalworks.com
+display_url: https://prolineelectricalworks.com
+logo_url: /favicon.svg
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: blog
+    label: Blog posts
+    label_singular: Blog post
+    folder: src/content/blog
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: "SEO title (60 characters or fewer)", widget: string, pattern: ['^.{1,60}$', 'Keep the title to 60 characters or fewer'] }
+      - { name: description, label: "Meta description (aim for 140–160 characters)", widget: text, pattern: ['^[\s\S]{70,170}$', 'Aim for 140–160 characters'] }
+      - { name: h1, label: "Heading on the page", widget: string, required: false }
+      - { name: keyword, label: "Main search phrase", widget: string }
+      - { name: date, label: Published, widget: datetime, format: "YYYY-MM-DD", time_format: false }
+      - { name: updated, label: "Last updated", widget: datetime, format: "YYYY-MM-DD", time_format: false, required: false }
+      - { name: author, label: Author, widget: string, default: Vineet Saini }
+      - &photo
+        name: image
+        label: Photo
+        widget: select
+        required: false
+        options: [dc-hub-bays, solar-canopy-cars, solar-canopy-aerial, solar-canopy-tall, dc-charger-car, ac-charger-plug, ev-charging-suv, ac-pedestal-charger, ev-pedestal-crossover, dc-cabinet-charging, ac-charger-closeup, dc-hub-canopy]
+      - { name: tags, label: Tags, widget: list, required: false }
+      - &faqs
+        name: faqs
+        label: Questions and answers (3–6)
+        widget: list
+        required: false
+        summary: "{{fields.q}}"
+        fields:
+          - { name: q, label: Question, widget: string }
+          - { name: a, label: "Answer (links like [text](/url/) are allowed)", widget: text }
+      - &related
+        name: related
+        label: "Related pages (addresses like /tools/charger-finder/)"
+        widget: list
+        required: false
+      - { name: lang, label: Language, widget: select, default: en, options: [{ label: English, value: en }, { label: Hindi, value: hi }] }
+      - { name: translationOf, label: "Hindi posts: file name of the English post", widget: string, required: false }
+      - { name: draft, label: "Draft (hidden from the site)", widget: boolean, default: false }
+      - { name: body, label: "Post text", widget: markdown }
+
+  - name: faqs
+    label: FAQ page
+    label_singular: Question
+    folder: src/content/faqs
+    create: true
+    slug: "{{slug}}"
+    identifier_field: question
+    summary: "{{group}} · {{question}}"
+    fields:
+      - { name: question, label: Question, widget: string }
+      - { name: answer, label: "Answer (links like [text](/url/) are allowed)", widget: text }
+      - { name: group, label: Group, widget: select, options: ["Home owners", "Businesses and investors", "Operators, brands and EV makers", "Site survey and installation", "Chargers, batteries and solar", "Proline CMS", "About Proline"] }
+      - { name: order, label: "Order in the group", widget: number, value_type: int, default: 100 }
+      - { name: lang, label: Language, widget: select, default: en, options: [{ label: English, value: en }, { label: Hindi, value: hi }] }
+      - { name: draft, label: "Draft (hidden)", widget: boolean, default: false }
+
+  - name: services
+    label: Service pages
+    label_singular: Service page
+    folder: src/content/services
+    create: true
+    slug: "{{slug}}"
+    summary: "{{label}}"
+    fields: &landing
+      - { name: title, label: "SEO title (60 characters or fewer)", widget: string, pattern: ['^.{1,60}$', 'Keep the title to 60 characters or fewer'] }
+      - { name: description, label: "Meta description (aim for 140–160 characters)", widget: text, pattern: ['^[\s\S]{70,170}$', 'Aim for 140–160 characters'] }
+      - { name: label, label: "Short name (menus, cards, breadcrumbs)", widget: string }
+      - { name: h1, label: "Heading (H1) — include the main search phrase", widget: string }
+      - { name: eyebrow, label: "Small label above the heading", widget: string, required: false }
+      - { name: intro, label: "First two sentences — answer the search", widget: text }
+      - { name: keyword, label: "Main search phrase", widget: string }
+      - { name: summary, label: "One line for hub cards", widget: string }
+      - { name: icon, label: Icon, widget: select, default: bolt, options: [bolt, plug, home, gauge, station, clipboard, check, checkCircle, earth, cable, box, hardhat, sun, battery, building, users, truck, bus, landmark, store, car, scooter, calculator, search, list, leaf, phone, shield, wrench, layers, clock, map, tag, server, qr, chart, question, handshake, factory, fuel, file, info, trending, cpu, wifi, lock, refresh, user, globe, palette] }
+      - { name: order, label: "Order on the hub page", widget: number, value_type: int, default: 100 }
+      - *photo
+      - { name: highlights, label: "Three short checks under the heading", widget: list, required: false, max: 4 }
+      - { name: costFactors, label: "What decides the cost (no prices!)", widget: list, required: false }
+      - name: steps
+        label: "Custom steps (leave empty for the standard six)"
+        widget: list
+        required: false
+        summary: "{{fields.title}}"
+        fields:
+          - { name: title, label: Step, widget: string }
+          - { name: text, label: Text, widget: text }
+      - { name: showProcess, label: "Show the steps section", widget: boolean, default: true }
+      - *faqs
+      - *related
+      - { name: form, label: "Form at the bottom", widget: select, default: quote, options: [quote, survey, station, demo, b2b, brand, technician, ask] }
+      - { name: need, label: "Pre-selected need in the quote form", widget: select, required: false, options: ["EV charger installation", "Home charger installation", "DC fast charger or charging station", "Help choosing a charger (any brand)", "Site survey", "Earthing, cabling or DB box", "Civil work or canopy", "Solar installation", "Batteries", "Proline CMS", "Something else"] }
+      - { name: serviceType, label: "Service name for Google (service pages only)", widget: string, required: false }
+      - { name: guide, label: "Long guide (shows author box)", widget: boolean, default: false }
+      - { name: widget, label: "Interactive block", widget: select, required: false, options: [dc-inside, white-label] }
+      - { name: updated, label: "Last updated", widget: datetime, format: "YYYY-MM-DD", time_format: false }
+      - { name: draft, label: "Draft (hidden from the site)", widget: boolean, default: false }
+      - { name: body, label: "Page text", widget: markdown }
+  - { name: chargers, label: Charger pages, label_singular: Charger page, folder: src/content/chargers, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
+  - { name: batteries, label: Battery pages, label_singular: Battery page, folder: src/content/batteries, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
+  - { name: audiences, label: "Who we serve pages", label_singular: Audience page, folder: src/content/audiences, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
+  - { name: pages, label: "Guides and other pages", label_singular: Page, folder: src/content/pages, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
+
+  - name: settings
+    label: Site settings
+    files:
+      - name: site
+        label: "Contact details, offer strip, numbers, clients, states"
+        file: src/data/site.json
+        fields:
+          - { name: name, label: Business name, widget: string }
+          - { name: shortName, label: Short name, widget: string }
+          - { name: alternateNames, label: "Other names people search for", widget: list }
+          - { name: url, label: Website address, widget: string }
+          - { name: tagline, label: Tagline, widget: string }
+          - { name: phoneDisplay, label: "Phone as shown", widget: string }
+          - { name: phoneE164, label: "Phone for links (+91…)", widget: string }
+          - { name: whatsapp, label: "WhatsApp number (91…, no +)", widget: string }
+          - { name: email, label: Email, widget: string }
+          - { name: city, label: City, widget: string }
+          - { name: callHours, label: Call hours, widget: string }
+          - { name: whatsappHours, label: WhatsApp hours, widget: string }
+          - { name: offerStrip, label: "Offer strip (top of every page)", widget: string }
+          - { name: formEndpoint, label: "Form web app address (Google Apps Script). Leave empty to send forms to WhatsApp.", widget: string, required: false }
+          - name: stats
+            label: Trust numbers
+            widget: list
+            summary: "{{fields.value}} {{fields.label}}"
+            fields:
+              - { name: value, label: Number, widget: string }
+              - { name: label, label: Label, widget: string }
+          - { name: clients, label: "Installed for (client names)", widget: list }
+          - name: regions
+            label: States by region
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { name: name, label: Region, widget: string }
+              - { name: states, label: States, widget: list }
+          - name: social
+            label: Social and directory profiles
+            widget: object
+            fields:
+              - { name: linkedin, label: LinkedIn, widget: string, required: false }
+              - { name: youtube, label: YouTube, widget: string, required: false }
+              - { name: indiamart, label: IndiaMART, widget: string, required: false }
+              - { name: justdial, label: JustDial, widget: string, required: false }
+              - { name: facebook, label: Facebook, widget: string, required: false }
+              - { name: instagram, label: Instagram, widget: string, required: false }
+
+      - name: rates
+        label: "Calculator prices: fuel, charging, CO₂"
+        file: src/data/rates.json
+        fields:
+          - { name: checked, label: "Date these were checked (YYYY-MM-DD)", widget: string }
+          - name: publicCharging
+            label: Public charging prices (₹ a unit)
+            widget: object
+            fields:
+              - { name: ac, label: AC, widget: object, fields: [{ name: min, widget: number, value_type: float }, { name: max, widget: number, value_type: float }, { name: default, widget: number, value_type: float }] }
+              - { name: dc, label: DC, widget: object, fields: [{ name: min, widget: number, value_type: float }, { name: max, widget: number, value_type: float }, { name: default, widget: number, value_type: float }] }
+              - { name: source, label: Source, widget: string }
+              - { name: sourceUrl, label: Source link, widget: string }
+          - name: fuel
+            label: Fuel prices
+            widget: object
+            fields:
+              - name: petrol
+                label: Petrol (₹ a litre)
+                widget: object
+                fields: &fuelfields
+                  - { name: price, label: Price, widget: number, value_type: float }
+                  - { name: unit, label: Unit, widget: string }
+                  - { name: city, label: City, widget: string }
+                  - { name: date, label: "Date (YYYY-MM-DD)", widget: string }
+                  - { name: source, label: Source, widget: string }
+                  - { name: sourceUrl, label: Source link, widget: string }
+              - { name: diesel, label: Diesel (₹ a litre), widget: object, fields: *fuelfields }
+              - { name: cng, label: CNG (₹ a kg), widget: object, fields: *fuelfields }
+          - name: homeElectricity
+            label: Home charging
+            widget: object
+            fields:
+              - { name: default, label: "₹ a unit", widget: number, value_type: float }
+              - { name: note, label: Note, widget: text }
+          - name: co2
+            label: CO₂ factors
+            widget: object
+            fields:
+              - { name: petrol, label: "Petrol, kg per litre", widget: number, value_type: float }
+              - { name: diesel, label: "Diesel, kg per litre", widget: number, value_type: float }
+              - { name: cng, label: "CNG, kg per kg", widget: number, value_type: float }
+              - { name: gridKgPerKwh, label: "Grid, kg per unit", widget: number, value_type: float }
+              - { name: gridSource, label: Grid source, widget: text }
+              - { name: gridSourceUrl, label: Grid source link, widget: string }
+              - { name: fuelNote, label: Fuel note, widget: text }
+          - { name: gstOnCharging, label: "GST on charging (%)", widget: number, value_type: float }
+          - { name: todRule, label: Time-of-day rule, widget: text }
+          - { name: todSourceUrl, label: Time-of-day source link, widget: string }
+
+      - name: tariffs
+        label: State EV tariffs (earnings calculator, coverage page)
+        file: src/data/tariffs.json
+        fields:
+          - { name: checked, label: "Date checked (YYYY-MM-DD)", widget: string }
+          - { name: source, label: Source, widget: string }
+          - { name: sourceUrl, label: Source link, widget: string }
+          - { name: note, label: Note, widget: text }
+          - name: states
+            label: States
+            widget: list
+            summary: "{{fields.state}}: ₹{{fields.tariff}}"
+            fields:
+              - { name: state, label: State, widget: string }
+              - { name: tariff, label: "EV tariff (₹ a unit)", widget: number, value_type: float }
+              - { name: fixedPerKw, label: "Fixed charge (₹ per kW a month)", widget: number, value_type: float, default: 0 }
+              - { name: fixedFlat, label: "Flat fixed charge (₹ a month)", widget: number, value_type: float, required: false }
+              - { name: note, label: Note, widget: string, required: false }
+              - { name: served, label: "A state we work in", widget: boolean, required: false }
+
+      - name: cmsScreens
+        label: Proline CMS screenshots
+        file: src/data/cms-screens.json
+        fields:
+          - { name: note, label: Note, widget: text }
+          - name: desktop
+            label: "Desktop screens (D1–D5)"
+            widget: list
+            summary: "{{fields.id}} {{fields.title}}"
+            fields: &screenfields
+              - { name: id, label: Slot, widget: string }
+              - { name: title, label: Title, widget: string }
+              - { name: caption, label: Caption, widget: string, required: false }
+              - { name: image, label: Screenshot, widget: image, required: false }
+              - { name: concept, label: "Concept design (untick for a real screenshot)", widget: boolean, default: false }
+          - { name: phone, label: "Phone screens (P1–P6)", widget: list, summary: "{{fields.id}} {{fields.title}}", fields: *screenfields }
+          - { name: extra, label: "Other screens", widget: list, summary: "{{fields.id}} {{fields.title}}", fields: *screenfields }

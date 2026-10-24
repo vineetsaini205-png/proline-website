@@ -27,7 +27,7 @@ export function orgNode() {
     ],
     knowsAbout: ['EV charger installation', 'EV charger commissioning', 'DC fast charger installation', 'EV charging station setup', 'Earthing', 'Electrical cabling', 'Solar installation', 'Charge management software', 'OCPP'],
     slogan: 'Brand-neutral EV charging partner',
-    ...(Object.keys(site.social).length ? { sameAs: Object.values(site.social) } : {}),
+    ...(Object.values(site.social as Record<string, string>).filter(Boolean).length ? { sameAs: Object.values(site.social as Record<string, string>).filter(Boolean) } : {}),
   };
 }
 

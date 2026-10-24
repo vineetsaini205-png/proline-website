@@ -25,5 +25,5 @@
     { "name": "West and Central India", "states": ["Maharashtra", "Madhya Pradesh", "Chhattisgarh"] },
     { "name": "South India", "states": ["Telangana", "Tamil Nadu"] }
   ],
-  "social": {}
+  "social": { "linkedin": "", "youtube": "", "indiamart": "", "justdial": "", "facebook": "", "instagram": "" }
 }
