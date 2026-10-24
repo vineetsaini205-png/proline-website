@@ -1,11 +1,11 @@
 ---
 import Icon from './Icon.astro';
 import { inlineMd } from '../lib/text';
-interface Props { items: string[]; title?: string; lead?: string }
-const { items, title = 'What decides the cost', lead = 'We don’t publish prices, because no two sites are the same. These are the things that decide yours. Share them with us and you get one clear quote.' } = Astro.props;
+interface Props { items: string[]; title?: string; lead?: string; bare?: boolean }
+const { items, bare = false, title = 'What decides the cost', lead = 'We don’t publish prices, because no two sites are the same. These are the things that decide yours. Share them with us and you get one clear quote.' } = Astro.props;
 ---
 <div class="cost-factors">
-  <h2 style="font-size:clamp(24px,2.6vw,30px)">{title}</h2>
+  {!bare && <h2 style="font-size:clamp(21px,2.2vw,26px)">{title}</h2>}
   <p style="margin-top:10px;max-width:720px">{lead}</p>
   <ul class="factors" style="margin-top:20px">
     {items.map((t) => <li><Icon name="checkCircle" size={20} /><span set:html={inlineMd(t)} /></li>)}

@@ -24,6 +24,7 @@ For anyone writing or editing pages (people or Claude sessions). The owner's rul
 
 - Plain Indian English for busy buyers: short sentences, active voice, "you" and "we". British spelling (colour, metre, programme), Indian terms (DISCOM, sanctioned load, society NOC, lakh).
 - The first two sentences of a page answer the search directly. Detail comes after.
+- Service, product and audience pages show only the first part of the text (about the first two sections) before a "Read the full page" button. Put the main answer and what the job covers first; reference detail (tables, standards, long lists) later.
 - Specific beats grand: "a dedicated earth pit, tested for resistance" not "world-class safety".
 - No emojis, no exclamation marks, no filler ("In today's world…", "Look no further").
 - Be honest about trade-offs (e.g. 22 kW AC is wasted on cars that accept 7.2 kW).

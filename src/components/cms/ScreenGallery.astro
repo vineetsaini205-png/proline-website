@@ -1,22 +1,73 @@
 ---
+// CMS screens. Desktop screens show one at a time with tabs (less to scroll; owner, 24 Oct),
+// or all in a grid with tabs={false}. Phone screens sit in one row (a swipe strip on phones).
 import Screen from './Screen.astro';
 import screens from '../../data/cms-screens.json';
-interface Props { show?: 'both' | 'desktop' | 'phone' }
-const { show = 'both' } = Astro.props;
+interface Props { show?: 'both' | 'desktop' | 'phone'; tabs?: boolean }
+const { show = 'both', tabs = true } = Astro.props;
 ---
-{show !== 'phone' && (
+{show !== 'phone' && (tabs ? (
+  <div class="scr-tabs" data-scr-tabs>
+    <div class="scr-tablist" role="tablist" aria-label="Console screens">
+      {screens.desktop.map((s, i) => (
+        <button type="button" role="tab" id={`scr-tab-${s.id}`} aria-controls={`scr-panel-${s.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? '0' : '-1'}>{s.title}</button>
+      ))}
+    </div>
+    {screens.desktop.map((s, i) => (
+      <div class="scr-panel" role="tabpanel" id={`scr-panel-${s.id}`} aria-labelledby={`scr-tab-${s.id}`} hidden={i !== 0}>
+        <Screen item={s} kind="desktop" />
+      </div>
+    ))}
+  </div>
+) : (
   <div class="grid grid-2" style="gap:44px 32px">
     {screens.desktop.map((s) => <Screen item={s} kind="desktop" />)}
   </div>
-)}
+))}
 {show !== 'desktop' && (
-  <div class="phone-grid" style={show === 'both' ? 'margin-top:56px' : undefined}>
+  <div class="phone-grid" style={show === 'both' ? 'margin-top:48px' : undefined}>
     {screens.phone.map((s) => <Screen item={s} kind="phone" />)}
   </div>
 )}
+<script is:inline>
+  (function () {
+    document.querySelectorAll('[data-scr-tabs]').forEach(function (box) {
+      var tabs = Array.prototype.slice.call(box.querySelectorAll('[role="tab"]'));
+      function pick(t, focus) {
+        tabs.forEach(function (x) {
+          var on = x === t;
+          x.setAttribute('aria-selected', on ? 'true' : 'false');
+          x.tabIndex = on ? 0 : -1;
+          document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+        });
+        if (focus) t.focus();
+      }
+      tabs.forEach(function (t, i) {
+        t.addEventListener('click', function () { pick(t); });
+        t.addEventListener('keydown', function (e) {
+          var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
+          if (j === null) return;
+          e.preventDefault();
+          pick(tabs[(j + tabs.length) % tabs.length], true);
+        });
+      });
+    });
+  })();
+</script>
 <style>
+  .scr-tabs { max-width: 860px; margin: 0 auto; }
+  .scr-tablist { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 26px; }
+  .scr-tablist button { font: inherit; font-size: 14px; font-weight: 600; color: var(--ink); background: var(--white); border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 16px; cursor: pointer; }
+  .scr-tablist button:hover { border-color: var(--navy); }
+  .scr-tablist button[aria-selected="true"] { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .scr-tablist button:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
   .phone-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px 18px; }
   @media (max-width: 1100px) { .phone-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (max-width: 620px) { .phone-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; } }
+  @media (max-width: 620px) {
+    .scr-tablist { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; margin: 0 calc(-1 * var(--gutter)) 20px; padding: 2px var(--gutter) 6px; scrollbar-width: none; }
+    .scr-tablist button { flex: none; }
+    .phone-grid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 46%; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 8px; }
+    .phone-grid > :global(*) { scroll-snap-align: start; }
+  }
   .phone-grid :global(.frame-caption span) { display: block; font-size: 13px; }
 </style>

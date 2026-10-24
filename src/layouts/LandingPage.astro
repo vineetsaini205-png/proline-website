@@ -64,7 +64,8 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
 
   <section class="section">
     <div class="wrap layout-side">
-      <article class="prose">
+      <div>
+      <article class="prose" id="page-body">
         <Content />
         {d.guide && (
           <div class="author" style="margin-top:40px">
@@ -73,15 +74,17 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
           </div>
         )}
       </article>
+      <button class="btn btn-outline fold-more" type="button" hidden>Read the full page<Icon name="chevronDown" size={18} /></button>
+      </div>
       <aside class="side-sticky" aria-label="Contact and contents">
-        <div class="side-card navy">
+        <div class="side-card side-cta">
           <h3>Talk to an engineer</h3>
-          <p>Send photos of your meter, DB and parking spot on WhatsApp and we tell you what the job needs.</p>
+          <p>Send photos of your meter, DB and parking spot and we tell you what the job needs.</p>
           <a class="btn btn-primary" href="#quote">{ctaLabel}</a>
-          <p class="small" style="margin-top:12px;color:#A9BBD3"><a href={waLink(site.whatsapp, wa)} rel="noopener" target="_blank" style="color:#fff;font-weight:600">WhatsApp any time</a> · <a href={`tel:${site.phoneE164}`} style="color:#fff;font-weight:600">Call 10 am–7 pm</a></p>
+          <p class="small" style="margin-top:10px"><a href={waLink(site.whatsapp, wa)} rel="noopener" target="_blank">WhatsApp any time</a> · <a href={`tel:${site.phoneE164}`}>Call 10 am–7 pm</a></p>
         </div>
         {toc.length > 2 && (
-          <nav class="side-card" aria-label="On this page">
+          <nav class="side-card side-toc" aria-label="On this page">
             <h3>On this page</h3>
             <ul style="list-style:none;display:grid;gap:8px;font-size:15px">
               {toc.map((h) => <li><a href={`#${h.slug}`} style="text-decoration:none">{h.text}</a></li>)}
@@ -106,15 +109,21 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
     </section>
   )}
 
-  {d.costFactors.length > 0 && (
-    <section class="section section-soft"><div class="wrap"><CostFactors items={d.costFactors} /></div></section>
-  )}
-
-  {d.showProcess && (
-    <section class="section" aria-labelledby="process-title">
-      <div class="wrap">
-        <SectionHead eyebrow="How we work" title={d.steps ? 'How the job runs' : 'Six steps from survey to handover'} id="process-title" />
-        <ProcessSteps steps={d.steps} />
+  {(d.costFactors.length > 0 || d.showProcess) && (
+    <section class="section section-soft fold-zone" aria-label="Cost and steps">
+      <div class="wrap folds">
+        {d.costFactors.length > 0 && (
+          <details class="fold-sec">
+            <summary><span class="card-icon"><Icon name="tag" size={20} /></span><span class="fs-text"><strong>What decides the cost</strong><span>{d.costFactors.length} things that decide your quote</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+            <div class="fold-body"><CostFactors items={d.costFactors} bare /></div>
+          </details>
+        )}
+        {d.showProcess && (
+          <details class="fold-sec">
+            <summary><span class="card-icon"><Icon name="list" size={20} /></span><span class="fs-text"><strong>{d.steps ? 'How the job runs' : 'Six steps from survey to handover'}</strong><span>{(d.steps ?? []).length || 6} steps, from first message to handover</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+            <div class="fold-body"><ProcessSteps steps={d.steps} /></div>
+          </details>
+        )}
       </div>
     </section>
   )}
@@ -130,4 +139,26 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
 
   <RelatedLinks links={d.related} />
   <CtaBand variant={d.form} need={d.need} waText={wa} />
+  <script is:inline>
+    // Long page text starts folded (the full text stays in the page for Google); "Read the full page" opens it.
+    // A link to a heading inside the text (from this page or another) opens it too.
+    (function () {
+      var body = document.getElementById('page-body');
+      var more = body && body.nextElementSibling;
+      function target(hash) { var el = hash && hash.length > 1 && document.getElementById(decodeURIComponent(hash.slice(1))); return el && body.contains(el) ? el : null; }
+      if (!body || !more || body.scrollHeight < 1100 || target(location.hash)) return;
+      body.classList.add('folded');
+      more.hidden = false;
+      function open() { body.classList.remove('folded'); more.hidden = true; }
+      more.addEventListener('click', open);
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href*="#"]');
+        if (a && a.pathname === location.pathname && target(a.hash)) open();
+      });
+      window.addEventListener('hashchange', function () {
+        var el = target(location.hash);
+        if (el && body.classList.contains('folded')) { open(); el.scrollIntoView(); }
+      });
+    })();
+  </script>
 </Base>

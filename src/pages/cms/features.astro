@@ -115,33 +115,53 @@ const addons = ['White-label driver app for Android and iOS', 'Host and investor
         <div>
           <p class="eyebrow"><span class="dot"></span>Proline CMS features</p>
           <h1>Feature-rich charge point operator software for India</h1>
-          <p class="lead">Proline CMS covers the whole job of running a charging network: chargers of any brand over OCPP 1.6J, QR and UPI payments with automatic refunds, alerts and tickets, GST documents and reports, and a technician app for the field. Here is every feature, with its screen.</p>
-          <ul class="tag-row" style="list-style:none;margin-top:24px">
-            {groups.map((g) => <li><a class="pill" href={`#${g.id}`} style="text-decoration:none;font-size:13.5px;padding:7px 12px">{g.title}</a></li>)}
-          </ul>
+          <p class="lead">Proline CMS covers the whole job of running a charging network: chargers of any brand over OCPP 1.6J, QR and UPI payments with automatic refunds, alerts and tickets, GST documents and reports, and a technician app for the field. Here is every feature, with its screen. Tap a group to open it.</p>
         </div>
       </div>
     </div>
   </section>
 
-  {groups.map((g, i) => (
-    <section class:list={['section', { 'section-soft': i % 2 === 1 }]} id={g.id} aria-labelledby={`${g.id}-title`}>
-      <div class:list={['wrap', g.shots.length ? 'split top' : '']}>
-        <div>
-          <span class="card-icon navy" style="margin-bottom:16px"><Icon name={g.icon} size={24} /></span>
-          <h2 id={`${g.id}-title`}>{g.title}</h2>
-          <ul class="ticks" style="margin-top:22px">
-            {g.items.map((t) => <li set:html={inlineMd(t)} />)}
-          </ul>
-        </div>
-        {g.shots.length > 0 && (
-          <div class:list={['feature-shots', { 'two-phones': g.shots.every(isPhone) && g.shots.length > 1 }]}>
-            {g.shots.map((id) => <Screen item={shot(id)} kind={isPhone(id) ? 'phone' : 'desktop'} />)}
+  <section class="section" aria-label="Features by group">
+    <div class="wrap feat-folds">
+      {groups.map((g, i) => (
+        <details class="fold-sec feat" id={g.id} open={i === 0 ? true : undefined}>
+          <summary>
+            <span class="card-icon navy"><Icon name={g.icon} size={20} /></span>
+            <h2 id={`${g.id}-title`}>{g.title}</h2>
+            <span class="fs-sub">{g.items.length} features{g.shots.length > 0 ? `, ${g.shots.length === 1 ? 'one screen' : `${g.shots.length} screens`}` : ''}</span>
+            <Icon name="chevronDown" size={20} class="chev" />
+          </summary>
+          <div class:list={['fold-body', g.shots.length ? 'split top' : '']}>
+            <ul class="ticks">
+              {g.items.map((t) => <li set:html={inlineMd(t)} />)}
+            </ul>
+            {g.shots.length > 0 && (
+              <div class:list={['feature-shots', { 'two-phones': g.shots.every(isPhone) && g.shots.length > 1 }]}>
+                {g.shots.map((id) => <Screen item={shot(id)} kind={isPhone(id) ? 'phone' : 'desktop'} />)}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </section>
-  ))}
+        </details>
+      ))}
+    </div>
+  </section>
+  <script is:inline>
+    // A link to a feature group (#payments etc.) opens it.
+    (function () {
+      function openFor(hash) {
+        var el = hash && hash.length > 1 && document.getElementById(decodeURIComponent(hash.slice(1)));
+        var d = el && el.closest && el.closest('details.feat');
+        if (d && !d.open) { d.open = true; return d; }
+        return null;
+      }
+      var d = openFor(location.hash); if (d) d.scrollIntoView();
+      window.addEventListener('hashchange', function () { var d = openFor(location.hash); if (d) d.scrollIntoView(); });
+      document.addEventListener('click', function (e) {
+        var a = e.target.closest && e.target.closest('a[href*="#"]');
+        if (a && a.pathname === location.pathname) openFor(a.hash);
+      });
+    })();
+  </script>
 
   <section class="section section-navy" aria-labelledby="addons-title">
     <div class="wrap split top">
@@ -157,6 +177,14 @@ const addons = ['White-label driver app for Android and iOS', 'Host and investor
   <CtaBand variant="demo" title="See the features working" lead="Book a live demo and we show you the console, a charge from QR scan to refund, the reports and the technician app." waText="Hello Proline, I would like a demo of Proline CMS." navy={false} />
 </Base>
 <style>
+  .feat-folds { display: grid; gap: 12px; }
+  .fold-sec.feat > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "icon title chev" "icon sub chev"; column-gap: 14px; align-items: center; }
+  .fold-sec.feat > summary .card-icon { grid-area: icon; width: 42px; height: 42px; border-radius: 12px; }
+  .fold-sec.feat > summary h2 { grid-area: title; font-size: 17px; line-height: 1.3; align-self: end; }
+  .fold-sec.feat > summary .fs-sub { grid-area: sub; font-size: 13.5px; color: var(--muted); align-self: start; }
+  .fold-sec.feat > summary :global(.chev) { grid-area: chev; }
+  .fold-sec.feat > .fold-body { padding: 22px 22px 26px; }
+  .fold-sec.feat > .fold-body.split { gap: 36px; }
   .feature-shots { display: grid; gap: 40px; }
   .feature-shots.two-phones { grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
   .feature-shots :global(.frame-caption span) { display: block; font-size: 13.5px; }

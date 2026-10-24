@@ -21,13 +21,12 @@ const items = links
 {items.length > 0 && (
   <section class="section section-line" aria-labelledby="related-title">
     <div class="wrap">
-      <h2 id="related-title" style="font-size:clamp(22px,2.4vw,28px);margin-bottom:24px">{title}</h2>
-      <div class="grid grid-3">
+      <h2 id="related-title" class="rel-title">{title}</h2>
+      <div class="grid grid-3 rel-links">
         {items.map((l) => (
-          <a class="card" href={l.href}>
-            <h3>{l.label}</h3>
-            {l.note && <p>{l.note}</p>}
-            <span class="card-cta">Read more<Icon name="arrowRight" size={16} /></span>
+          <a class="rel" href={l.href}>
+            <span><strong>{l.label}</strong>{l.note && <span>{l.note}</span>}</span>
+            <Icon name="arrowRight" size={18} />
           </a>
         ))}
       </div>

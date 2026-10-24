@@ -41,7 +41,7 @@ Done on 24 October. What was set up, in case you need to check or undo it:
 2. New project **proline-website** → **Custom domains**: `www.prolineelectricalworks.com` (the main address) and `prolineelectricalworks.com`. Cloudflare added the two DNS records itself (CNAME to `proline-website.pages.dev`). The Zoho mail records (MX, SPF, DKIM, DMARC) were not changed.
 3. **Rules → Redirect Rules → "Bare domain to www"**: any address on `prolineelectricalworks.com` goes to the same page on `https://www.prolineelectricalworks.com` (301, keeps the page path and anything after `?`). So Google sees one address.
 
-The old project **proline** now serves only `proline-3da.pages.dev`. Keep it for a week in case you need to switch back, then delete it yourself: Workers & Pages → proline → Settings → Delete project.
+The old project **proline** was deleted by you on 24 October.
 
 ## 4. Cloudflare settings to keep or check
 
@@ -100,6 +100,18 @@ What you can edit there:
 
 New page layouts and new tools still need a developer.
 
+## Billing: invoices, proformas and purchase orders
+
+Open **www.prolineelectricalworks.com/admin/billing/** while signed in to Google with your account (anyone else is sent to the Google sign-in page and can't open it).
+
+First time, in **Settings**:
+
+1. Firm details: GSTIN, address and PAN. Bank details and UPI ID (the UPI QR code goes on final invoices). Upload your logo and signature.
+2. **Numbering:** if you already issued invoices this financial year in another system, set "Continue after" to the last number, so the series carries on.
+3. Check the HSN/SAC codes and GST rates in **Items** with your CA.
+
+Add customers and vendors (each can have several GST registrations) under **Customers & vendors**. Then: **+ Invoice**, **+ Proforma** or **+ PO** → pick the customer and its GST registration → add items → **Save draft**. Drafts have no number and can be changed. **Preview** shows the PDF. **Finalise** gives the next number, locks the document, saves the PDF in Google Drive (**Proline Billing / 2026-27 / Tax Invoices**, Proforma Invoices or Purchase Orders) and emails it to Sales@. GST is worked out by itself: CGST + SGST inside Delhi, IGST for other states. More detail: `billing/README.md`.
+
 ## 7. Google Search Console and Bing Webmaster Tools
 
 1. https://search.google.com/search-console → **Add property** → **Domain** → `prolineelectricalworks.com`. Verify it with the DNS TXT record (Cloudflare → DNS → Add record).
@@ -135,7 +147,6 @@ These go in when they arrive. Until then the site works without them.
 - **Brands:** which charger brands you sell or work with. Only then do brand names appear on charger pages.
 - **Open answers:**
   - Which Tata company did you install for?
-  - Do you offer AMC?
   - Do you offer electricity-connection (DISCOM/CEIG) approvals?
   - Which days are calls answered? This goes into Google's opening hours.
 - **Optional:**

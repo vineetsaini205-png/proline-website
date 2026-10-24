@@ -1,68 +1,41 @@
 ---
+// Home page. Kept short on purpose (owner, 24 Oct: "too much information on one page"):
+// hero + numbers, six services, Proline CMS, two calculators, five FAQs, contact form.
+// Everything else has its own page, linked from the menu and the footer.
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import TrustStrip from '../components/TrustStrip.astro';
 import SectionHead from '../components/SectionHead.astro';
-import ProcessSteps from '../components/ProcessSteps.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
-import HomeTools from '../components/HomeTools.astro';
 import site from '../data/site.json';
 import screens from '../data/cms-screens.json';
 import { faqNode } from '../lib/schema';
-import { getCollection } from 'astro:content';
 
 const title = 'Proline Electrical Works | EV Charger Installation in India';
 const description = 'Proline installs and commissions EV chargers of any brand across India: AC and DC chargers, earthing, cabling and civil work. Free advice on choosing a charger.';
 
-const audiences = [
-  { icon: 'station', title: 'Charge point operators', text: 'Crews to survey, install and commission sites in many cities, to your checklist and handover format.', href: '/for/charge-point-operators/' },
-  { icon: 'factory', title: 'Charger brands and EV makers', text: 'Trained installers for every charger you sell or every EV you deliver, anywhere we work.', href: '/for/charger-brands/' },
-  { icon: 'building', title: 'Businesses and societies', text: 'The right charger, an earnings estimate and a turnkey setup for hotels, offices, malls and housing societies.', href: '/for/businesses/' },
-  { icon: 'home', title: 'Home owners', text: 'A wall-box charger fitted safely at home, with its own DB box and proper earthing.', href: '/services/home-ev-charger-installation/' },
-  { icon: 'trending', title: 'Investors and landowners', text: 'Thinking of a charging station? See what it could earn, then plan it with us.', href: '/start-an-ev-charging-station/' },
+const services = [
+  { icon: 'plug', title: 'EV charger installation', text: 'AC and DC chargers of any brand, installed and tested.', href: '/services/ev-charger-installation/' },
+  { icon: 'home', title: 'Home charger installation', text: 'Wall-box chargers fitted safely at home.', href: '/services/home-ev-charger-installation/' },
+  { icon: 'station', title: 'Charging stations', text: 'DC fast chargers and turnkey stations, survey to go-live.', href: '/services/ev-charging-station-setup/' },
+  { icon: 'clipboard', title: 'Site survey', text: 'Know what your site needs before you buy.', href: '/services/site-survey/' },
+  { icon: 'wrench', title: 'AMC and maintenance', text: 'Planned visits, safety tests and a report each time.', href: '/services/ev-charger-amc/' },
+  { icon: 'earth', title: 'Earthing, cabling, civil', text: 'Tested earth pits, sized cable, foundations, canopies.', href: '/services/ev-charger-earthing/' },
 ];
 
-const serviceCards = [
-  { icon: 'plug', title: 'EV charger installation', text: 'AC and DC chargers of any brand, installed and tested anywhere we work.', href: '/services/ev-charger-installation/' },
-  { icon: 'home', title: 'Home charger installation', text: '7.4, 11 and 22 kW wall boxes, single or three phase, with a separate EV meter if you need one.', href: '/services/home-ev-charger-installation/' },
-  { icon: 'bolt', title: 'DC fast charger installation', text: '30–240 kW chargers: LT panel, armoured cable, foundation and trench.', href: '/services/dc-fast-charger-installation/' },
-  { icon: 'station', title: 'Charging station setup', text: 'Turnkey, from site survey to go-live: civil work, canopy, branding and CMS.', href: '/services/ev-charging-station-setup/' },
-  { icon: 'clipboard', title: 'Site survey', text: 'Know what your site needs before you buy. Fee adjusted against your order.', href: '/services/site-survey/' },
-  { icon: 'checkCircle', title: 'Commissioning and testing', text: 'Earthing and insulation tests, OCPP or app setup, and a handover pack.', href: '/services/ev-charger-commissioning/' },
-  { icon: 'earth', title: 'Earthing, cabling and DB boxes', text: 'The electrical work that keeps chargers safe: tested earth pits, sized cable and the right protection.', href: '/services/ev-charger-earthing/', links: [{ label: 'Earthing', href: '/services/ev-charger-earthing/' }, { label: 'Cabling', href: '/services/ev-charger-cabling/' }, { label: 'DB boxes', href: '/services/ev-charger-db-box/' }] },
-  { icon: 'hardhat', title: 'Civil work and solar', text: 'Charger foundations and canopies, and rooftop or carport solar built along with the chargers.', href: '/services/ev-charging-civil-work/', links: [{ label: 'Civil work', href: '/services/ev-charging-civil-work/' }, { label: 'Solar', href: '/services/solar-installation/' }] },
+const tools = [
+  { icon: 'trending', title: 'Charging station earnings', text: 'Monthly profit for your state, charger and prices, from quiet to busy.', href: '/tools/ev-charging-station-earnings-calculator/' },
+  { icon: 'fuel', title: 'EV vs petrol savings', text: 'What you save each month by driving electric, and the CO₂ avoided.', href: '/tools/ev-vs-petrol-savings-calculator/' },
 ];
-
-const chargerCards = [
-  { icon: 'plug', title: 'AC and home chargers', text: '3.3–22 kW, single or three phase, for homes, offices and societies.', href: '/chargers/ac-chargers/' },
-  { icon: 'bolt', title: 'DC fast chargers', text: '30–240 kW, single or dual gun, CCS2, for public and highway sites.', href: '/chargers/dc-fast-chargers/' },
-  { icon: 'scooter', title: '2W and 3W chargers', text: 'Chargers and socket points for e-scooters, e-rickshaws and autos.', href: '/chargers/2w-3w-chargers/' },
-  { icon: 'bus', title: 'Bus and truck chargers', text: 'High-power DC charging for depots and fleets.', href: '/chargers/bus-truck-chargers/' },
-  { icon: 'tag', title: 'White-label chargers', text: 'Chargers made with your brand on them, from makers we work with.', href: '/chargers/white-label-chargers/' },
-];
-
-const toolCards = [
-  { icon: 'trending', title: 'Charging station earnings calculator', text: 'Monthly profit for your state, charger and prices, from quiet to busy.', href: '/tools/ev-charging-station-earnings-calculator/' },
-  { icon: 'fuel', title: 'EV vs petrol savings calculator', text: 'What you save each month and year by driving electric, and the CO₂ avoided.', href: '/tools/ev-vs-petrol-savings-calculator/' },
-  { icon: 'search', title: 'Charger finder', text: 'Which charger type and power fit your vehicles, site and supply.', href: '/tools/charger-finder/' },
-  { icon: 'list', title: 'Installation checklist', text: 'The cable, earthing, DB box and civil work your installation needs.', href: '/tools/installation-checklist/' },
-];
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
 
 const faqs = [
   { q: 'Do you install EV chargers of any brand?', a: 'Yes. Proline is brand-neutral: we survey, install and commission AC and DC chargers from any maker, and the free consultation helps you choose the right one for your site. We have installed chargers for TATA, ThunderPlus, Bolt.Earth and KIA.' },
-  { q: 'Which states do you work in?', a: `We are based in Delhi and work across ${site.regions.flatMap((r) => r.states).join(', ')}. See the [coverage page](/coverage/) for the full list by region.` },
-  { q: 'How much does EV charger installation cost?', a: 'It depends on the charger, the distance from your meter or panel to the charger, the cable, the earthing and DB box needed, any civil work, and whether your connection needs more load. We don’t publish prices because no two sites are the same; send us a few details or photos and we reply with one clear quote. The [installation checklist](/tools/installation-checklist/) shows what your job is likely to need.' },
-  { q: 'Is the site survey free?', a: 'The site survey is paid. If you go ahead with Proline, the survey fee is adjusted against your order. For a simple home installation, photos of your meter, DB and parking spot on WhatsApp are often enough to quote.' },
-  { q: 'Can you help me choose a charger?', a: 'Yes, and that advice is free. We work with many charger brands, so we compare options on what matters for your site: power, phase, connectors, app or OCPP support, warranty and service. The [charger finder](/tools/charger-finder/) is a good place to start.' },
-  { q: 'Do you set up complete charging stations?', a: 'Yes. For DC fast charging stations we handle the survey, electrical design, cabling, LT panel and DB boxes, earthing, foundations, canopy, branding, commissioning and the charging software. See [charging station setup](/services/ev-charging-station-setup/) and [what a station could earn](/tools/ev-charging-station-earnings-calculator/).' },
-  { q: 'What is Proline CMS?', a: 'Proline CMS is our own charge management system for charge point operators. It runs chargers of any brand on one console, lets drivers pay by QR code and UPI with automatic refunds, issues GST documents, and runs on your own server in your brand. [See Proline CMS](/cms/).' },
-  { q: 'How do I reach you?', a: `Use the WhatsApp or Call buttons on any page: WhatsApp any time, calls from 10 am to 7 pm. Or email ${site.email}, or use the form on this page.` },
+  { q: 'Which states do you work in?', a: `We are based in Delhi and work across ${site.regions.flatMap((r) => r.states).join(', ')}. See the [coverage page](/coverage/).` },
+  { q: 'How much does EV charger installation cost?', a: 'It depends on the charger, the cable run from your meter or panel, the earthing and DB box, any civil work, and whether your connection needs more load. We don’t publish prices because no two sites are the same; send us a few details or photos and we reply with one clear quote.' },
+  { q: 'Is the site survey free?', a: 'The site survey is paid. If you go ahead with Proline, the survey fee is adjusted against your order. For a simple home installation, photos on WhatsApp are often enough to quote.' },
+  { q: 'What is Proline CMS?', a: 'Our own charge management software for charge point operators: chargers of any brand on one console, QR and UPI payments with automatic refunds, GST documents, in your brand and on your own server. [See Proline CMS](/cms/).' },
 ];
 const desk = screens.desktop[0];
 ---
@@ -72,67 +45,37 @@ const desk = screens.desktop[0];
       <div class="hero-copy">
         <p class="eyebrow">Pan-India EV charging partner</p>
         <h1>EV charger installation and commissioning <span class="underline-green">across India</span></h1>
-        <p class="lead">AC and DC chargers, DB boxes, earthing, cabling and civil work for charge point operators, charger brands, EV makers, businesses and homes. Any brand, one team, from site survey to handover.</p>
+        <p class="lead">Chargers of any brand, installed, tested and handed over by one team, for operators, brands, businesses and homes.</p>
         <div class="btn-row">
           <a class="btn btn-primary btn-lg" href="#quote">Get a quote</a>
-          <a class="btn btn-outline btn-lg" href="/cms/">See Proline CMS<Icon name="arrowRight" size={18} /></a>
+          <a class="btn btn-outline btn-lg" href="/services/">Our services<Icon name="arrowRight" size={18} /></a>
         </div>
         <ul class="checks">
           <li><Icon name="check" size={18} stroke={2.5} />Any charger brand</li>
           <li><Icon name="check" size={18} stroke={2.5} />Survey to handover</li>
-          <li><Icon name="check" size={18} stroke={2.5} />200+ technicians across India</li>
+          <li><Icon name="check" size={18} stroke={2.5} />AMC available</li>
         </ul>
       </div>
       <div class="hero-media">
         <Photo name="dc-hub-canopy" eager sizes="(max-width: 900px) 100vw, 560px" />
-        <div class="float-card float-tl">
-          <span class="fc-icon" style="background:var(--green)"><Icon name="bolt" size={20} /></span>
-          <span><strong>Up to 240 kW DC</strong><span class="fc-sub">AC, DC and 2W/3W chargers</span></span>
-        </div>
-        <a class="float-card float-br" href="/cms/" style="text-decoration:none">
-          <span class="fc-icon" style="background:var(--navy);color:var(--green)"><Icon name="grid" size={20} /></span>
-          <span><strong>Proline CMS</strong><span class="fc-sub">Every charger, one console</span></span>
-        </a>
       </div>
     </div>
   </section>
 
   <TrustStrip />
 
-  <section class="section" aria-labelledby="who-title">
-    <div class="wrap">
-      <SectionHead eyebrow="Who we work with" title="One installation team for every kind of EV charging site" lead="Tell us who you are and we show you how we work for you." id="who-title" />
-      <div class="grid grid-5">
-        {audiences.map((a) => (
-          <a class="card" href={a.href}>
-            <span class="card-icon"><Icon name={a.icon} size={24} /></span>
-            <h3 style="font-size:17px">{a.title}</h3>
-            <p style="font-size:14.5px">{a.text}</p>
-            <span class="card-cta">See how<Icon name="arrowRight" size={16} /></span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-soft" aria-labelledby="services-title">
+  <section class="section" aria-labelledby="services-title">
     <div class="wrap">
       <div class="shead-row">
-        <SectionHead eyebrow="Services" title="Everything from site survey to handover" lead="Our technicians do the whole job, so one team answers for the charger, the wiring and the paperwork." id="services-title" />
-        <a class="btn btn-outline" href="/services/">All services<Icon name="arrowRight" size={18} /></a>
+        <SectionHead eyebrow="Services" title="Everything from site survey to handover" id="services-title" />
+        <a class="link-arrow" href="/services/">All services<Icon name="arrowRight" size={16} /></a>
       </div>
-      <div class="grid grid-4">
-        {serviceCards.map((s) => (
-          <div class="card is-link">
-            <span class="card-icon"><Icon name={s.icon} size={24} /></span>
-            <h3><a href={s.href} class="stretched" style="text-decoration:none">{s.title}</a></h3>
-            <p>{s.text}</p>
-            {s.links ? (
-              <p class="tag-row" style="margin-top:auto;position:relative;z-index:1">{s.links.map((l) => <a class="pill pill-green" href={l.href} style="text-decoration:none">{l.label}</a>)}</p>
-            ) : (
-              <span class="card-cta">Learn more<Icon name="arrowRight" size={16} /></span>
-            )}
-          </div>
+      <div class="grid grid-3 tiles">
+        {services.map((s) => (
+          <a class="tile" href={s.href}>
+            <span class="card-icon"><Icon name={s.icon} size={22} /></span>
+            <span><strong>{s.title}</strong><span>{s.text}</span></span>
+          </a>
         ))}
       </div>
     </div>
@@ -142,124 +85,39 @@ const desk = screens.desktop[0];
     <div class="wrap split">
       <div>
         <p class="eyebrow-plain">Proline CMS</p>
-        <h2 id="cms-title">Your own charge management system. In your brand, on your server.</h2>
-        <p class="lead" style="margin-top:16px;font-size:18px">Proline CMS runs every charger you own, whatever the brand. Drivers scan a QR code and pay by UPI, unused money goes back to them automatically, and every rupee is matched to your bank the next morning.</p>
-        <ul class="ticks" style="margin-top:24px">
-          <li><strong style="color:#fff">Any charger brand, one system.</strong> AC, DC and light-EV chargers from different makers, all in one console.</li>
-          <li><strong style="color:#fff">Your brand, your domain.</strong> Your name, logo and colours on every screen, receipt and QR sticker.</li>
-          <li><strong style="color:#fff">Your server, or ours.</strong> Installed on your own servers in India, or hosted by us in India at a low running cost with 24/7 support.</li>
-          <li><strong style="color:#fff">No commission, no per-charger fees.</strong> Drivers pay into your own account. It is your software, not a network you join.</li>
+        <h2 id="cms-title">Your own charging software, in your brand</h2>
+        <p class="lead" style="margin-top:14px">Run every charger you own, whatever the brand. Drivers scan a QR code and pay by UPI, and unused money goes back to them automatically.</p>
+        <ul class="ticks" style="margin-top:20px">
+          <li>Any charger brand, one console</li>
+          <li>On your server, or hosted by us in India with 24/7 support</li>
+          <li>No commission and no per-charger fees</li>
         </ul>
-        <div class="btn-row" style="margin-top:28px">
-          <a class="btn btn-primary btn-lg" href="/cms/demo/">Book a demo</a>
-          <a class="btn btn-ghost-light btn-lg" href="/cms/">See how it works<Icon name="arrowRight" size={18} /></a>
+        <div class="btn-row" style="margin-top:24px">
+          <a class="btn btn-primary" href="/cms/demo/">Book a demo</a>
+          <a class="btn btn-ghost-light" href="/cms/">See how it works<Icon name="arrowRight" size={18} /></a>
         </div>
       </div>
       <figure style="margin:0">
         <div class="laptop"><div class="screen"><img src={desk.image} width="1600" height="1000" alt={`Proline CMS ${desk.title.toLowerCase()}: ${desk.caption}`} loading="lazy" decoding="async" /></div></div>
-        <figcaption class="frame-caption" style="color:#A9BBD3;margin-top:28px"><strong style="color:#fff">{desk.title}</strong>{desk.caption}{desk.concept && <><br /><span class="concept-tag">Concept design · sample data</span></>}</figcaption>
+        {desk.concept && <figcaption class="frame-caption" style="color:#A9BBD3;margin-top:24px"><span class="concept-tag">Concept design · sample data</span></figcaption>}
       </figure>
     </div>
   </section>
 
   <section class="section" aria-labelledby="tools-title">
     <div class="wrap">
-      <SectionHead eyebrow="Earnings and savings" title="See the numbers before you call us" lead="Two quick estimates from public tariffs and charging rates. No sign-up, no phone number needed." id="tools-title" />
-      <HomeTools />
-    </div>
-  </section>
-
-  <section class="section section-soft" aria-labelledby="how-title">
-    <div class="wrap">
-      <SectionHead eyebrow="How we work" title="Six steps from survey to handover" lead="The same steps for a single home charger or a highway charging hub; only the size of the job changes." id="how-title" />
-      <ProcessSteps />
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="chargers-title">
-    <div class="wrap split top">
-      <div>
-        <SectionHead eyebrow="Chargers" title="Any brand, chosen for your site" lead="We work with many charger makers, so our advice is about your vehicles, your supply and your budget, not one brand’s catalogue. Ask us and we compare options on power, connectors, software, warranty and service." id="chargers-title" />
-        <div class="note"><strong>Free consultation.</strong> Tell us your vehicles, site and supply, and we suggest the right charger type and power, with options from up to three brands.</div>
-        <div class="btn-row" style="margin-top:24px">
-          <a class="btn btn-primary" href="/tools/charger-finder/">Find your charger</a>
-          <a class="btn btn-outline" href="/chargers/">All chargers</a>
-        </div>
-      </div>
-      <div class="grid" style="gap:12px">
-        {chargerCards.map((c) => (
-          <a class="card" href={c.href} style="flex-direction:row;align-items:center;gap:16px;padding:18px 20px">
-            <span class="card-icon"><Icon name={c.icon} size={24} /></span>
-            <span style="display:block"><h3 style="font-size:17px">{c.title}</h3><p style="font-size:14.5px;margin-top:2px">{c.text}</p></span>
-            <Icon name="arrowRight" size={18} class="muted" style="margin-left:auto;flex:none" />
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-soft" aria-labelledby="coverage-title">
-    <div class="wrap">
-      <div class="shead-row">
-        <SectionHead eyebrow="Coverage" title="Working in 10 states across North, South and West India" lead={`Based in ${site.city}, with 200+ technicians who travel to sites in these states.`} id="coverage-title" />
-        <a class="btn btn-outline" href="/coverage/">See coverage<Icon name="arrowRight" size={18} /></a>
-      </div>
-      <div class="regions">
-        {site.regions.map((r) => (
-          <div class="region">
-            <h3><Icon name="map" size={20} class="muted" />{r.name}</h3>
-            <ul>{r.states.map((s) => <li>{s}</li>)}</ul>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-navy" aria-labelledby="solar-title">
-    <div class="wrap">
-      <div class="shead-row">
-        <SectionHead eyebrow="Solar and storage" title="Charge from the sun" lead="We supply and install rooftop and carport solar sized for your chargers, with batteries where storage pays off. Solar-hour charging can also be cheaper where your DISCOM applies time-of-day tariffs." id="solar-title" />
-        <a class="btn btn-ghost-light" href="/solar-ev-charging/">Solar + EV charging<Icon name="arrowRight" size={18} /></a>
-      </div>
-      <ol class="flow">
-        <li><span class="card-icon"><Icon name="sun" size={24} /></span><div><strong>Sun</strong><span>Daytime energy for daytime charging</span></div></li>
-        <li><span class="card-icon"><Icon name="grid" size={24} /></span><div><strong>Solar panels</strong><span>On your roof or a carport canopy</span></div></li>
-        <li><span class="card-icon"><Icon name="battery" size={24} /></span><div><strong>Battery storage</strong><span>Stores midday solar for evening sessions</span></div></li>
-        <li><span class="card-icon"><Icon name="station" size={24} /></span><div><strong>Charger</strong><span>AC or DC, any brand</span></div></li>
-        <li><span class="card-icon"><Icon name="car" size={24} /></span><div><strong>Electric vehicle</strong><span>Cars, 2W, 3W, buses</span></div></li>
-      </ol>
-      <p style="margin-top:24px" class="small"><a href="/services/solar-installation/" style="color:#fff">Solar installation</a> · <a href="/batteries/" style="color:#fff">Batteries</a> · <a href="/batteries/bess-for-ev-charging/" style="color:#fff">BESS for charging stations</a></p>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="toolsall-title">
-    <div class="wrap">
-      <div class="shead-row">
-        <SectionHead eyebrow="Tools and guides" title="Free tools for planning EV charging" id="toolsall-title" />
-        <a class="btn btn-outline" href="/tools/">All tools<Icon name="arrowRight" size={18} /></a>
-      </div>
-      <div class="grid grid-4">
-        {toolCards.map((t) => (
+      <SectionHead eyebrow="Free calculators" title="See the numbers before you call us" id="tools-title" />
+      <div class="grid grid-2">
+        {tools.map((t) => (
           <a class="card" href={t.href}>
-            <span class="card-icon navy"><Icon name={t.icon} size={24} /></span>
-            <h3 style="font-size:17px">{t.title}</h3>
-            <p style="font-size:14.5px">{t.text}</p>
-            <span class="card-cta">Open the tool<Icon name="arrowRight" size={16} /></span>
+            <span class="card-icon navy"><Icon name={t.icon} size={22} /></span>
+            <h3>{t.title}</h3>
+            <p>{t.text}</p>
+            <span class="card-cta">Open the calculator<Icon name="arrowRight" size={16} /></span>
           </a>
         ))}
       </div>
-      {posts.length > 0 && (
-        <div class="grid grid-3" style="margin-top:20px">
-          {posts.map((p) => (
-            <a class="card card-soft" href={`/blog/${p.id}/`}>
-              <span class="pill">Guide</span>
-              <h3 style="font-size:17px">{p.data.h1 ?? p.data.title}</h3>
-              <p style="font-size:14.5px">{p.data.description}</p>
-              <span class="card-cta">Read the guide<Icon name="arrowRight" size={16} /></span>
-            </a>
-          ))}
-        </div>
-      )}
+      <p class="small muted" style="margin-top:16px">Also: <a href="/tools/charger-finder/">charger finder</a> · <a href="/tools/installation-checklist/">installation checklist</a> · <a href="/blog/">guides</a></p>
     </div>
   </section>
 
@@ -267,7 +125,7 @@ const desk = screens.desktop[0];
     <div class="wrap-narrow">
       <SectionHead eyebrow="FAQ" title="Questions we are often asked" center id="faq-title" />
       <Faqs items={faqs} />
-      <p class="center" style="margin-top:24px"><a class="link-arrow" href="/faq/">More answers<Icon name="arrowRight" size={16} /></a></p>
+      <p class="center" style="margin-top:20px"><a class="link-arrow" href="/faq/">More answers<Icon name="arrowRight" size={16} /></a></p>
     </div>
   </section>
 

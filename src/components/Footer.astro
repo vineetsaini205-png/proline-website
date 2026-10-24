@@ -1,29 +1,47 @@
 ---
+// Compact footer (owner, 24 Oct: less crowded). The menu, the sitemap and links inside page text
+// carry the internal linking for SEO, so the footer keeps only the main pages.
 import site from '../data/site.json';
-import { services, products, batteries, audiences, cms, tools, resources, company } from '../data/nav';
+import { tools } from '../data/nav';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { waLink } from '../lib/text';
 const year = new Date().getFullYear();
 const cols = [
-  { title: 'Services', links: [...services, { label: 'All services', href: '/services/' }] },
-  { title: 'Chargers and batteries', links: [{ label: 'All chargers', href: '/chargers/' }, ...products.filter((l) => l.href !== '/batteries/'), { label: 'All batteries', href: '/batteries/' }, ...batteries] },
-  { title: 'Who we serve', links: [...audiences.filter((l) => l.href.startsWith('/for/')), { label: 'Home owners', href: '/services/home-ev-charger-installation/' }, { label: 'Investors and landowners', href: '/start-an-ev-charging-station/' }] },
-  { title: 'Proline CMS and tools', links: [...cms, ...tools] },
-  { title: 'Resources and company', links: [...resources, ...company.filter((l) => !['/privacy-policy/', '/terms/'].includes(l.href))] },
+  { title: 'Services', links: [
+    { label: 'EV charger installation', href: '/services/ev-charger-installation/' },
+    { label: 'Home charger installation', href: '/services/home-ev-charger-installation/' },
+    { label: 'Charging station setup', href: '/services/ev-charging-station-setup/' },
+    { label: 'AMC and maintenance', href: '/services/ev-charger-amc/' },
+    { label: 'All services', href: '/services/' },
+  ] },
+  { title: 'Products', links: [
+    { label: 'Chargers, any brand', href: '/chargers/' },
+    { label: 'Batteries', href: '/batteries/' },
+    { label: 'Solar + EV charging', href: '/solar-ev-charging/' },
+    { label: 'Proline CMS', href: '/cms/' },
+    { label: 'Who we serve', href: '/for/' },
+  ] },
+  { title: 'Tools and guides', links: [...tools.map((t) => ({ label: t.label, href: t.href })), { label: 'Blog and FAQ', href: '/blog/' }] },
+  { title: 'Company', links: [
+    { label: 'About Proline', href: '/about/' },
+    { label: 'Contact', href: '/contact/' },
+    { label: 'Coverage', href: '/coverage/' },
+    { label: 'Partner with us', href: '/partner-with-us/' },
+    { label: 'Join as a technician', href: '/join-as-technician/' },
+  ] },
 ];
 ---
 <footer class="site-footer">
   <div class="wrap footer-top">
     <div class="footer-brand">
       <Logo />
-      <p>Brand-neutral EV charging partner. We survey, install and commission chargers of any brand across India, help you choose the right charger, and give you Proline CMS to run them all.</p>
-      <ul class="footer-contact">
-        <li><Icon name="phone" size={18} /><span><a href={`tel:${site.phoneE164}`}>Call us</a><span class="fc-note">{site.callHours}</span></span></li>
-        <li><Icon name="whatsapp" size={18} /><span><a href={waLink(site.whatsapp)} rel="noopener" target="_blank">WhatsApp us</a><span class="fc-note">{site.whatsappHours}</span></span></li>
-        <li><Icon name="mail" size={18} /><span><a href={`mailto:${site.email}`}>{site.email}</a></span></li>
-        <li><Icon name="map" size={18} /><span>{site.city}, India<span class="fc-note">Working across 10 states</span></span></li>
-      </ul>
+      <p>EV chargers of any brand, installed and commissioned across India. Based in {site.city}, working in 10 states.</p>
+      <div class="footer-actions">
+        <a class="fbtn" href={waLink(site.whatsapp)} rel="noopener" target="_blank"><Icon name="whatsapp" size={16} />WhatsApp us</a>
+        <a class="fbtn" href={`tel:${site.phoneE164}`}><Icon name="phone" size={16} />Call 10 am–7 pm</a>
+        <a class="fbtn" href={`mailto:${site.email}`}><Icon name="mail" size={16} />Email</a>
+      </div>
     </div>
     {cols.map((c) => (
       <div class="footer-col">
@@ -34,9 +52,9 @@ const cols = [
   </div>
   <div class="footer-bottom">
     <div class="wrap">
-      <p>© {year} {site.name}, {site.city}. Brand names and logos belong to their owners.</p>
+      <p>© {year} {site.name}, {site.city}. Brand names belong to their owners.</p>
       <ul>
-        <li><a href="/privacy-policy/">Privacy policy</a></li>
+        <li><a href="/privacy-policy/">Privacy</a></li>
         <li><a href="/terms/">Terms</a></li>
         <li><a href="/sitemap-index.xml">Sitemap</a></li>
       </ul>
