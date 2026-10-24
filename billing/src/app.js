@@ -493,15 +493,54 @@
     var dd = PBPDF.build(doc, c, S.settings, S.images || {}, { watermark: watermark });
     return pdfMake.createPdf(dd);
   }
-  async function previewPdf(doc) {
-    await run('Making the PDF…', loadImages);
-    var pdf = makePdf(doc, doc.status === 'DRAFT' ? 'DRAFT' : (doc.status === 'CANCELLED' ? 'CANCELLED' : null));
-    pdf.getBlob(function (blob) {
-      var url = URL.createObjectURL(blob);
-      modal('<div class="pdf-head"><h2>' + esc(PBPDF.fileName(doc)) + '</h2><span class="grow"></span><a class="btn" href="' + url + '" download="' + esc(PBPDF.fileName(doc)) + '">Download</a><button class="btn primary" data-close>Close</button></div><iframe class="pdf" src="' + url + '" title="PDF preview"></iframe>');
-      $('#modal').classList.add('wide');
-      closeModal.after = function () { $('#modal').classList.remove('wide'); URL.revokeObjectURL(url); };
+  // Inline preview: Chrome's own PDF viewer is blocked inside the Apps Script frame (and on phones),
+  // so pages are drawn with pdf.js, loaded only when needed.
+  var PDFJS_URL = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+  var PDFJS_WORKER = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var el = document.createElement('script');
+      el.src = src; el.onload = resolve; el.onerror = function () { reject(new Error('Could not load the PDF viewer. Use Download instead.')); };
+      document.head.appendChild(el);
     });
+  }
+  async function pdfjs() {
+    if (!window.pdfjsLib) { await loadScript(PDFJS_URL); window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER; }
+    return window.pdfjsLib;
+  }
+  async function previewPdf(doc) {
+    busy(true, 'Making the PDF…');
+    try {
+      await loadImages();
+      var pdf = makePdf(doc, doc.status === 'DRAFT' ? 'DRAFT' : (doc.status === 'CANCELLED' ? 'CANCELLED' : null));
+      var buf = await new Promise(function (resolve) { pdf.getBuffer(resolve); });
+      var url = URL.createObjectURL(new Blob([buf], { type: 'application/pdf' }));
+      var name = PBPDF.fileName(doc);
+      modal('<div class="pdf-head"><h2>' + esc(name) + '</h2><span class="grow"></span><button class="btn" id="pdf-dl">Download</button><a class="btn" href="' + url + '" target="_blank" rel="noopener">Open in a new tab</a><button class="btn primary" data-close>Close</button></div><div class="pdf-pages" id="pdf-pages"><p class="muted">Drawing the pages…</p></div>');
+      $('#modal').classList.add('wide');
+      $('#pdf-dl').onclick = function () { pdf.download(name); };
+      closeModal.after = function () { $('#modal').classList.remove('wide'); setTimeout(function () { URL.revokeObjectURL(url); }, 60000); };
+      var holder = $('#pdf-pages');
+      try {
+        var lib = await pdfjs();
+        var pdfDoc = await lib.getDocument({ data: new Uint8Array(buf) }).promise;
+        holder.innerHTML = '';
+        var cssWidth = Math.min(holder.clientWidth || 800, 900);
+        for (var i = 1; i <= pdfDoc.numPages; i++) {
+          var page = await pdfDoc.getPage(i);
+          var base = page.getViewport({ scale: 1 });
+          var vp = page.getViewport({ scale: (cssWidth / base.width) * Math.min(window.devicePixelRatio || 1, 2) });
+          var c = document.createElement('canvas');
+          c.width = Math.floor(vp.width); c.height = Math.floor(vp.height);
+          c.setAttribute('aria-label', 'Page ' + i + ' of ' + pdfDoc.numPages);
+          holder.appendChild(c);
+          await page.render({ canvasContext: c.getContext('2d'), viewport: vp }).promise;
+        }
+      } catch (e) {
+        holder.innerHTML = '<p class="bad">' + esc(cleanMsg(e)) + '</p>';
+      }
+    } catch (e) { showError(e); }
+    finally { busy(false); }
   }
   async function storePdf(doc, email) {
     await loadImages();

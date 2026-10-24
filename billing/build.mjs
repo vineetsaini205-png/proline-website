@@ -28,6 +28,7 @@ writeFileSync(join(dist, 'Index.html'), page);
 // Test page: fakes + server code in the page, and google.script.run calling it.
 const args = process.argv.slice(2);
 const pm = args.includes('--pdfmake-dir') ? args[args.indexOf('--pdfmake-dir') + 1] : null;
+const pj = args.includes('--pdfjs-dir') ? args[args.indexOf('--pdfjs-dir') + 1] : null;
 const fakes = readFileSync(join(here, 'test', 'gas-fakes.js'), 'utf8');
 const runner = `
 window.google = { script: { run: (function make(ok, fail) {
@@ -51,6 +52,11 @@ if (pm) {
     .replace('https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js', 'file://' + join(pm, 'pdfmake.min.js'))
     .replace('https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.js', 'file://' + join(pm, 'vfs_fonts.js'))
     .replace(/<link[^>]+fonts\.googleapis[^>]+>\n?/g, '');
+}
+if (pj) {
+  testPage = testPage
+    .replace('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js', 'file://' + join(pj, 'pdf.min.js'))
+    .replace('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js', 'file://' + join(pj, 'pdf.worker.min.js'));
 }
 writeFileSync(join(dist, 'test.html'), testPage);
 console.log(`built ${join(dist, 'Code.gs')} (${code.length} chars), Index.html (${page.length} chars), test.html`);

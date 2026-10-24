@@ -98,7 +98,9 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await idle();
   // Preview.
   await page.click('.doc-head [data-action="doc-preview"]');
-  await page.waitForSelector('iframe.pdf');
+  await page.waitForSelector('#pdf-pages canvas', { timeout: 30000 });
+  await page.waitForTimeout(500);
+  await shot('04b-preview');
   await page.click('.pdf-head [data-close]');
   // Finalise.
   await page.click('.doc-head [data-action="doc-finalise"]');
