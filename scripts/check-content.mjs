@@ -21,15 +21,15 @@ for (const [dir, base] of Object.entries(contentDirs)) {
   for (const f of readdirSync(d)) if (f.endsWith('.md')) known.add(`${base}${f.replace(/\.md$/, '')}/`);
 }
 // Planned pages that may not exist yet (other writers are working on them).
-['/blog/ev-charging-station-earnings/', '/blog/home-ev-charger-installation-guide/', '/blog/ev-vs-petrol-savings/'].forEach((u) => known.add(u));
+['/blog/ev-charging-station-earnings/', '/blog/home-ev-charger-installation-guide/', '/blog/ev-vs-petrol-savings/', '/blog/how-to-choose-ev-charging-cms/'].forEach((u) => known.add(u));
 
 const FORBIDDEN = [
-  [/\b(cheapest|lowest price|best price|affordable price|discount|offer price|starting (at|from) ₹|only ₹)/i, 'price talk'],
+  [/\b((we are|we're|proline is|proline cms is) (the )?(cheapest|lowest[- ]cost)|cheapest (price|rate)s?|lowest price|best price|affordable price|discount|offer price|starting (at|from) ₹|only ₹)/i, 'price talk / cheapest claim'],
   [/\bprice list\b/i, 'price list'],
   [/\b(no\.?\s?1|number one|leading (ev|company|provider|installer|brand|player)|best[- ]in[- ]class|world[- ]class|india'?s (largest|biggest|best|top))\b/i, 'hype / unprovable claim'],
   [/\b(certified|accredited|iso[ -]?\d+|approved by|empanelled|licensed by)\b/i, 'certification claim (none confirmed)'],
   [/\bauthori[sz]ed (partner|dealer|distributor|installer)\b/i, '"authorised partner" (no brand has authorised Proline in writing yet)'],
-  [/\b(guarantee[d]?|within \d+ (hours|days)|same[- ]day|24\s?[x×\/]\s?7)\b/i, 'promise / response time (owner has not set one)'],
+  [/\b(guarantee[d]?|within \d+ (hours|days)|same[- ]day)\b/i, 'promise / response time (owner has not set one)'],
   [/\b(\d+\+? years of experience|decades)\b/i, 'experience claim (Proline: 2 years)'],
   [/\b(testimonial|our clients say|rated \d|★)/i, 'testimonial / rating'],
   [/\b(chatbot|ai assistant)\b/i, 'AI assistant (owner said no)'],
@@ -87,6 +87,8 @@ for (const file of targets.flatMap(files).filter((f) => f.endsWith('.md'))) {
   }
   for (const line of text.split('\n')) {
     if (line.includes('₹') && !RUPEE_OK.test(line)) warn(file, `₹ amount: check it is not a Proline/brand price: ${line.trim().slice(0, 120)}`);
+    // Owner confirmed 24/7 support for Proline CMS only; never for installation work.
+    if (/24\s?[x×\/]\s?7/i.test(line) && !(/support/i.test(line) && /(cms|host)/i.test(line))) err(file, `"24/7" is allowed only for Proline CMS support: ${line.trim().slice(0, 120)}`);
   }
   for (const lm of text.matchAll(/\]\((\/[^)\s#]*)(#[^)]*)?\)/g)) {
     if (!known.has(lm[1])) err(file, `internal link not a known page: ${lm[1]}`);

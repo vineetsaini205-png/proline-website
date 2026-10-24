@@ -1,0 +1,57 @@
+---
+// Template for calculator and checklist pages: result first, method and FAQ after, no contact wall.
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Faqs from '../components/Faqs.astro';
+import SectionHead from '../components/SectionHead.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { toolNode, faqNode } from '../lib/schema';
+import { inlineMd, plainText } from '../lib/text';
+import type { FormVariant } from '../components/QuoteForm.astro';
+
+interface Props {
+  title: string; description: string; h1: string; intro: string; label: string;
+  faqs?: { q: string; a: string }[]; related?: string[];
+  form?: FormVariant; need?: string; ctaTitle?: string; ctaLead?: string; waText?: string;
+}
+const { title, description, h1, intro, label, faqs = [], related = [], form = 'quote', need, ctaTitle, ctaLead, waText } = Astro.props;
+const path = Astro.url.pathname;
+const crumbs = [{ label: 'Tools', href: '/tools/' }, { label }];
+const schema: object[] = [toolNode(path, h1, plainText(intro))];
+if (faqs.length) schema.push(faqNode(path, faqs));
+---
+<Base title={title} description={description} crumbs={crumbs} schema={schema} waText={waText}>
+  <section class="phero" style="border-bottom:0">
+    <div class="wrap" style="padding-bottom:28px">
+      <Breadcrumbs items={crumbs} />
+      <div class="phero-grid no-media">
+        <div>
+          <p class="eyebrow">Free tool · no sign-up</p>
+          <h1>{h1}</h1>
+          <p class="lead" set:html={inlineMd(intro)} />
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section section-soft" style="padding-top:8px" aria-label={label}>
+    <div class="wrap">
+      <slot />
+    </div>
+  </section>
+  <section class="section" aria-labelledby="method-title">
+    <div class="wrap-narrow prose">
+      <slot name="method" />
+    </div>
+  </section>
+  {faqs.length > 0 && (
+    <section class="section section-soft" aria-labelledby="faq-title">
+      <div class="wrap-narrow">
+        <SectionHead eyebrow="FAQ" title={`${label}: questions`} center id="faq-title" />
+        <Faqs items={faqs} />
+      </div>
+    </section>
+  )}
+  <RelatedLinks links={related} />
+  <CtaBand variant={form} need={need} title={ctaTitle} lead={ctaLead} waText={waText} />
+</Base>

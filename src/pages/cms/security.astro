@@ -1,0 +1,99 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Faqs from '../../components/Faqs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CmsNav from '../../components/cms/CmsNav.astro';
+import Screen from '../../components/cms/Screen.astro';
+import screens from '../../data/cms-screens.json';
+import { faqNode } from '../../lib/schema';
+
+const areas = [
+  { id: 'drivers', icon: 'user', title: 'Safe for drivers', items: [
+    'Never charged more than paid: the bill comes from the charger’s own meter and is capped at the amount paid.',
+    'Unused money goes back automatically, and everything goes back if charging never starts. Failed refunds are retried.',
+    'On fast chargers of 120 kW and more, the stop is sent early so drivers never get, or pay for, more than they paid.',
+    'The page shows your payee name and reminds drivers that your staff never ask for a UPI PIN.',
+    'Stickers are bound to each gun by a real plug-in, checked on every visit, and a suspected fake sticker pauses QR payment on that gun at once.',
+    'A faulty gun can be taken off QR sales until its ticket is closed, so drivers never pay at a broken gun.',
+  ] },
+  { id: 'money', icon: 'rupee', title: 'Safe money', items: [
+    'Payments go straight into your own payment aggregator account; you are the merchant.',
+    'A double-entry ledger is posted automatically for every payment, charge, refund and payout.',
+    'Every morning at 06:00 payments, refunds, payouts, the books and every gun’s meter are reconciled; each mismatch is explained and gets a ticket.',
+    'A second person approves refunds above a limit and any change to payment settings.',
+    'Amounts are kept in paise and energy in watt-hours, so nothing is lost to rounding.',
+  ] },
+  { id: 'access', icon: 'lock', title: 'Safe access', items: [
+    'Sign-in with an authenticator app and recovery codes, with an automatic lock after five wrong tries.',
+    'Seven ready-made roles, adjustable area by area, and site limits enforced by the database itself (row-level security).',
+    'Two-person approval for payment settings, large refunds, weakening a fault rule and the ESG factors.',
+    'An audit log of every action, with the values before and after, sealed daily so tampering is detected.',
+  ] },
+  { id: 'data', icon: 'shield', title: 'Safe data', items: [
+    'Installed on your servers in India, or in your own cloud account in an Indian region.',
+    'You are the Data Fiduciary under the DPDP Act 2023. Drivers’ mobile numbers are optional and kept only as long as you set, from 30 to 365 days.',
+    'No call home: the licence is checked on your own server, and usage data goes to Proline only if you switch it on.',
+    'Proline support only when you allow it: a named engineer, a stated reason, at most 72 hours, personal data masked, every step recorded, and you can end it at any moment.',
+    'Prefer not to run servers? Proline can host it for you, with 24/7 support.',
+  ] },
+  { id: 'chargers', icon: 'plug', title: 'Safe chargers', items: [
+    'Chargers connect over OCPP 1.6J on secure WebSocket (port 443), each with its own password. Unknown charger IDs are refused.',
+    'Each charger model and firmware passes a 25-check capability test before drivers can pay on it.',
+    'Firmware updates go out in staged waves, only while no gun is in use, and pause automatically if a charger fails.',
+  ] },
+  { id: 'running', icon: 'server', title: 'Safe operations', items: [
+    'A health page with one plain-words headline, checks every minute and alerts when something turns red.',
+    'Backups and restore drills that prove a backup can be restored and that the money still adds up.',
+    'Safe updates: a fresh backup first, and a rollback that needs no internet.',
+    'Security incidents recorded with the CERT-In 6-hour reporting clock; the server clock follows India’s official time servers (NIC and NPL).',
+  ] },
+];
+const faqs = [
+  { q: 'Is Proline CMS secure?', a: 'Security is built into how it works: authenticator sign-in, roles and site limits enforced by the database, two-person approval for sensitive changes, a sealed audit log, chargers on secure WebSocket with their own passwords, and your data on your own server in India.' },
+  { q: 'Can a driver lose money at a charger?', a: 'The bill is capped at what was paid and comes from the charger’s own meter. Unused money is refunded automatically, everything is refunded if charging never starts, and failed refunds are retried.' },
+  { q: 'Can Proline see our data?', a: 'Only when you approve a time-limited support grant: a named engineer, a stated reason, at most 72 hours, with personal data masked and every step recorded.' },
+  { q: 'What happens if someone sticks a fake QR code on a charger?', a: 'Stickers are bound to their gun by a real plug-in and checked on every visit, and a suspected fake sticker pauses QR payment on that gun straight away. The driver page also shows your payee name, so drivers can check who they are paying.' },
+];
+const path = '/cms/security/';
+---
+<Base title="Secure EV Charging Software: Safe by Design | Proline CMS" description="How Proline CMS keeps drivers, money and data safe: capped bills and automatic refunds, fake-QR checks, two-person approvals, audit logs and data in India." crumbs={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Security' }]} schema={[faqNode(path, faqs)]} headerCta={{ label: 'Book a demo', href: '#quote' }} waText="Hello Proline, I would like a demo of Proline CMS.">
+  <CmsNav />
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Security' }]} />
+      <div class="phero-grid">
+        <div>
+          <p class="eyebrow"><span class="dot"></span>Security and safety</p>
+          <h1>Secure EV charging software, safe for drivers, money and data</h1>
+          <p class="lead">Proline CMS is built so that drivers are never charged more than they paid, every rupee is reconciled, and your data stays on your own server in India. Here is how each part is protected.</p>
+          <ul class="tag-row" style="list-style:none;margin-top:22px">{areas.map((a) => <li><a class="pill" href={`#${a.id}`} style="text-decoration:none;font-size:13.5px;padding:7px 12px">{a.title}</a></li>)}</ul>
+        </div>
+        <div><Screen item={screens.extra[3]} kind="desktop" eager /></div>
+      </div>
+    </div>
+  </section>
+
+  {areas.map((a, i) => (
+    <section class:list={['section', { 'section-soft': i % 2 === 1 }]} id={a.id} aria-labelledby={`${a.id}-t`}>
+      <div class="wrap split top">
+        <div>
+          <span class="card-icon navy" style="margin-bottom:16px"><Icon name={a.icon} size={24} /></span>
+          <h2 id={`${a.id}-t`}>{a.title}</h2>
+        </div>
+        <ul class="ticks">{a.items.map((t) => <li>{t}</li>)}</ul>
+      </div>
+    </section>
+  ))}
+
+  <section class="section section-soft" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Security questions" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+
+  <CtaBand variant="demo" title="See the safety features working" lead="In the demo we show a capped bill and an automatic refund, a sticker check, the audit log and the support-access approval." waText="Hello Proline, I would like a demo of Proline CMS." />
+</Base>

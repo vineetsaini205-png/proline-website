@@ -1,0 +1,35 @@
+---
+// Plain page: hero with breadcrumbs, then whatever the page puts in the slot, then an optional enquiry band.
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { faqNode } from '../lib/schema';
+import { inlineMd } from '../lib/text';
+import type { FormVariant } from '../components/QuoteForm.astro';
+
+interface Props {
+  title: string; description: string; h1: string; lead?: string; eyebrow?: string; crumb: string;
+  cta?: false | { variant?: FormVariant; title?: string; lead?: string; need?: string };
+  faqs?: { q: string; a: string }[]; noindex?: boolean; schema?: object[]; waText?: string; headerCta?: { label: string; href: string };
+}
+const { title, description, h1, lead, eyebrow, crumb, cta = {}, faqs = [], noindex = false, schema = [], waText, headerCta } = Astro.props;
+const path = Astro.url.pathname;
+const allSchema = faqs.length ? [...schema, faqNode(path, faqs)] : schema;
+---
+<Base title={title} description={description} crumbs={[{ label: crumb }]} schema={allSchema} noindex={noindex} waText={waText} headerCta={headerCta}>
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: crumb }]} />
+      <div class="phero-grid no-media">
+        <div>
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          <h1>{h1}</h1>
+          {lead && <p class="lead" set:html={inlineMd(lead)} />}
+          <slot name="hero" />
+        </div>
+      </div>
+    </div>
+  </section>
+  <slot />
+  {cta !== false && <CtaBand variant={cta.variant} title={cta.title} lead={cta.lead} need={cta.need} waText={waText} />}
+</Base>

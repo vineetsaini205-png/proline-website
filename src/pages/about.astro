@@ -1,0 +1,51 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import site from '../data/site.json';
+const values = [
+  { icon: 'shield', title: 'Safety before speed', text: 'The right cable, the right protection and a tested earth on every job, following the charger maker’s manual.' },
+  { icon: 'handshake', title: 'Advice that isn’t tied to one brand', text: 'We work with many charger makers, so we can tell you which charger fits your site, and which one doesn’t.' },
+  { icon: 'users', title: 'One accountable team', text: 'Survey, wiring, civil work, commissioning and the charging software come from one team, so you have one number to call.' },
+  { icon: 'file', title: 'Clear quotes and records', text: 'One quote for the whole job, and a handover pack with test results and photos when it’s done.' },
+];
+---
+<SimplePage
+  title="About Proline Electrical Works | EV Charger Installers"
+  description="Proline Electrical Works is a Delhi-based EV charging partner: 500+ chargers installed, 200+ technicians, 10 states, and the maker of Proline CMS."
+  h1="About Proline Electrical Works"
+  eyebrow="About us"
+  crumb="About"
+  lead="Proline Electrical Works is a brand-neutral EV charging partner based in Delhi. In two years we have installed more than 500 chargers and DB boxes, AC and DC, with a network of 200+ technicians across 10 states of India."
+  cta={{ title: 'Work with us', lead: 'Tell us about your site or your rollout and we reply with how we would do it, and one clear quote.' }}>
+  <TrustStrip />
+  <section class="section" aria-labelledby="story-title">
+    <div class="wrap split top">
+      <SectionHead eyebrow="What we do" title="From site survey to handover, for any charger brand" id="story-title" />
+      <div class="prose">
+        <p>We survey sites, lay the cable, fit DB boxes and earthing, build foundations and canopies, and install and commission EV chargers of any brand: AC chargers for homes and offices, DC fast chargers for public stations and fleets, and chargers for two- and three-wheelers. We also supply and install solar, and supply batteries for EVs, inverters and charging stations.</p>
+        <p>Because we don’t make chargers, our advice is about your site. We are tied up with many charger brands, help you choose the one that fits, and arrange white-label chargers for companies that want their own brand on them.</p>
+        <p>We built <a href="/cms/">Proline CMS</a>, our own charge management system, for the chargers we fit. The crews that install chargers also bring them onto the CMS, so operators get chargers, installation, software and support from one team.</p>
+        <p>Proline Electrical Works is run by Vineet Saini from {site.city}. We have installed chargers for <strong>TATA, ThunderPlus, Bolt.Earth and KIA</strong>, and work for charge point operators, charger brands, EV makers, businesses, housing societies, fleets and home owners.</p>
+      </div>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="how-title">
+    <div class="wrap">
+      <SectionHead eyebrow="How we work" title="What you can expect from us" id="how-title" />
+      <div class="grid grid-4">
+        {values.map((v) => <div class="card"><span class="card-icon"><Icon name={v.icon} size={24} /></span><h3 style="font-size:17px">{v.title}</h3><p>{v.text}</p></div>)}
+      </div>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="where-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Where we work" title="10 states across North, South and West India" lead={`Based in ${site.city}, with technicians who travel to sites across these states.`} id="where-title" />
+      <div class="regions">
+        {site.regions.map((r) => <div class="region"><h3><Icon name="map" size={20} class="muted" />{r.name}</h3><ul>{r.states.map((s) => <li>{s}</li>)}</ul></div>)}
+      </div>
+      <p style="margin-top:20px"><a class="link-arrow" href="/coverage/">See coverage and state EV tariffs<Icon name="arrowRight" size={16} /></a></p>
+    </div>
+  </section>
+</SimplePage>

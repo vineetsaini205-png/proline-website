@@ -1,0 +1,157 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Faqs from '../../components/Faqs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CmsNav from '../../components/cms/CmsNav.astro';
+import { faqNode } from '../../lib/schema';
+
+const models = [
+  { name: 'Subscription (SaaS)', pay: 'A monthly or yearly fee for each charger or connector', grows: 'Every charger you add raises the bill', money: 'Usually your account; check the terms' },
+  { name: 'Revenue share', pay: 'A percentage of charging revenue, or a fee for each session', grows: 'Every unit you sell raises the bill', money: 'Often collected by the platform first, then paid out to you' },
+  { name: 'Owned licence (Proline CMS)', pay: 'A one-time build and licence fee and a yearly maintenance contract; or, hosted by Proline, a low running cost', grows: 'No fee per charger per month and no commission on your sessions', money: 'Straight into your own payment account; you are the merchant' },
+];
+const hidden = [
+  ['Fees that grow with you', 'Per-charger and per-session fees look small at ten chargers and large at two hundred.'],
+  ['A cut of every rupee', 'A revenue share is paid on every session, for as long as you use the platform.'],
+  ['Money held by someone else', 'When a platform collects your payments, you wait for payouts and reconcile them yourself.'],
+  ['Lock-in', 'Chargers configured for one vendor’s backend, data you can’t export, and costly switching later.'],
+  ['Brand limits', 'Some platforms support only certain charger makers, so you pay more for chargers or can’t buy the cheaper one.'],
+  ['Staff time', 'Refunds by hand, GST paperwork and month-end reconciliation all cost salaries.'],
+  ['Downtime', 'A broken gun that nobody notices loses sessions every hour it stays down.'],
+];
+const ours = [
+  { icon: 'server', title: 'Own it, don’t rent it', text: 'A one-time build and licence fee and a yearly maintenance contract, instead of a fee for every charger every month.' },
+  { icon: 'rupee', title: 'No share of your sessions', text: 'Drivers pay straight into your own payment aggregator account. You are the merchant, so the charging money is yours.' },
+  { icon: 'layers', title: 'Any charger brand', text: 'Chargers of any make that speak OCPP 1.6J join the same way, so you can buy the charger that fits your budget.' },
+  { icon: 'refresh', title: 'Less work for your staff', text: 'Automatic refunds, GST documents issued automatically and a reconciliation every morning at 06:00.' },
+  { icon: 'info', title: 'More uptime', text: 'Alerts with deadlines and tickets with checklists find faults before drivers call, and a faulty gun comes off sale.' },
+  { icon: 'cpu', title: 'Modest servers, or none', text: 'One virtual machine runs a small network on your side; or we host it for you at a low running cost, with 24/7 support.' },
+];
+const faqs = [
+  { q: 'Is Proline CMS the cheapest EV charging software?', a: 'It depends on your network, so compare the total over five years, not the first month. For a handful of chargers a subscription can cost less at the start. As the network grows, owning your software can cost less, because there is no fee for every charger and no share of every session. Use the comparison above with the quotes you have.' },
+  { q: 'Does Proline take a commission on charging payments?', a: 'No. Drivers pay straight into your own payment aggregator account and you are the merchant. There is no commission to Proline and no fee per charger per month. Proline CMS then reconciles every payment, refund and payout each morning.' },
+  { q: 'Can you host it so we don’t need servers?', a: 'Yes. We can run Proline CMS for you on our servers at a low running cost, with 24/7 support. It stays your system, in your brand.' },
+  { q: 'How is Proline CMS priced?', a: 'A one-time build and licence fee, deployment and commissioning, any add-ons you choose, and an annual maintenance contract; or a low running cost if we host it for you. We don’t publish prices; tell us about your network and we send a quote.' },
+  { q: 'What does the yearly maintenance cover?', a: 'Security patches and product updates, profiles for new charger models you buy, periodic health checks, and remote help only through the channel you approve, with response times by priority.' },
+  { q: 'Will we need expensive servers?', a: 'No large hardware is needed to start: one virtual machine runs a small network, in your own data centre or your cloud account in an Indian region. Sizes are estimated for your charger count and confirmed by a load test.' },
+  { q: 'Can we switch our chargers to Proline CMS later?', a: 'Yes, if they speak OCPP 1.6J. Chargers are added one at a time or up to 1,000 at once from a spreadsheet, and each model passes a 25-check capability test before drivers pay on it.' },
+];
+const path = '/cms/affordable-ev-charging-software/';
+---
+<Base title="Affordable EV Charging Software: True CMS Cost | Proline" description="Looking for a low-cost EV charging CMS? Compare subscription, revenue-share and owned-licence pricing over five years, and see how Proline CMS cuts costs." crumbs={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Cost of ownership' }]} schema={[faqNode(path, faqs)]} headerCta={{ label: 'Book a demo', href: '#quote' }} waText="Hello Proline, I want to compare the cost of Proline CMS for my network.">
+  <CmsNav />
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Cost of ownership' }]} />
+      <div class="phero-grid no-media">
+        <div>
+          <p class="eyebrow"><span class="dot"></span>Cost of ownership</p>
+          <h1>Affordable EV charging software: what a CMS really costs</h1>
+          <p class="lead">The cheapest-looking CMS is not always the cheapest to run. A small monthly fee for every charger, or a share of every session, can add up to more over five years than owning your software. Proline CMS has no commission on your charging payments and no fee per charger per month. Here is how to compare charge management systems on total cost.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="#compare">Compare two quotes</a>
+            <a class="btn btn-outline btn-lg" href="#quote">Get a quote for your network</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="models-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Pricing models" title="Three ways charging software is sold" lead="Most charge management systems in India are sold in one of these ways. What matters is what grows as your network grows." id="models-title" />
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th scope="col">Model</th><th scope="col">How you pay</th><th scope="col">As you grow</th><th scope="col">Where drivers’ money goes</th></tr></thead>
+          <tbody>{models.map((m, i) => <tr style={i === 2 ? 'background:var(--green-50)' : undefined}><td><strong>{m.name}</strong></td><td>{m.pay}</td><td>{m.grows}</td><td>{m.money}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="hidden-title">
+    <div class="wrap split top">
+      <SectionHead eyebrow="Hidden costs" title="What makes a CMS expensive later" lead="Ask every vendor about these before you sign, and put them in your five-year total." id="hidden-title" />
+      <ul class="ticks">{hidden.map(([t, d]) => <li><strong>{t}.</strong> {d}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="ours-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Proline CMS" title="How Proline CMS keeps the running cost down" id="ours-title" />
+      <div class="grid grid-3">
+        {ours.map((o) => <div class="card"><span class="card-icon navy"><Icon name={o.icon} size={24} /></span><h3 style="font-size:18px">{o.title}</h3><p>{o.text}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" id="compare" aria-labelledby="compare-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Compare two quotes" title="Five-year cost, side by side" lead="Type the figures from the quotes you have. Nothing is filled in for you, and nothing is sent anywhere." id="compare-title" />
+      <div class="calc" id="cmp">
+        <form class="calc-in" onsubmit="return false" aria-label="Your quotes">
+          <div class="grid grid-2" style="gap:14px">
+            <div class="field"><label for="k-chargers">Chargers in your network</label><input id="k-chargers" type="number" min="1" step="1" value="20" inputmode="numeric" /></div>
+            <div class="field"><label for="k-rev">Charging revenue per charger (₹ a month)</label><input id="k-rev" type="number" min="0" step="1000" placeholder="e.g. from the earnings calculator" inputmode="numeric" /></div>
+          </div>
+          <h3 style="font-size:17px;margin-top:6px">Option A: subscription or revenue share</h3>
+          <div class="grid grid-2" style="gap:14px">
+            <div class="field"><label for="a-fee">Fee per charger (₹ a month)</label><input id="a-fee" type="number" min="0" step="50" inputmode="decimal" /></div>
+            <div class="field"><label for="a-share">Revenue share or commission (%)</label><input id="a-share" type="number" min="0" max="100" step="0.5" inputmode="decimal" /></div>
+            <div class="field"><label for="a-setup">One-time setup (₹)</label><input id="a-setup" type="number" min="0" step="1000" inputmode="numeric" /></div>
+          </div>
+          <h3 style="font-size:17px;margin-top:6px">Option B: owned licence</h3>
+          <div class="grid grid-2" style="gap:14px">
+            <div class="field"><label for="b-once">One-time licence and deployment (₹)</label><input id="b-once" type="number" min="0" step="1000" inputmode="numeric" /></div>
+            <div class="field"><label for="b-amc">Yearly maintenance (₹ a year)</label><input id="b-amc" type="number" min="0" step="1000" inputmode="numeric" /></div>
+            <div class="field"><label for="b-server">Server or cloud (₹ a month)</label><input id="b-server" type="number" min="0" step="500" inputmode="numeric" /></div>
+          </div>
+        </form>
+        <div class="calc-out" aria-live="polite">
+          <p class="small">Total over five years</p>
+          <dl class="calc-rows">
+            <div><dt>Option A</dt><dd id="k-a">Enter your quote</dd></div>
+            <div><dt>Option B</dt><dd id="k-b">Enter your quote</dd></div>
+            <div><dt>Difference</dt><dd id="k-diff">–</dd></div>
+          </dl>
+          <p class="calc-note" id="k-note">Option A = setup + fee × chargers × 60 months + share × revenue × chargers × 60 months. Option B = licence + 5 years of maintenance + 60 months of server cost. Payment gateway charges apply in both cases and are left out.</p>
+          <div class="btn-row"><a class="btn btn-primary" href="#quote">Get a Proline CMS quote</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Cost questions" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+
+  <CtaBand variant="demo" title="Get a quote for your network" lead="Tell us how many chargers and sites you run or plan, and where you want it hosted. We send a quote and show you the system working." waText="Hello Proline, I want a quote for Proline CMS." />
+</Base>
+
+<script>
+  import { rupees } from '../../lib/calc';
+  const root = document.getElementById('cmp');
+  if (root) {
+    const n = (id: string) => Number((document.getElementById(id) as HTMLInputElement).value) || 0;
+    const has = (...ids: string[]) => ids.some((id) => (document.getElementById(id) as HTMLInputElement).value !== '');
+    const run = () => {
+      const ch = Math.max(1, n('k-chargers'));
+      const a = n('a-setup') + n('a-fee') * ch * 60 + (n('a-share') / 100) * n('k-rev') * ch * 60;
+      const b = n('b-once') + n('b-amc') * 5 + n('b-server') * 60;
+      const hasA = has('a-fee', 'a-share', 'a-setup');
+      const hasB = has('b-once', 'b-amc', 'b-server');
+      document.getElementById('k-a')!.textContent = hasA ? rupees(a) : 'Enter your quote';
+      document.getElementById('k-b')!.textContent = hasB ? rupees(b) : 'Enter your quote';
+      document.getElementById('k-diff')!.textContent = hasA && hasB ? (a === b ? 'Same' : `${a > b ? 'B' : 'A'} costs ${rupees(Math.abs(a - b))} less`) : '–';
+      if (n('a-share') > 0 && !n('k-rev')) document.getElementById('k-note')!.textContent = 'Add the revenue per charger to include the revenue share. The earnings calculator can estimate it.';
+    };
+    root.addEventListener('input', run);
+    run();
+  }
+</script>

@@ -20,7 +20,9 @@ export const cms: NavLink[] = [
   { label: 'Proline CMS overview', href: '/cms/', note: 'Every charger, one console' },
   { label: 'Features', href: '/cms/features/', note: 'What the console does' },
   { label: 'Built for India', href: '/cms/built-for-india/', note: 'UPI, GST documents, Indian rules' },
-  { label: 'Your server, your brand', href: '/cms/white-label-self-hosted/', note: 'Self-hosted and white-label' },
+  { label: 'Your server, your brand', href: '/cms/white-label-self-hosted/', note: 'Customisable, white-label, self-hosted' },
+  { label: 'Security', href: '/cms/security/', note: 'Safe payments, safe data' },
+  { label: 'Cost of ownership', href: '/cms/affordable-ev-charging-software/', note: 'What a CMS really costs' },
   { label: 'Book a demo', href: '/cms/demo/', note: 'See it working' },
 ];
 

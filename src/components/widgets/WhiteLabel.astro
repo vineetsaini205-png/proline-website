@@ -1,0 +1,118 @@
+---
+// "Your brand on the charger": type a brand name and pick a colour to preview a white-label charger.
+const swatches = ['#13B26B', '#1E6FD9', '#E4572E', '#7A3FE4', '#F2A900', '#0B2545'];
+---
+<div class="wl" id="wl">
+  <div class="shead" style="margin-bottom:24px">
+    <p class="eyebrow-plain">Your brand on the charger</p>
+    <h2>See your name on a charger</h2>
+    <p class="lead">Type your brand and pick a colour. White-label chargers carry your name and colours on the body, the screen and the QR sticker.</p>
+  </div>
+  <div class="wl-box">
+    <form class="wl-controls" onsubmit="return false" aria-label="Branding">
+      <div class="field">
+        <label for="wl-name">Brand name</label>
+        <input id="wl-name" type="text" maxlength="18" value="Your Brand" autocomplete="off" />
+      </div>
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label">Brand colour</legend>
+        <div class="wl-sw">
+          {swatches.map((c, i) => <label class="sw" style={`--c:${c}`}><input type="radio" name="wl-color" value={c} checked={i === 0} /><span class="visually-hidden">{c}</span></label>)}
+          <label class="sw sw-custom" title="Pick any colour"><input id="wl-custom" type="color" value="#13B26B" aria-label="Pick any colour" /></label>
+        </div>
+      </fieldset>
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label">Charger</legend>
+        <div class="radio-row">
+          <label><input type="radio" name="wl-type" value="ac" checked />AC wall box</label>
+          <label><input type="radio" name="wl-type" value="dc" />DC fast charger</label>
+        </div>
+      </fieldset>
+      <p class="small muted">A preview only: real branding follows the maker’s design rules for each model.</p>
+    </form>
+    <div class="wl-stage" aria-live="polite">
+      <svg viewBox="0 0 320 420" class="wl-ac" role="img" aria-label="Preview of an AC wall-box charger with your brand">
+        <rect x="70" y="20" width="180" height="300" rx="34" fill="#F4F7FB" stroke="#C9D6E8" stroke-width="2" />
+        <rect x="70" y="20" width="180" height="70" rx="34" class="wl-fill" />
+        <rect x="70" y="60" width="180" height="30" class="wl-fill" />
+        <text x="160" y="66" text-anchor="middle" class="wl-name-t" fill="#fff" font-weight="800" font-size="20">Your Brand</text>
+        <rect x="100" y="112" width="120" height="70" rx="10" fill="#0B2545" />
+        <text x="160" y="142" text-anchor="middle" fill="#fff" font-size="11" class="wl-welcome">Welcome to Your Brand</text>
+        <text x="160" y="164" text-anchor="middle" fill="#13B26B" font-size="12" font-weight="700" class="wl-ready">Ready to charge</text>
+        <circle cx="160" cy="236" r="34" fill="#fff" stroke="#C9D6E8" stroke-width="2" />
+        <circle cx="160" cy="236" r="22" fill="#E4EDF7" />
+        <circle cx="150" cy="230" r="4" fill="#0B2545" /><circle cx="170" cy="230" r="4" fill="#0B2545" /><circle cx="160" cy="246" r="4" fill="#0B2545" />
+        <rect x="140" y="292" width="40" height="8" rx="4" class="wl-fill" />
+        <path d="M160 320 C 160 370, 240 360, 250 400" stroke="#0B2545" stroke-width="10" fill="none" stroke-linecap="round" />
+      </svg>
+      <svg viewBox="0 0 320 420" class="wl-dc" hidden role="img" aria-label="Preview of a DC fast charger with your brand">
+        <rect x="60" y="10" width="200" height="380" rx="16" fill="#F4F7FB" stroke="#C9D6E8" stroke-width="2" />
+        <rect x="60" y="10" width="200" height="56" rx="16" class="wl-fill" /><rect x="60" y="40" width="200" height="26" class="wl-fill" />
+        <text x="160" y="46" text-anchor="middle" class="wl-name-t" fill="#fff" font-weight="800" font-size="20">Your Brand</text>
+        <rect x="90" y="90" width="140" height="96" rx="10" fill="#0B2545" />
+        <text x="160" y="126" text-anchor="middle" fill="#fff" font-size="11" class="wl-welcome">Welcome to Your Brand</text>
+        <text x="160" y="148" text-anchor="middle" fill="#13B26B" font-size="12" font-weight="700">Scan to charge</text>
+        <rect x="134" y="156" width="52" height="22" rx="4" fill="#fff" />
+        <rect x="76" y="214" width="12" height="150" rx="6" class="wl-fill" />
+        <rect x="232" y="214" width="12" height="150" rx="6" class="wl-fill" />
+        <rect x="104" y="214" width="44" height="64" rx="10" fill="#fff" stroke="#C9D6E8" stroke-width="2" /><rect x="172" y="214" width="44" height="64" rx="10" fill="#fff" stroke="#C9D6E8" stroke-width="2" />
+        <circle cx="126" cy="246" r="12" fill="#0B2545" /><circle cx="194" cy="246" r="12" fill="#0B2545" />
+        <rect x="96" y="300" width="128" height="40" rx="8" fill="#fff" stroke="#C9D6E8" />
+        <text x="160" y="325" text-anchor="middle" fill="#0B2545" font-size="12" font-weight="700" class="wl-gun">Gun A · Gun B</text>
+      </svg>
+      <div class="wl-sticker">
+        <div class="wl-st-top wl-bg"><span class="wl-name-s">Your Brand</span> · EV charging</div>
+        <div class="wl-qr" aria-hidden="true"></div>
+        <p>Scan with your phone camera<br /><strong>Payee: <span class="wl-name-s">Your Brand</span></strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .wl-box { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 24px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 24px; align-items: center; }
+  .wl-controls { display: grid; gap: 18px; }
+  .wl-sw { display: flex; flex-wrap: wrap; gap: 10px; }
+  .sw { width: 40px; height: 40px; border-radius: 50%; background: var(--c); position: relative; cursor: pointer; box-shadow: inset 0 0 0 3px #fff, 0 0 0 1px var(--line-strong); }
+  .sw input[type="radio"] { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .sw:has(input:checked) { box-shadow: inset 0 0 0 3px #fff, 0 0 0 3px var(--navy); }
+  .sw-custom { background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); overflow: hidden; }
+  .sw-custom input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .wl-stage { display: grid; grid-template-columns: minmax(0, 1fr) 170px; gap: 20px; align-items: center; background: var(--soft); border-radius: var(--radius-lg); padding: 20px; }
+  .wl-stage svg { width: 100%; max-height: 380px; }
+  .wl-sticker { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); text-align: center; font-size: 12px; color: var(--ink); }
+  .wl-st-top { color: #fff; font-weight: 700; padding: 8px; font-size: 12px; }
+  .wl-qr { width: 104px; height: 104px; margin: 14px auto 8px; background:
+      conic-gradient(from 90deg at 25% 25%, #0B2545 25%, transparent 0) 0 0 / 26px 26px,
+      linear-gradient(#0B2545, #0B2545) 0 0 / 30px 30px no-repeat, linear-gradient(#0B2545, #0B2545) 100% 0 / 30px 30px no-repeat, linear-gradient(#0B2545, #0B2545) 0 100% / 30px 30px no-repeat;
+    opacity: .9; border-radius: 4px; }
+  .wl-sticker p { padding: 0 10px 12px; line-height: 1.4; }
+  @media (max-width: 900px) { .wl-box { grid-template-columns: minmax(0, 1fr); padding: 14px; } .wl-stage { grid-template-columns: minmax(0, 1fr) 140px; padding: 12px; } }
+</style>
+
+<script>
+  const root = document.getElementById('wl');
+  if (root) {
+    const nameIn = document.getElementById('wl-name') as HTMLInputElement;
+    const custom = document.getElementById('wl-custom') as HTMLInputElement;
+    let color = '#13B26B';
+    const update = () => {
+      const name = nameIn.value.trim() || 'Your Brand';
+      root.querySelectorAll('.wl-name-t, .wl-name-s').forEach((el) => (el.textContent = name));
+      root.querySelectorAll('.wl-welcome').forEach((el) => (el.textContent = `Welcome to ${name}`));
+      root.querySelectorAll<SVGElement>('.wl-fill').forEach((el) => el.setAttribute('fill', color));
+      root.querySelectorAll<HTMLElement>('.wl-bg').forEach((el) => (el.style.background = color));
+      const dc = (root.querySelector<HTMLInputElement>('input[name="wl-type"]:checked')?.value) === 'dc';
+      (root.querySelector('.wl-ac') as SVGElement).toggleAttribute('hidden', dc);
+      (root.querySelector('.wl-dc') as SVGElement).toggleAttribute('hidden', !dc);
+    };
+    root.addEventListener('input', (e) => {
+      const t = e.target as HTMLInputElement;
+      if (t.name === 'wl-color') color = t.value;
+      if (t === custom) { color = custom.value; root.querySelectorAll<HTMLInputElement>('input[name="wl-color"]').forEach((r) => (r.checked = false)); }
+      update();
+    });
+    root.addEventListener('change', update);
+    update();
+  }
+</script>

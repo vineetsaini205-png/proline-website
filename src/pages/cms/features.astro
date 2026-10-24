@@ -1,0 +1,162 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CmsNav from '../../components/cms/CmsNav.astro';
+import Screen from '../../components/cms/Screen.astro';
+import screens from '../../data/cms-screens.json';
+import { inlineMd } from '../../lib/text';
+
+const all = [...screens.desktop, ...screens.phone, ...screens.extra];
+const shot = (id: string) => all.find((s) => s.id === id)!;
+const isPhone = (id: string) => id.startsWith('P') || id === 'X5' || id === 'X6';
+
+const groups = [
+  { id: 'payments', icon: 'qr', title: 'QR payments and refunds', shots: ['P3', 'P4'], items: [
+    '**A QR code for every gun.** Each gun has its own sticker, so the page always knows which gun the driver is at.',
+    '**Pay any way that suits the driver:** an amount, a number of kWh, or until full, with any UPI app. On a computer, the page shows a QR code to pay from a phone.',
+    '**Driver pages in English, Hindi and Marathi,** with your brand, the price including GST, and “No other fees. No minimum charge.”',
+    '**Automatic refunds** of unused money to the account that paid, and a full refund if charging never starts.',
+    '**Never more than paid.** On fast chargers (120 kW and more) the stop is sent early, so drivers never get, or pay for, more than they paid. If a charger loses its connection mid-charge, the bill settles when it reconnects, still capped at the amount paid.',
+    '**Refunds that get through.** A failed refund is retried automatically. If the driver’s bank account is closed, they claim the money to another account from their receipt.',
+    '**Refunds desk.** Find any payment by order ID, UPI reference (UTR) or mobile number; refund by hand with a reason; a second person approves refunds above a limit; disputed charges go under review.',
+    '**Safety for drivers.** The page shows your payee name and reminds drivers that your staff never ask for a UPI PIN.',
+  ] },
+  { id: 'operations', icon: 'info', title: 'Live operations and alerts', shots: ['D1', 'X1'], items: [
+    '**Dashboard:** chargers online, uptime, live sessions, energy, money collected, refunds pending and failed starts, by period, city, site or charger type.',
+    '**Live map:** every site marked by its worst gun, with the reason: faulted, offline or unavailable.',
+    '**Alerts with deadlines:** four severities (Critical, Major, Minor, Info), each with a time to acknowledge and a time to fix. A Critical alert left alone for 15 minutes escalates automatically.',
+    '**Tickets with checklists:** step-by-step SOPs, notes, photos from the site and parts used. A fault can take a gun off QR sales until its ticket is closed, so drivers never pay at a broken gun.',
+    '**Alert routing:** to email or your team chat (for example Slack, Google Chat or Microsoft Teams), by severity and region, with an on-call rota and one-click acknowledge links. SMS alerts on request.',
+    '**NOC wallboard:** a calm full-screen view for your control room, with no money or personal data on it.',
+  ] },
+  { id: 'chargers', icon: 'plug', title: 'Chargers of any brand', shots: ['D2'], items: [
+    '**OCPP 1.6J gateway** for AC, DC and light-EV chargers of any make.',
+    '**A profile for every model:** guns, power, plugs, and the maker’s fault codes turned into plain words in English and Hindi.',
+    '**Capability test:** 25 checks prove each model and firmware version works correctly before drivers can pay on it.',
+    '**Add chargers** one at a time with a guided form, or up to 1,000 at once from a spreadsheet.',
+    '**Remote commands:** stop, unlock, soft or hard reset, take a gun out of service, test start. Bulk actions on up to 200 chargers at once.',
+    '**Settings check:** the system confirms that each charger accepted the settings QR payment needs.',
+    '**Hide from maps** for maintenance or a private event, with an automatic return time. Members-only and fleet-only chargers too.',
+    '**Firmware over the air** in staged waves (a pilot charger, then up to 10%, then the rest), only while no gun is in use, pausing automatically if a charger fails.',
+    '**Diagnostics** fetched from the charger with one click.',
+  ] },
+  { id: 'technician-app', icon: 'wrench', title: 'Technician app for the field', shots: ['P5', 'P6'], items: [
+    '**Phones join with one QR scan:** no server addresses to type and no shared passwords.',
+    '**Works with weak or no signal:** work is saved on the phone and sent when the network returns.',
+    '**Commissioning in eight guided steps:** site, charger, network, connection, site test, settings, QR sticker binding and a signed handover.',
+    '**Stickers bound by a real plug-in,** so a swapped sticker is caught before go-live, and a ₹10 test payment proves each gun end to end.',
+    '**Sticker checks on every visit,** with photos. A suspected fake sticker pauses QR payment on that gun at once.',
+    '**Tickets on the phone:** arrival on site, checklist, notes, photos, parts used, close.',
+    '**Network test** from the site, and firmware updates on site.',
+    '**In English and Hindi.** The app runs in the phone’s browser, installs to the home screen and works offline.',
+  ] },
+  { id: 'pricing', icon: 'tag', title: 'Pricing for drivers', shots: ['D3'], items: [
+    '**One clear price per kWh including GST,** split into energy and service charges.',
+    '**Time-of-day prices:** up to six bands, for example cheaper solar hours.',
+    '**Ministry of Power ceiling check** on the service charge, with a recorded reason if you go above it.',
+    '**Versions:** preview what drivers will see, then publish now or at a set time. Drivers keep the price shown when they paid.',
+    '**Special prices** for groups and fleets.',
+  ] },
+  { id: 'finance', icon: 'rupee', title: 'Finance and GST', shots: ['X5'], items: [
+    '**Double-entry ledger,** posted automatically for every payment, charge, refund and payout.',
+    '**Daily reconciliation at 06:00:** payments, refunds, payouts, the books and every gun’s meter. Each mismatch is explained and gets a ticket.',
+    '**GST documents issued automatically:** receipt vouchers, tax invoices (B2C, and B2B with the buyer’s GSTIN), refund vouchers and credit notes.',
+    '**Document series** per GSTIN and financial year, with a check for missing numbers.',
+    '**For your CA:** the CA’s sign-off recorded, and a monthly register ready to download.',
+  ] },
+  { id: 'customers', icon: 'users', title: 'Customers, fleets and groups', shots: ['X2'], items: [
+    '**RFID cards:** add, import, block, report lost. Cards can keep working on a fleet’s own chargers even when those chargers are offline.',
+    '**Fleet accounts:** postpaid charging with a credit limit, warnings at 80% and 95%, one monthly GST invoice listing every session, and payments recorded by bank reference.',
+    '**Groups** for housing societies, offices and depots: members by mobile, email or card, with members-only chargers or a members’ price.',
+    '**Privacy requests under the DPDP Act:** a register with deadlines, identity checks, a report of what is held, and erasure that keeps only the records tax law requires.',
+  ] },
+  { id: 'reports', icon: 'chart', title: 'Reports', shots: ['D4'], items: [
+    '**Report centre:** ask for a report, it builds in the background, and you download it as Excel (XLSX) or a printable PDF summary. Kept for 90 days.',
+    '**Ready-made reports:** sessions and refunds, energy by charger, the charger list, refund timeliness, revenue by day, GST register, GSTR-1 extract, reconciliation exceptions, fleet accounts and groups.',
+    '**Accounting exports** for TallyPrime and Zoho Books, under your own account names.',
+    '**BEE EV Yatra files** for the national list of public charging stations.',
+    '**ESG:** estimated CO₂ and fuel avoided, with the method and factors shown and approved by two people.',
+  ] },
+  { id: 'security', icon: 'lock', title: 'Team, security and control', shots: ['X4'], items: [
+    '**Seven ready-made roles:** Owner, Operations, Finance, Support, Technician, System admin and Viewer, adjustable area by area.',
+    '**Site limits:** keep any person to some regions or sites. The database itself enforces it.',
+    '**Strong sign-in:** an authenticator app and recovery codes, with an automatic lock after five wrong tries.',
+    '**Two-person approval** for payment settings, large refunds, weakening a fault rule, and the ESG factors.',
+    '**Audit log** of every action with the values before and after, sealed daily so tampering is detected.',
+    '**Proline support only when you allow it:** a named engineer, a stated reason, at most 72 hours, personal data masked, every step recorded, and you can end it at any moment.',
+  ] },
+  { id: 'your-server', icon: 'server', title: 'Running it on your server', shots: ['D5', 'X3'], items: [
+    '**Health page:** one headline in plain words, checks every minute, and alerts when something turns red.',
+    '**Backups and restore drills** that prove a backup can be restored and that the money still adds up.',
+    '**Safe updates:** a fresh backup first, and a rollback that needs no internet. Maintenance windows are announced 24 hours ahead, and drivers see a clear notice.',
+    '**Setup wizard** with a go-live checklist, including a live ₹1 payment and refund.',
+    '**Security incidents** recorded with the CERT-In 6-hour reporting clock.',
+    '**No call home:** the licence is checked on your own server, and usage data goes to Proline only if you switch it on.',
+  ] },
+  { id: 'integrations', icon: 'globe', title: 'Integrations', shots: [], items: [
+    '**REST API** with keys limited to what each system needs (read, operate, finance), and documentation.',
+    '**Signed webhooks** for payments, charging and refunds, retried for 24 hours.',
+    '**Email** through your own mail server: alerts, invitations, report notices and fleet notices.',
+    '**Driver SMS** on templates registered on your DLT portal (on request).',
+    '**TallyPrime and Zoho Books** exports, and **BEE EV Yatra** files.',
+  ] },
+];
+const addons = ['White-label driver app for Android and iOS', 'Host and investor portal', 'Advanced fleet portal (rider limits for 2W/3W fleets, depot scheduling)', 'Smart charging with solar, battery storage and DG', 'OCPI roaming', 'OCPP 2.0.1 and 2.1', 'High-availability cluster', 'Predictive maintenance', 'Plug & Charge'];
+---
+<Base title="Feature-Rich Charge Point Operator Software | Proline CMS" description="Feature-rich EV charging software for India: QR and UPI payments, automatic refunds, alerts and tickets, OCPP 1.6J for any charger, GST, reports and a field app." crumbs={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Features' }]} headerCta={{ label: 'Book a demo', href: '#quote' }} waText="Hello Proline, I would like a demo of Proline CMS.">
+  <CmsNav />
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Features' }]} />
+      <div class="phero-grid no-media">
+        <div>
+          <p class="eyebrow"><span class="dot"></span>Proline CMS features</p>
+          <h1>Feature-rich charge point operator software for India</h1>
+          <p class="lead">Proline CMS covers the whole job of running a charging network: chargers of any brand over OCPP 1.6J, QR and UPI payments with automatic refunds, alerts and tickets, GST documents and reports, and a technician app for the field. Here is every feature, with its screen.</p>
+          <ul class="tag-row" style="list-style:none;margin-top:24px">
+            {groups.map((g) => <li><a class="pill" href={`#${g.id}`} style="text-decoration:none;font-size:13.5px;padding:7px 12px">{g.title}</a></li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {groups.map((g, i) => (
+    <section class:list={['section', { 'section-soft': i % 2 === 1 }]} id={g.id} aria-labelledby={`${g.id}-title`}>
+      <div class:list={['wrap', g.shots.length ? 'split top' : '']}>
+        <div>
+          <span class="card-icon navy" style="margin-bottom:16px"><Icon name={g.icon} size={24} /></span>
+          <h2 id={`${g.id}-title`}>{g.title}</h2>
+          <ul class="ticks" style="margin-top:22px">
+            {g.items.map((t) => <li set:html={inlineMd(t)} />)}
+          </ul>
+        </div>
+        {g.shots.length > 0 && (
+          <div class:list={['feature-shots', { 'two-phones': g.shots.every(isPhone) && g.shots.length > 1 }]}>
+            {g.shots.map((id) => <Screen item={shot(id)} kind={isPhone(id) ? 'phone' : 'desktop'} />)}
+          </div>
+        )}
+      </div>
+    </section>
+  ))}
+
+  <section class="section section-navy" aria-labelledby="addons-title">
+    <div class="wrap split top">
+      <div>
+        <p class="eyebrow-plain">Optional add-ons</p>
+        <h2 id="addons-title">On request</h2>
+        <p style="margin-top:14px">These are not part of the standard CPO Edition. Ask us about any of them for your network.</p>
+      </div>
+      <ul class="ticks">{addons.map((a) => <li>{a}</li>)}</ul>
+    </div>
+  </section>
+
+  <CtaBand variant="demo" title="See the features working" lead="Book a live demo and we show you the console, a charge from QR scan to refund, the reports and the technician app." waText="Hello Proline, I would like a demo of Proline CMS." navy={false} />
+</Base>
+<style>
+  .feature-shots { display: grid; gap: 40px; }
+  .feature-shots.two-phones { grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .feature-shots :global(.frame-caption span) { display: block; font-size: 13.5px; }
+</style>

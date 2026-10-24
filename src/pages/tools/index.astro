@@ -1,0 +1,21 @@
+---
+import HubPage from '../../layouts/HubPage.astro';
+const items = [
+  { icon: 'trending', label: 'Charging station earnings calculator', summary: 'Monthly profit for your state, charger, prices and how busy the site will be, with payback on your own quote.', href: '/tools/ev-charging-station-earnings-calculator/' },
+  { icon: 'fuel', label: 'EV vs petrol savings calculator', summary: 'What an electric scooter, car, SUV or auto saves each month and year against petrol, diesel or CNG, and the CO₂ avoided.', href: '/tools/ev-vs-petrol-savings-calculator/' },
+  { icon: 'search', label: 'Charger finder', summary: 'Which charger type and power fit your vehicles, parking time, supply and budget.', href: '/tools/charger-finder/' },
+  { icon: 'list', label: 'Installation checklist', summary: 'The supply, cable, DB box, earthing, civil work and permissions your installation is likely to need.', href: '/tools/installation-checklist/' },
+];
+const faqs = [
+  { q: 'Do I have to give my phone number to use the tools?', a: 'No. Every tool shows its result straight away. If you want, you can send the result to us on WhatsApp or through the form for a quote.' },
+  { q: 'Where do the numbers come from?', a: 'Public sources, each named and dated on the tool’s page: state EV tariffs from the Bureau of Energy Efficiency’s list, public charging rates, fuel prices and the grid’s CO₂ factor. No tool uses Proline or brand prices.' },
+  { q: 'Are the results exact?', a: 'They are estimates to help you plan. A site survey, or photos of your meter and DB for a simple job, gives the exact picture.' },
+];
+---
+<HubPage
+  title="Free EV Charging Calculators and Tools | Proline"
+  description="Free tools for EV charging: station earnings calculator, EV vs petrol savings calculator, charger finder and installation checklist. No sign-up needed."
+  h1="Free EV charging tools"
+  eyebrow="Tools"
+  intro="Plan EV charging with numbers before you call anyone: what a charging station could earn, what an EV saves you on fuel, which charger fits and what the installation needs. Results show first, with no sign-up."
+  crumb="Tools" items={items} itemsTitle="Pick a tool" faqs={faqs} cols={2} />

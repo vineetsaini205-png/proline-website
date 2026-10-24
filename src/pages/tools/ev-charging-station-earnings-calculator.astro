@@ -1,0 +1,254 @@
+---
+import ToolPage from '../../layouts/ToolPage.astro';
+import Icon from '../../components/Icon.astro';
+import tariffs from '../../data/tariffs.json';
+import rates from '../../data/rates.json';
+import { CHARGERS, earnings, earningsRange, rupees, BUSY_LABEL, type Busy } from '../../lib/calc';
+import { formatDate } from '../../lib/text';
+import site from '../../data/site.json';
+
+const def = { chargerId: 'dc-60', count: 1, state: 'Delhi', busy: 'likely' as Busy };
+const c0 = CHARGERS.find((c) => c.id === def.chargerId)!;
+const st0 = tariffs.states.find((s) => s.state === def.state)!;
+const base = {
+  chargerId: def.chargerId, count: def.count, pricePerKwh: rates.publicCharging.dc.default, priceIncludesGst: true, gstPct: rates.gstOnCharging,
+  tariff: st0.tariff, fixedPerKw: st0.fixedPerKw, fixedFlat: (st0 as any).fixedFlat ?? 0, solarShare: null, rentMonthly: 0, revenueSharePct: 0, appCommissionPct: 0, otherMonthly: 0, quote: null,
+};
+const r0 = earnings({ ...base, hoursPerDay: c0.hours[def.busy] });
+const range0 = earningsRange(base);
+const cfg = { chargers: CHARGERS, states: tariffs.states, ac: rates.publicCharging.ac.default, dc: rates.publicCharging.dc.default, gst: rates.gstOnCharging, wa: site.whatsapp };
+const checked = formatDate(new Date(tariffs.checked));
+
+const faqs = [
+  { q: 'How much does an EV charging station earn in India?', a: 'It depends mostly on how many hours a day the chargers are in use, the price drivers pay per unit and your EV tariff. One 60 kW DC charger in Delhi selling at ₹20 a unit for about 3 hours a day makes roughly ' + rupees(r0.profit) + ' a month after electricity and GST, before rent and staff. Use the calculator with your own numbers.' },
+  { q: 'How long does a new charging station take to get busy?', a: 'Usually 6–12 months, as drivers find the station on apps and maps. Plan your cash flow on the “quiet” result for the first months.' },
+  { q: 'Why does the calculator take GST out of the price?', a: 'Public charging is a service taxed at 18% GST, and the prices drivers see usually include it. The GST goes to the government, so your revenue is the price divided by 1.18.' },
+  { q: 'What is the time-of-day rule?', a: 'The Ministry of Power’s 2024 guidelines set a single-part tariff for public charging, capped at the average cost of supply till 31 March 2028, with solar hours at 0.7 times and other hours at 1.3 times the tariff where time-of-day billing applies. Switch it on under “More settings” and set your share of solar-hour charging.' },
+  { q: 'Why don’t you show the cost of the station?', a: 'Because it changes a lot with the chargers, the electricity connection, cabling and civil work at your site. Enter the quote you have and the calculator shows payback. For a quote for your site, [contact us](#quote).' },
+  { q: 'Is this a promise of earnings?', a: 'No. It is an estimate from public tariffs and charging rates and the assumptions shown below. Real earnings depend on your location, competition, uptime and pricing.' },
+];
+---
+<ToolPage
+  title="EV Charging Station Earnings Calculator | Proline"
+  description="Work out what an EV charging station could earn a month in your state: charger, how busy, the price per unit and your EV tariff. Free, no sign-up."
+  h1="EV charging station earnings calculator"
+  label="Earnings calculator"
+  intro="Estimate the monthly profit of an EV charging station from your charger, your state’s EV tariff, the price drivers pay and how busy the site will be. Results show first, with a quiet-to-busy range; add your own quote to see payback."
+  faqs={faqs}
+  related={['/start-an-ev-charging-station/', '/blog/ev-charging-station-earnings/', '/services/ev-charging-station-setup/', '/chargers/dc-fast-chargers/', '/tools/charger-finder/', '/for/businesses/']}
+  form="station" need="DC fast charger or charging station"
+  ctaTitle="Get an exact quote for your station"
+  ctaLead="Share your location, the chargers you have in mind and your sanctioned load. We reply with the right chargers and one clear quote, so you can put real numbers into the calculator."
+  waText="Hello Proline, I used your earnings calculator and want to discuss a charging station.">
+
+  <div class="calc" id="earn" data-cfg={JSON.stringify(cfg)}>
+    <form class="calc-in" onsubmit="return false" aria-label="Your station">
+      <div class="calc-sticky" aria-hidden="true"><span>Profit a month</span><strong id="o-sticky">{rupees(r0.profit)}</strong><a href="#o-profit">Details ↓</a></div>
+      <div class="field">
+        <label for="e-charger">Charger</label>
+        <select id="e-charger">{CHARGERS.map((c) => <option value={c.id} selected={c.id === def.chargerId}>{c.label}</option>)}</select>
+      </div>
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field">
+          <label for="e-count">Number of chargers</label>
+          <input id="e-count" type="number" min="1" max="100" step="1" value="1" inputmode="numeric" />
+        </div>
+        <div class="field">
+          <label for="e-state">State</label>
+          <select id="e-state">
+            {tariffs.states.map((s) => <option value={s.state} selected={s.state === def.state}>{s.state}</option>)}
+            <option value="other">Other: type your tariff</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <span class="label" id="e-busy-l">How busy will it be?</span>
+        <div class="radio-row" role="radiogroup" aria-labelledby="e-busy-l">
+          {(['quiet', 'likely', 'busy'] as Busy[]).map((b) => <label><input type="radio" name="e-busy" value={b} checked={b === def.busy} />{BUSY_LABEL[b]}</label>)}
+        </div>
+      </div>
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field">
+          <label for="e-hours">Charging hours a day, per charger</label>
+          <input id="e-hours" type="number" min="0" max="24" step="0.5" value={c0.hours[def.busy]} inputmode="decimal" />
+        </div>
+        <div class="field">
+          <label for="e-price">Price drivers pay (₹ a unit)</label>
+          <input id="e-price" type="number" min="0" max="60" step="0.5" value={rates.publicCharging.dc.default} inputmode="decimal" />
+          <p class="hint" id="e-price-hint">Public DC charging: ₹{rates.publicCharging.dc.min}–{rates.publicCharging.dc.max} a unit</p>
+        </div>
+      </div>
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field">
+          <label for="e-tariff">Your EV tariff (₹ a unit)</label>
+          <input id="e-tariff" type="number" min="0" max="20" step="0.01" value={st0.tariff} inputmode="decimal" />
+          <p class="hint" id="e-tariff-note">{(st0 as any).note ?? 'LT tariff for public charging, BEE list'}</p>
+        </div>
+        <div class="field">
+          <label for="e-quote">Your quote for the station (₹) <span class="opt">(optional)</span></label>
+          <input id="e-quote" type="number" min="0" step="1000" placeholder="Leave blank" inputmode="numeric" />
+          <p class="hint">Shows payback. We never fill this in for you.</p>
+        </div>
+      </div>
+      <details class="adv">
+        <summary>More settings: fixed charges, rent, commission, GST<Icon name="chevronDown" size={18} class="chev" /></summary>
+        <div class="adv-body">
+          <div class="grid grid-2" style="gap:14px">
+            <div class="field"><label for="e-fixed">Fixed charge (₹ per kW a month)</label><input id="e-fixed" type="number" min="0" step="1" value={st0.fixedPerKw} inputmode="decimal" /></div>
+            <div class="field"><label for="e-rent">Rent (₹ a month)</label><input id="e-rent" type="number" min="0" step="500" value="0" inputmode="numeric" /></div>
+            <div class="field"><label for="e-share">Revenue share to landowner (%)</label><input id="e-share" type="number" min="0" max="100" step="1" value="0" inputmode="decimal" /></div>
+            <div class="field"><label for="e-app">App or aggregator commission (%)</label><input id="e-app" type="number" min="0" max="100" step="1" value="0" inputmode="decimal" /></div>
+            <div class="field"><label for="e-other">Other costs (₹ a month)</label><input id="e-other" type="number" min="0" step="500" value="0" inputmode="numeric" /><p class="hint">Staff, internet, upkeep, insurance</p></div>
+            <div class="field">
+              <span class="label">GST</span>
+              <label style="display:flex;gap:10px;align-items:center;font-weight:500;min-height:48px"><input id="e-gst" type="checkbox" checked style="width:20px;height:20px;accent-color:#0B7D4A" />Price drivers pay includes 18% GST</label>
+            </div>
+          </div>
+          <div class="field">
+            <label style="display:flex;gap:10px;align-items:center"><input id="e-tod" type="checkbox" style="width:20px;height:20px;accent-color:#0B7D4A" />Apply the time-of-day rule (solar hours 0.7×, other hours 1.3×)</label>
+          </div>
+          <div class="field range-field">
+            <div class="rf-top"><label for="e-solar">Share of charging in solar hours</label><output id="e-solar-out" for="e-solar">40%</output></div>
+            <input id="e-solar" type="range" min="0" max="100" step="5" value="40" disabled />
+          </div>
+        </div>
+      </details>
+    </form>
+
+    <div class="calc-out" aria-live="polite">
+      <div>
+        <p class="small">Estimated profit a month</p>
+        <p class="calc-big" id="o-profit">{rupees(r0.profit)}<small> /month</small></p>
+        <p class="small" id="o-sub" style="margin-top:6px">{rupees(r0.profit * 12)} a year · {def.count} × {c0.label}</p>
+      </div>
+      <div class="calc-range" id="o-range">
+        {(['quiet', 'likely', 'busy'] as Busy[]).map((b) => <div class:list={[{ on: b === def.busy }]} data-b={b}><span>{BUSY_LABEL[b]} ({c0.hours[b]} h/day)</span><strong>{rupees(range0[b])}</strong></div>)}
+      </div>
+      <dl class="calc-rows">
+        <div><dt>Units sold a month</dt><dd id="o-units">{Math.round(r0.kwhSold).toLocaleString('en-IN')} kWh</dd></div>
+        <div><dt>Revenue after GST</dt><dd id="o-rev">{rupees(r0.revenue)}</dd></div>
+        <div><dt>Electricity</dt><dd id="o-elec">−{rupees(r0.electricity)}</dd></div>
+        <div><dt>Fixed charges</dt><dd id="o-fixed">−{rupees(r0.fixed)}</dd></div>
+        <div><dt>Rent, revenue share and commission</dt><dd id="o-shares">−{rupees(r0.shares)}</dd></div>
+        <div><dt>Other costs</dt><dd id="o-other">−{rupees(r0.other)}</dd></div>
+        <div id="o-pay-row" hidden><dt>Payback on your quote</dt><dd id="o-pay">–</dd></div>
+        <div id="o-5y-row" hidden><dt>Cash after 5 years</dt><dd id="o-5y">–</dd></div>
+      </dl>
+      <div class="btn-row">
+        <a class="btn btn-primary" id="o-wa" href="#" rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Send this to WhatsApp</a>
+        <a class="btn btn-ghost-light" id="o-quote" href="#quote">Get an exact quote</a>
+      </div>
+      <p class="calc-note">Estimate only, not a promise of earnings. Uses public EV tariffs ({tariffs.source}, checked {checked}) and the assumptions below. New stations usually take 6–12 months to get busy.</p>
+    </div>
+  </div>
+
+  <div slot="method">
+    <h2 id="method-title">How the calculator works</h2>
+    <p>The calculator follows the money for one month. Every number it uses is on this page, so you can check it or change it.</p>
+    <ol>
+      <li><strong>Units sold</strong> = average power while a vehicle charges × charging hours a day × 30 days × number of chargers.</li>
+      <li><strong>Revenue</strong> = units × the price drivers pay, divided by 1.18 when that price includes 18% GST.</li>
+      <li><strong>Electricity</strong> = units ÷ the charger’s efficiency × your EV tariff (× the time-of-day factor if you switch it on).</li>
+      <li><strong>Fixed charges</strong> = your state’s fixed charge per kW × the chargers’ rated power.</li>
+      <li><strong>Profit</strong> = revenue − electricity − fixed charges − rent − revenue share − app commission − other costs.</li>
+      <li><strong>Payback</strong> = your quote ÷ monthly profit, shown only when you enter a quote.</li>
+    </ol>
+    <h3>Charger assumptions</h3>
+    <p>Vehicles rarely draw a charger’s full rated power for a whole session, so the calculator uses a lower average. “Quiet”, “likely” and “busy” are hours of charging a day per charger; type your own hours if you know them.</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">Charger</th><th scope="col">Average power</th><th scope="col">Efficiency</th><th scope="col">Quiet / likely / busy</th></tr></thead>
+        <tbody>{CHARGERS.map((c) => <tr><td>{c.label}</td><td>{c.avgKw} kW</td><td>{Math.round(c.efficiency * 100)}%</td><td>{c.hours.quiet} / {c.hours.likely} / {c.hours.busy} h a day</td></tr>)}</tbody>
+      </table>
+    </div>
+    <h3>Tariffs and prices</h3>
+    <p>EV tariffs are the LT rates for public charging stations from the <a href={tariffs.sourceUrl} rel="noopener" target="_blank">{tariffs.source}</a>, checked on {checked}. HT connections and some DISCOMs differ, so use the rate on your own bill or tariff order. Public charging prices of ₹{rates.publicCharging.ac.min}–{rates.publicCharging.ac.max} a unit on AC and ₹{rates.publicCharging.dc.min}–{rates.publicCharging.dc.max} on DC are from <a href={rates.publicCharging.sourceUrl} rel="noopener" target="_blank">{rates.publicCharging.source}</a>. The time-of-day rule is from the Ministry of Power’s 2024 guidelines (<a href={rates.todSourceUrl} rel="noopener" target="_blank">Lok Sabha answer, 7 Aug 2025</a>).</p>
+    <h3>What it leaves out</h3>
+    <p>Loan interest, depreciation, income tax, charger downtime and price changes over time. A new station also takes 6–12 months to build up usage, as <a href="https://bolt.earth/franchise" rel="noopener" target="_blank">Bolt.Earth</a> notes. For the full picture, read <a href="/blog/ev-charging-station-earnings/">how to work out your earnings</a> and our guide to <a href="/start-an-ev-charging-station/">starting a charging station</a>.</p>
+  </div>
+</ToolPage>
+
+<script>
+  import { earnings, earningsRange, rupees, type Busy, type ChargerPreset } from '../../lib/calc';
+  const root = document.getElementById('earn');
+  if (root) {
+    const cfg = JSON.parse(root.dataset.cfg || '{}') as { chargers: ChargerPreset[]; states: { state: string; tariff: number; fixedPerKw: number; fixedFlat?: number; note?: string }[]; ac: number; dc: number; gst: number; wa: string };
+    const el = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
+    const num = (id: string) => Number(el(id).value) || 0;
+    const busy = () => (root.querySelector<HTMLInputElement>('input[name="e-busy"]:checked')?.value || 'likely') as Busy;
+    const charger = () => cfg.chargers.find((c) => c.id === el<HTMLSelectElement>('e-charger').value)!;
+    let fixedFlat = 0;
+
+    const onCharger = () => {
+      const c = charger();
+      el('e-hours').value = String(c.hours[busy()]);
+      el('e-price').value = String(c.kind === 'dc' ? cfg.dc : cfg.ac);
+      el('e-price-hint').textContent = c.kind === 'dc' ? 'Public DC charging: ₹15–25 a unit' : 'Public AC charging: ₹8–15 a unit';
+    };
+    const onState = () => {
+      const v = el<HTMLSelectElement>('e-state').value;
+      const s = cfg.states.find((x) => x.state === v);
+      if (s) {
+        el('e-tariff').value = String(s.tariff);
+        el('e-fixed').value = String(s.fixedPerKw);
+        fixedFlat = s.fixedFlat ?? 0;
+        el('e-tariff-note').textContent = s.note ?? 'LT tariff for public charging, BEE list';
+      } else {
+        el('e-tariff').focus();
+        fixedFlat = 0;
+        el('e-tariff-note').textContent = 'Type the EV tariff from your DISCOM’s tariff order';
+      }
+    };
+    const calc = () => {
+      const c = charger();
+      const tod = el('e-tod') as HTMLInputElement;
+      const solar = el('e-solar') as HTMLInputElement;
+      solar.disabled = !tod.checked;
+      el('e-solar-out').textContent = `${solar.value}%`;
+      const q = num('e-quote');
+      const base = {
+        chargerId: c.id, count: Math.max(1, Math.round(num('e-count'))), pricePerKwh: num('e-price'), priceIncludesGst: (el('e-gst') as HTMLInputElement).checked,
+        gstPct: cfg.gst, tariff: num('e-tariff'), fixedPerKw: num('e-fixed'), fixedFlat, solarShare: tod.checked ? Number(solar.value) / 100 : null,
+        rentMonthly: num('e-rent'), revenueSharePct: num('e-share'), appCommissionPct: num('e-app'), otherMonthly: num('e-other'), quote: q > 0 ? q : null,
+      };
+      const r = earnings({ ...base, hoursPerDay: num('e-hours') });
+      const range = earningsRange(base);
+      el('o-profit').innerHTML = `${rupees(r.profit)}<small> /month</small>`;
+      el('o-sticky').textContent = rupees(r.profit);
+      el('o-sub').textContent = `${rupees(r.profit * 12)} a year · ${base.count} × ${c.label}`;
+      el('o-range').querySelectorAll<HTMLElement>('[data-b]').forEach((d) => {
+        const b = d.dataset.b as Busy;
+        d.classList.toggle('on', b === busy() && num('e-hours') === c.hours[b]);
+        d.innerHTML = `<span>${b[0].toUpperCase() + b.slice(1)} (${c.hours[b]} h/day)</span><strong>${rupees(range[b])}</strong>`;
+      });
+      el('o-units').textContent = `${Math.round(r.kwhSold).toLocaleString('en-IN')} kWh`;
+      el('o-rev').textContent = rupees(r.revenue);
+      el('o-elec').textContent = `−${rupees(r.electricity)}`;
+      el('o-fixed').textContent = `−${rupees(r.fixed)}`;
+      el('o-shares').textContent = `−${rupees(r.shares)}`;
+      el('o-other').textContent = `−${rupees(r.other)}`;
+      const showQ = !!base.quote;
+      el('o-pay-row').hidden = !showQ;
+      el('o-5y-row').hidden = !showQ;
+      if (showQ) {
+        el('o-pay').textContent = r.paybackMonths ? `${Math.ceil(r.paybackMonths)} months (${(r.paybackMonths / 12).toFixed(1)} years)` : 'Not reached: profit is zero or negative';
+        el('o-5y').textContent = r.fiveYear != null ? rupees(r.fiveYear) : '–';
+      }
+      const st = el<HTMLSelectElement>('e-state').value;
+      const summary = `Earnings calculator: ${base.count} × ${c.label}, ${st === 'other' ? 'state not listed' : st}, ${num('e-hours')} h/day, ₹${base.pricePerKwh}/unit, tariff ₹${base.tariff}/unit → about ${rupees(r.profit)} a month${showQ ? `, payback ${r.paybackMonths ? Math.ceil(r.paybackMonths) + ' months' : 'not reached'} on a quote of ${rupees(base.quote!)}` : ''}.`;
+      (el('o-wa') as unknown as HTMLAnchorElement).href = `https://wa.me/${cfg.wa}?text=${encodeURIComponent('Hello Proline, ' + summary + ' Please call me about a charging station.')}`;
+      (window as any).prolineFill?.('#quote-form', summary);
+      root.dataset.summary = summary;
+    };
+    root.addEventListener('change', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.id === 'e-charger') onCharger();
+      if (t.id === 'e-state') onState();
+      if ((t as HTMLInputElement).name === 'e-busy') el('e-hours').value = String(charger().hours[busy()]);
+      calc();
+    });
+    root.addEventListener('input', calc);
+    el('o-quote').addEventListener('click', () => (window as any).prolineFill?.('#quote-form', root.dataset.summary || ''));
+    calc();
+  }
+</script>

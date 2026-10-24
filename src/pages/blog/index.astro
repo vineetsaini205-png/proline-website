@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import Photo from '../../components/Photo.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { formatDate } from '../../lib/text';
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="EV Charging Blog: Guides on Installation and Costs | Proline" description="Plain guides on EV charger installation, charging station earnings, EV running-cost savings, tariffs and rules in India, from the Proline team in Delhi." crumbs={[{ label: 'Blog' }]}>
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Blog' }]} />
+      <div class="phero-grid no-media">
+        <div>
+          <p class="eyebrow">Blog</p>
+          <h1>EV charging guides</h1>
+          <p class="lead">Plain answers on installing EV chargers, what charging stations earn, what an EV saves you, and the tariffs and rules in India. Written by the team that installs the chargers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="wrap">
+      {posts.length === 0 ? <p>Guides are on their way.</p> : (
+        <div class="grid grid-3">
+          {posts.map((p) => (
+            <a class="card" href={`/blog/${p.id}/`} style="padding:0;overflow:hidden">
+              {p.data.image && <div style="aspect-ratio:16/9;overflow:hidden;background:var(--navy-50)"><Photo name={p.data.image} sizes="(max-width: 620px) 100vw, 380px" style="width:100%;height:100%;object-fit:cover" /></div>}
+              <div style="padding:20px 22px 22px;display:flex;flex-direction:column;gap:10px;flex:1">
+                <span class="small muted">{formatDate(p.data.updated ?? p.data.date)}</span>
+                <h2 style="font-size:19px;line-height:1.3">{p.data.h1 ?? p.data.title}</h2>
+                <p>{p.data.description}</p>
+                <span class="card-cta">Read the guide<Icon name="arrowRight" size={16} /></span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+  <CtaBand />
+</Base>

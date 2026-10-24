@@ -1,0 +1,22 @@
+// Proline CMS FAQs, from the owner's CMS copy (section 9), edited for section 10:
+// no payment company named, no prices or fee structure, add-ons only "on request".
+export const cmsFaqs = [
+  { q: 'Which chargers does it work with?', a: 'Any charger that speaks OCPP 1.6J: AC, DC and light-EV, from any maker. Each model gets a profile and passes a 25-check capability test before drivers can pay on it.' },
+  { q: 'Do drivers need an app or an account?', a: 'No. They scan the QR sticker on the gun, pay with any UPI app and charge. The pages work in English, Hindi and Marathi.' },
+  { q: 'Where does the money go?', a: 'Into your own payment aggregator account. You are the merchant, and the system reconciles every payment, refund and payout each morning.' },
+  { q: 'What if a driver pays but charging does not start?', a: 'The whole amount goes back automatically: after 90 seconds, or after 4 minutes where drivers pay before plugging in.' },
+  { q: 'Can a driver be charged more than they paid?', a: 'No. The bill comes from the charger’s meter and is capped at the amount paid. The rest is refunded automatically.' },
+  { q: 'Where is our data kept?', a: 'With the CPO Edition, on your servers in India, or in your own cloud account in an Indian region; Proline gets in only when you approve a time-limited support grant, and every step is recorded. If you prefer, we can host it for you on our servers instead.' },
+  { q: 'Can Proline host it for us?', a: 'Yes. If you don’t want to run servers, we run Proline CMS for you on our servers at a low running cost, with 24/7 support. It is still your system, in your brand, with drivers paying into your own account.' },
+  { q: 'Is Proline CMS a charging network we join?', a: 'No. It is software you own: we build it in your brand and hand it over, so you can build your own charging network. Your chargers, your drivers and your charging revenue stay yours.' },
+  { q: 'Can we use our own brand?', a: 'Yes. Your name, logo, colours and web address appear on the console, the driver pages, receipts and QR stickers. See [your server, your brand](/cms/white-label-self-hosted/).' },
+  { q: 'Does it handle fleets, housing societies and offices?', a: 'Yes. Fleets charge on account with RFID cards and get one GST invoice a month. Groups can have members-only chargers or a members’ price.' },
+  { q: 'Does it issue GST invoices?', a: 'Yes. Receipt vouchers, tax invoices, refund vouchers and credit notes are issued automatically, in the way your CA approves. See [built for India](/cms/built-for-india/).' },
+  { q: 'Can our accountant use the data?', a: 'Yes. Export to TallyPrime or Zoho Books, download the monthly GST register and a GSTR-1 extract, or the daily journal.' },
+  { q: 'How long does it take to go live?', a: 'About 16 weeks in our plan: discovery, build and branding, a factory test in our lab with your charger models, installation and site test on your server, then a pilot and handover with training.' },
+  { q: 'What support do you provide?', a: '24/7 support, under an annual maintenance contract with response times by priority: security patches and product updates, profiles for new charger models you buy, periodic health checks, and remote help only through the channel you approve.' },
+  { q: 'How is it priced?', a: 'A one-time build and licence fee, deployment and commissioning, any add-ons you choose, and an annual maintenance contract; or, if we host it for you, a low running cost. There is no fee for every charger every month and no commission on your charging revenue. We don’t publish prices; tell us about your network and we send a quote. See [what a CMS really costs](/cms/affordable-ev-charging-software/).' },
+  { q: 'Is it cheaper than a subscription CMS?', a: 'Over several years it can be, because the fees don’t grow with every charger and every session. For a handful of chargers a subscription may cost less at the start. Compare the five-year totals with [our comparison tool](/cms/affordable-ev-charging-software/#compare).' },
+  { q: 'Is it secure?', a: 'Authenticator sign-in, roles and site limits enforced by the database, two-person approval for sensitive changes, a sealed audit log, and your data on your own server in India. See [security](/cms/security/).' },
+  { q: 'Can we see it working?', a: 'Yes. [Book a live demo](/cms/demo/) and we will walk you through a charge from QR scan to refund.' },
+];

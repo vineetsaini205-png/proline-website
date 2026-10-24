@@ -1,0 +1,54 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import Faqs from '../components/Faqs.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+const roles = [
+  { icon: 'plug', title: 'Electricians', text: 'Wiring, DB boxes, cable laying and terminations, with experience of three-phase work.' },
+  { icon: 'wrench', title: 'EV charger technicians', text: 'Installation and commissioning of AC or DC chargers, OCPP setup and fault finding.' },
+  { icon: 'earth', title: 'Earthing and cabling teams', text: 'Earth pits, resistance testing, trenching and armoured cable work.' },
+  { icon: 'hardhat', title: 'Civil teams', text: 'Charger foundations, cable trenches, bollards and canopy structures.' },
+];
+const steps = [
+  { title: 'Apply', text: 'Send the form with your city, experience and skills. Teams can apply together.' },
+  { title: 'Call', text: 'We call you to understand your work and the areas you can cover.' },
+  { title: 'Training', text: 'You learn how we install, test and hand over chargers, and our safety rules.' },
+  { title: 'Jobs in your area', text: 'You get installation jobs near you as work comes in.' },
+];
+const faqs = [
+  { q: 'Which cities are you hiring in?', a: 'All the states we work in: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. Apply even if you are elsewhere; we keep your details for when we start there.' },
+  { q: 'Do I need EV charger experience?', a: 'Electrical experience matters most. We train you on EV charger installation, testing and commissioning.' },
+  { q: 'What do I need to apply?', a: 'Your name, phone number, city and a few lines about your experience and skills. We discuss the rest when we call.' },
+  { q: 'Can a team apply together?', a: 'Yes. Mention the team size and skills in the form.' },
+];
+---
+<SimplePage
+  title="EV Charger Technician Jobs Across India | Proline"
+  description="Electricians and installation teams: join Proline’s network of 200+ technicians and install EV chargers across 10 Indian states. Apply in two minutes."
+  h1="Join Proline as an EV charger technician"
+  eyebrow="Careers"
+  crumb="Join as a technician"
+  lead="Proline’s network of 200+ technicians installs EV chargers across 10 states of India. If you are an electrician or run an installation team, apply and we call you."
+  cta={{ variant: 'technician', title: 'Apply to join', lead: 'Two minutes: your city, experience and skills. We call you back.' }}
+  faqs={faqs}
+  waText="Hello Proline, I am an electrician and want to join your technician network.">
+  <section class="section" aria-labelledby="roles-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Who we are looking for" title="Skilled hands for EV charging work" id="roles-title" />
+      <div class="grid grid-4">{roles.map((r) => <div class="card"><span class="card-icon"><Icon name={r.icon} size={24} /></span><h3 style="font-size:17px">{r.title}</h3><p>{r.text}</p></div>)}</div>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="steps-title">
+    <div class="wrap">
+      <SectionHead eyebrow="How it works" title="From application to jobs near you" id="steps-title" />
+      <ProcessSteps steps={steps} />
+    </div>
+  </section>
+  <section class="section" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Questions from technicians" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+</SimplePage>

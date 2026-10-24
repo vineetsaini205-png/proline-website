@@ -1,0 +1,53 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import Icon from '../components/Icon.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Faqs from '../components/Faqs.astro';
+import site from '../data/site.json';
+import { waLink } from '../lib/text';
+const faqs = [
+  { q: 'What is the fastest way to reach you?', a: `WhatsApp ${site.phoneDisplay}, any time. Send photos of your meter, main DB and the parking spot, and the charger you have in mind, and we can often tell you what the job needs straight away.` },
+  { q: 'When can I call?', a: `Calls to ${site.phoneDisplay} are answered from 10 am to 7 pm. Outside those hours, WhatsApp us and we reply.` },
+  { q: 'Do you charge for a site survey?', a: 'Yes, the site survey is paid. If you go ahead with Proline, the survey fee is adjusted against your order.' },
+  { q: 'Where are you based?', a: `In ${site.city}. Our technicians travel to sites across 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu.` },
+];
+---
+<SimplePage
+  title="Contact Proline: EV Charger Installation in India"
+  description="WhatsApp +91 73038 87364 any time, call 10 am–7 pm, or email Sales@prolineelectricalworks.com for EV charger installation, chargers and Proline CMS."
+  h1="Contact Proline"
+  eyebrow="Contact"
+  crumb="Contact"
+  lead="WhatsApp us any time, call between 10 am and 7 pm, or send the form. Tell us about your site and we reply with the right charger options and one clear quote."
+  cta={false} faqs={faqs}>
+  <section class="section" id="quote">
+    <div class="wrap cta-split">
+      <div>
+        <ul class="contact-list">
+          <li><span class="ci"><Icon name="whatsapp" size={22} /></span><div><strong><a href={waLink(site.whatsapp, 'Hello Proline, I would like to talk about EV charging.')} rel="noopener" target="_blank">WhatsApp {site.phoneDisplay}</a></strong><span>Any time. Photos of your meter, DB and parking spot help.</span></div></li>
+          <li><span class="ci"><Icon name="phone" size={22} /></span><div><strong><a href={`tel:${site.phoneE164}`}>Call {site.phoneDisplay}</a></strong><span>10 am–7 pm</span></div></li>
+          <li><span class="ci"><Icon name="mail" size={22} /></span><div><strong><a href={`mailto:${site.email}`}>{site.email}</a></strong><span>Tenders, drawings, documents and brand partnerships</span></div></li>
+          <li><span class="ci"><Icon name="map" size={22} /></span><div><strong>{site.city}, India</strong><span>Working across 10 states in North, South and West India</span></div></li>
+        </ul>
+        <div class="note" style="margin-top:28px"><strong>Site surveys</strong> are paid, and the fee is adjusted against your order if you go ahead with Proline. Choose “Site survey” in the form to book one.</div>
+        <div class="grid" style="gap:10px;margin-top:28px">
+          <a class="card" href="/cms/demo/" style="flex-direction:row;align-items:center;gap:14px;padding:16px 18px"><span class="card-icon navy"><Icon name="grid" size={22} /></span><span><strong style="color:var(--ink)">Proline CMS demo</strong><br /><span class="small muted">Book a live demo of the software</span></span></a>
+          <a class="card" href="/partner-with-us/" style="flex-direction:row;align-items:center;gap:14px;padding:16px 18px"><span class="card-icon navy"><Icon name="handshake" size={22} /></span><span><strong style="color:var(--ink)">Partner with us</strong><br /><span class="small muted">CPOs, brands, EV makers and contractors</span></span></a>
+          <a class="card" href="/join-as-technician/" style="flex-direction:row;align-items:center;gap:14px;padding:16px 18px"><span class="card-icon navy"><Icon name="wrench" size={22} /></span><span><strong style="color:var(--ink)">Join as a technician</strong><br /><span class="small muted">Electricians and installation teams</span></span></a>
+        </div>
+      </div>
+      <QuoteForm variant="quote" id="quote-form" />
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Before you get in touch" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+</SimplePage>
+<style>
+  .cta-split { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: start; }
+  @media (max-width: 900px) { .cta-split { grid-template-columns: minmax(0, 1fr); } }
+</style>

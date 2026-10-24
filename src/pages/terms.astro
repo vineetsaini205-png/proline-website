@@ -1,0 +1,40 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import site from '../data/site.json';
+const updated = '24 October 2026';
+---
+<SimplePage
+  title="Terms of Use | Proline Electrical Works"
+  description="Terms for using the Proline Electrical Works website, its calculators and tools, quotes and site surveys, brand names and photos."
+  h1="Terms of use"
+  crumb="Terms"
+  lead={`Last updated ${updated}. By using this website you agree to these terms.`}
+  cta={false}>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <h2>About this website</h2>
+      <p>This website is run by {site.name}, {site.city}, India. It gives general information about EV chargers, their installation and related services. It is not a substitute for a site survey or professional advice for your site.</p>
+
+      <h2>Calculators and tools</h2>
+      <p>The earnings calculator, savings calculator, charger finder and installation checklist give estimates from public figures and the assumptions shown on each page. They are not a promise of earnings or savings, and not a quote or a design. Tariffs, fuel prices and rules change; check the current figures for your site before you decide.</p>
+
+      <h2>Quotes, surveys and work</h2>
+      <p>Prices are given only in a written quote for your site, and the quote and any order set out the scope, price and terms of the work. Site surveys are paid; if you go ahead with Proline, the survey fee is adjusted against your order as the quote states.</p>
+
+      <h2>Brands, logos and photos</h2>
+      <p>Brand names and logos on this site belong to their owners. Naming a client or a charger brand does not mean that brand endorses Proline, unless we say so. Photos on this site that are not of our own work are stock photos used to illustrate EV charging, and are not projects by Proline. Screens of Proline CMS marked “concept design” show sample data.</p>
+
+      <h2>Your use of the site</h2>
+      <p>Please do not copy the site’s text or tools for commercial use, try to break or overload the site, or send false enquiries. Links to other websites are for your convenience; we are not responsible for their content.</p>
+
+      <h2>Liability</h2>
+      <p>We work to keep the information on this site accurate, but it is provided as it is. To the extent the law allows, Proline is not liable for losses from relying on the website’s general information or tool estimates. Our responsibility for work we do is set out in the quote and order for that work.</p>
+
+      <h2>Law</h2>
+      <p>These terms are governed by the laws of India, and the courts at Delhi have jurisdiction.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about these terms: <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+    </div>
+  </section>
+</SimplePage>

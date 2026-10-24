@@ -1,0 +1,41 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import site from '../data/site.json';
+---
+<SimplePage
+  title="Brands We Work With: Clients and Chargers | Proline"
+  description="Proline has installed EV chargers for TATA, ThunderPlus, Bolt.Earth and KIA, and works with many charger brands to give brand-neutral advice."
+  h1="Brands we work with"
+  eyebrow="Clients and brands"
+  crumb="Brands we work with"
+  lead="We have installed chargers for TATA, ThunderPlus, Bolt.Earth and KIA, and we work with many charger makers so that we can suggest the charger that fits each site."
+  cta={{ title: 'Ask for charger options', lead: 'Tell us your vehicles, site and supply, and we send options from up to three brands, compared on features, warranty and service.', need: 'Help choosing a charger (any brand)' }}>
+  <section class="section" aria-labelledby="clients-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Installed for" title="Companies we have installed chargers for" id="clients-title" />
+      <div class="grid grid-4">
+        {site.clients.map((c) => <div class="card" style="align-items:center;justify-content:center;min-height:120px"><p style="font-family:var(--font-head);font-weight:800;font-size:24px;color:var(--ink)">{c}</p></div>)}
+      </div>
+      <p class="small muted" style="margin-top:14px">Brand names belong to their owners. Listing a client does not mean that company endorses Proline.</p>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="chargers-title">
+    <div class="wrap split top">
+      <SectionHead eyebrow="Charger brands" title="Many brands, one honest recommendation" lead="We are tied up with several charger makers for AC, DC and 2W/3W chargers, and we install chargers of any brand. Ask us and we compare the options that fit your site." id="chargers-title" />
+      <ul class="ticks">
+        <li>Options from up to three brands for your vehicles, site and budget.</li>
+        <li>Compared on power, connectors, software (app or OCPP), warranty and who services it.</li>
+        <li>Installation and commissioning by our technicians, whichever brand you choose.</li>
+        <li>White-label chargers for companies that want their own brand.</li>
+      </ul>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="partner-title">
+    <div class="wrap split">
+      <SectionHead eyebrow="For charger brands" title="Want more buyers in India?" lead="If you make or import chargers and want buyers, installation and service in our 10 states, see how brand partners work with Proline." id="partner-title" />
+      <p><a class="btn btn-primary btn-lg" href="/brand-partners/">Become a brand partner<Icon name="arrowRight" size={18} /></a></p>
+    </div>
+  </section>
+</SimplePage>

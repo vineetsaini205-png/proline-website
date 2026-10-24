@@ -1,0 +1,23 @@
+---
+// One CMS screenshot in a laptop or phone frame. Empty slots show a placeholder.
+export interface ScreenItem { id: string; title: string; caption?: string; image?: string; concept?: boolean }
+interface Props { item: ScreenItem; kind: 'desktop' | 'phone'; dark?: boolean; eager?: boolean }
+const { item, kind, dark = false, eager = false } = Astro.props;
+const alt = `Proline CMS ${kind === 'phone' ? 'phone screen' : 'console'}: ${item.title}${item.caption ? '. ' + item.caption : ''}`;
+---
+<figure class="screen-fig" style="margin:0">
+  <div class={kind === 'desktop' ? 'laptop' : 'phone'}>
+    <div class="screen">
+      {item.image ? (
+        <img src={item.image} alt={alt} width={kind === 'desktop' ? 1600 : 720} height={kind === 'desktop' ? 1000 : 1520} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+      ) : (
+        <div class="screen-empty"><strong>{item.id}</strong>{item.title}<br />Screenshot coming soon</div>
+      )}
+    </div>
+  </div>
+  <figcaption class="frame-caption" style={kind === 'desktop' ? 'margin-top:26px' : undefined}>
+    <strong style={dark ? 'color:#fff' : undefined}>{item.title}</strong>
+    {item.caption && <span style={dark ? 'color:#A9BBD3' : undefined}>{item.caption}</span>}
+    {item.concept && <><br /><span class="concept-tag">Concept design · sample data</span></>}
+  </figcaption>
+</figure>

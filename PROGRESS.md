@@ -44,7 +44,8 @@ Build: `npm run build` (output in `dist/`). Content rules check: `node scripts/c
 6. **Do not invent** projects, testimonials, reviews, certifications/registrations, partner status, prices or response-time promises. "Authorised partner" only for a brand that authorised Proline in writing (none confirmed yet).
 7. Site survey is **paid**; the fee is adjusted against the order if the customer goes ahead.
 8. Proline CMS: claim only what works today. Not ready (keep off, or "on request"): a named live payment gateway, SMS sending, add-ons, OCPP 2.0.1. Deck screens are concept designs — label them so until real screenshots arrive. Never publish deck slide 22 (commercial).
-9. Pages held back until the owner answers: AMC (`/services/ev-charger-amc/`), power approvals (`/services/ev-charging-power-approval/`). Hosted CMS: describe only the CPO Edition (customer's own server).
+9. Pages held back until the owner answers: AMC (`/services/ev-charger-amc/`), power approvals (`/services/ev-charging-power-approval/`).
+13. Proline CMS business model (owner, 24 Oct): software the operator owns, built in their brand and handed over (not a charging network they join). **No commission on charging payments, no fee per charger per month.** Two ways to run it: CPO Edition on the customer's own server/cloud, or **hosted by Proline on Proline's servers at a low running cost with 24/7 support**. "24/7" is allowed for CMS support only (not installation). Hosted server location not confirmed: don't say "in India" for the hosted option until the owner confirms.
 10. Hindi blogs/FAQs are phase 2 (at /hi/, written or checked by a Hindi speaker).
 11. Photos: Pexels downloads from the owner. Owner (24 Oct): "do not blur if it is not required". We blur **only readable charger / charging-network brand marks** (Pexels licence: don't imply endorsement by brands in the image). Car badges and number plates stay. Tesla Supercharger photos are **not used** (the charger design itself is Tesla's, and Proline doesn't install them).
 12. Commits end with the attribution lines in the session's instructions.
@@ -85,19 +86,22 @@ Services
 - held: `/services/ev-charger-amc/`, `/services/ev-charging-power-approval/` (owner to confirm)
 
 Proline CMS (copy from owner's `proline-cms-website-copy.md`, sections 1–9; section 10 = not-ready list)
-- [ ] `/cms/`
-- [ ] `/cms/features/`
-- [ ] `/cms/built-for-india/`
-- [ ] `/cms/white-label-self-hosted/`
-- [ ] `/cms/demo/`
+- [x] `/cms/` (copy sections 1–9; section 10 limits applied; FAQs in `src/data/cms-faqs.ts`)
+- [x] `/cms/features/` (re-titled "feature-rich")
+- [x] `/cms/built-for-india/`
+- [x] `/cms/white-label-self-hosted/` (re-titled "customisable"; CPO Edition + hosted by Proline)
+- [x] `/cms/demo/`
+- [x] `/cms/security/` (added 24 Oct: "safest CMS" searches)
+- [x] `/cms/affordable-ev-charging-software/` (added 24 Oct: "cheapest CMS" searches — explains total cost and pricing model, no prices, never claims "cheapest")
+- [x] `/blog/how-to-choose-ev-charging-cms/` (buyer's guide: "best / feature-rich / customisable CMS")
 
 Chargers and products
 - [x] `/chargers/` hub (cards fill from content)
 - [ ] `/chargers/ac-chargers/`
-- [ ] `/chargers/dc-fast-chargers/` (+ "Inside a DC charger" animation, rebuilt — originals not available)
+- [ ] `/chargers/dc-fast-chargers/` (+ "Inside a DC charger" widget: done, `src/components/widgets/DcInside.astro`, shown via `widget: dc-inside`)
 - [ ] `/chargers/2w-3w-chargers/`
 - [ ] `/chargers/bus-truck-chargers/`
-- [ ] `/chargers/white-label-chargers/` (+ "Your brand on the charger" demo, rebuilt)
+- [ ] `/chargers/white-label-chargers/` (+ "Your brand on the charger" widget: done, `WhiteLabel.astro`, via `widget: white-label`)
 - [x] `/batteries/` hub (cards fill from content)
 - [ ] `/batteries/2-wheeler-batteries/`
 - [ ] `/batteries/e-rickshaw-batteries/`
@@ -116,29 +120,30 @@ Who we serve
 - [ ] `/for/government-and-psu/`
 
 Tools (result first, no contact wall, no Proline prices)
-- [ ] `/tools/` hub
-- [ ] `/tools/ev-charging-station-earnings-calculator/`
-- [ ] `/tools/ev-vs-petrol-savings-calculator/` (added 24 Oct for "EV cost saving" searches)
-- [ ] `/tools/charger-finder/`
-- [ ] `/tools/installation-checklist/`
+- [x] `/tools/` hub
+- [x] `/tools/ev-charging-station-earnings-calculator/` (BEE tariffs, GST, ToD, payback on own quote; tested in browser)
+- [x] `/tools/ev-vs-petrol-savings-calculator/` (added 24 Oct for "EV cost saving" searches; tested)
+- [x] `/tools/charger-finder/` (rules in `src/lib/finder.ts`)
+- [x] `/tools/installation-checklist/` (rules in `src/lib/checklist.ts`, printable)
 
 Resources
 - [ ] `/start-an-ev-charging-station/`
-- [ ] `/coverage/` (state list by region — no India map, to avoid border-accuracy problems)
-- [ ] `/blog/` + 3 posts: earnings, home installation, EV vs petrol savings
-- [ ] `/faq/`
-- [ ] `/ask/`
-- [ ] `/brands/`
+- [x] `/coverage/` (state list by region + BEE EV tariffs; no India map)
+- [x] `/blog/` list and post template (`ArticlePage.astro`)
+- [~] 3 posts by a writer: earnings, home installation, EV vs petrol savings
+- [x] `/faq/` page (groups fill from `src/content/faqs/`; CMS group from `cms-faqs.ts`)
+- [x] `/ask/`
+- [x] `/brands/` (client names as text until logo files arrive)
 
 Company
-- [ ] `/about/`
-- [ ] `/contact/`
-- [ ] `/partner-with-us/`
-- [ ] `/brand-partners/`
-- [ ] `/join-as-technician/`
-- [ ] `/privacy-policy/`
-- [ ] `/terms/`
-- [ ] `404`
+- [x] `/about/`
+- [x] `/contact/`
+- [x] `/partner-with-us/`
+- [x] `/brand-partners/`
+- [x] `/join-as-technician/`
+- [x] `/privacy-policy/` (owner should have it checked)
+- [x] `/terms/` (owner should have it checked)
+- [x] `404`
 
 ### Site-wide
 - [ ] Enquiry forms → Google Apps Script (Sheet + email to Sales@); falls back to prefilled WhatsApp until the script URL is set
@@ -156,7 +161,7 @@ Company
 - Which charger brands Proline sells/works with (for /brands/ and charger pages; no brand names shown until then)
 - Real CMS screenshots (5 desktop, 6 phone) and a public PDF of the CMS deck without slide 22
 - Which CMS features are live at launch (copy section 10)
-- AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)? · Hosted CMS option?
+- AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)? · Are Proline's CMS hosting servers in India? (asked 24 Oct)
 - Project stories, client quotes (with permission), registrations (GST, Udyam, licence) — none received, so none shown
 - Google account for the enquiry Sheet (Apps Script) and GitHub logins for admin users
 
@@ -165,7 +170,9 @@ Company
 - 24 Oct: Pexels photos approved ("these photos look good and professional"). Blur only charger/network brand marks (owner: no unneeded blur). Two photos brought back (solar-canopy-tall, ev-pedestal-crossover) now that car badges may stay.
 - 24 Oct: add EV vs petrol savings calculator at launch; target searches: Proline (brand), EV charger installation, charging station earnings, EV cost savings.
 - 24 Oct: coverage shown as a state list, not an India map (map borders are legally sensitive in India).
+- 24 Oct: owner wants the CMS found for "cheapest, safest, feature-full, customisable CMS" searches. No superlative claims (no prices on site; ASCI needs proof for "cheapest"): cost-of-ownership page (one-time licence + yearly maintenance, payments to operator's own account, no commission to Proline — owner asked to confirm), security page, Features page re-titled "feature-rich", white-label page re-titled "customisable", buyer's guide blog. Removed "AI assistant" from the CMS add-on list (owner said no AI assistant).
 
 ## Session log
 - 24 Oct 2026: photos re-exported with minimal blur; PROGRESS.md created; first push.
 - 24 Oct 2026: skeleton, homepage, templates and hubs built and pushed. Seven writers drafting Markdown in parallel: services (10), chargers (5), batteries (4) + /solar-ev-charging/, audiences (7), blog (3), start-a-station guide + FAQs. If a session ends before they report back, check which files exist in `src/content/` and run the checker; write only the missing ones.
+- 24 Oct 2026: CMS pages (7), tools (4 + hub), company and resource pages, blog template, widgets built and pushed. Owner asked for cheapest/safest/feature-rich/customisable CMS searches → security + cost pages, re-titles, buyer's guide. Owner confirmed: no commission, no per-charger fee, hosted option with 24/7 support.

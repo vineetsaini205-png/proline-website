@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import ArticlePage from '../../layouts/ArticlePage.astro';
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en');
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<ArticlePage entry={entry} />

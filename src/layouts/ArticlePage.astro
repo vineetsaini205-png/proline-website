@@ -1,0 +1,91 @@
+---
+// Blog post template: author box, dates, contents, FAQ, related links, enquiry form.
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import Faqs from '../components/Faqs.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import CtaBand from '../components/CtaBand.astro';
+import SectionHead from '../components/SectionHead.astro';
+import site from '../data/site.json';
+import { linkInfo } from '../data/nav';
+import { articleNode, faqNode } from '../lib/schema';
+import { formatDate } from '../lib/text';
+
+interface Props { entry: CollectionEntry<'blog'> }
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const path = Astro.url.pathname;
+const h1 = d.h1 ?? d.title.replace(/ \| Proline.*$/, '');
+const crumbs = [{ label: 'Blog', href: '/blog/' }, { label: h1 }];
+const schema: object[] = [articleNode(path, { title: h1, description: d.description, date: d.date, updated: d.updated, image: d.image ? `/images/og/${d.image}.jpg` : undefined, author: d.author })];
+if (d.faqs.length) schema.push(faqNode(path, d.faqs));
+const toc = headings.filter((h) => h.depth === 2);
+const tool = d.related.find((r) => r.startsWith('/tools/'));
+const toolInfo = tool ? linkInfo(tool) : undefined;
+const initials = d.author.split(' ').map((w) => w[0]).join('').slice(0, 2);
+---
+<Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={d.image ? `/images/og/${d.image}.jpg` : undefined} imageAlt={h1} ogType="article" lang={d.lang === 'hi' ? 'hi-IN' : 'en-IN'}>
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class:list={['phero-grid', { 'no-media': !d.image }]}>
+        <div>
+          <p class="eyebrow">{d.tags[0] ? d.tags[0][0].toUpperCase() + d.tags[0].slice(1) : 'Guide'}</p>
+          <h1>{h1}</h1>
+          <p class="lead">{d.description}</p>
+          <p class="updated" style="margin-top:18px">By {d.author}, {site.name} · {d.updated ? `Updated ${formatDate(d.updated)}` : formatDate(d.date)}</p>
+        </div>
+        {d.image && <div class="phero-media"><Photo name={d.image} eager sizes="(max-width: 900px) 100vw, 480px" /></div>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap layout-side">
+      <article class="prose">
+        <Content />
+        <div class="author" style="margin-top:40px">
+          <span class="avatar" aria-hidden="true">{initials}</span>
+          <div><strong>{d.author}</strong><span>{site.name}, {site.city}. Installing EV chargers across India for {site.stats[3].value}, with {site.stats[0].value} chargers installed and {site.stats[1].value} technicians.</span></div>
+        </div>
+      </article>
+      <aside class="side-sticky" aria-label="Contents and tools">
+        {toc.length > 2 && (
+          <nav class="side-card" aria-label="In this guide">
+            <h3>In this guide</h3>
+            <ul style="list-style:none;display:grid;gap:8px;font-size:15px">{toc.map((h) => <li><a href={`#${h.slug}`} style="text-decoration:none">{h.text}</a></li>)}</ul>
+          </nav>
+        )}
+        {toolInfo && (
+          <a class="side-card" href={toolInfo.href} style="display:block;text-decoration:none;border:1px solid var(--line);background:#fff">
+            <span class="pill pill-green">Free tool</span>
+            <h3 style="margin-top:10px">{toolInfo.label}</h3>
+            <p>{toolInfo.note}</p>
+            <span class="link-arrow" style="margin-top:8px">Open<Icon name="arrowRight" size={16} /></span>
+          </a>
+        )}
+        <div class="side-card navy">
+          <h3>Questions about your site?</h3>
+          <p>WhatsApp us any time, or call 10 am–7 pm.</p>
+          <a class="btn btn-primary" href="#quote">Get a quote</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {d.faqs.length > 0 && (
+    <section class="section section-soft" aria-labelledby="faq-title">
+      <div class="wrap-narrow">
+        <SectionHead eyebrow="FAQ" title="Questions and answers" center id="faq-title" />
+        <Faqs items={d.faqs} />
+      </div>
+    </section>
+  )}
+  <RelatedLinks links={d.related} title="Read next" />
+  <CtaBand />
+</Base>

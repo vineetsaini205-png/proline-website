@@ -1,0 +1,138 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Faqs from '../../components/Faqs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CmsNav from '../../components/cms/CmsNav.astro';
+import Screen from '../../components/cms/Screen.astro';
+import screens from '../../data/cms-screens.json';
+import { faqNode } from '../../lib/schema';
+
+const brandItems = [
+  { icon: 'palette', title: 'Your name, logo and colours', text: 'On the console, the driver pages, receipts, GST documents and QR stickers.' },
+  { icon: 'globe', title: 'Your web addresses', text: 'Three addresses on your own domain: the console, the charger connection and the driver pages.' },
+  { icon: 'qr', title: 'Your QR stickers', text: 'Stickers in your brand, in English, Hindi and the site’s own language, with your payee name.' },
+  { icon: 'user', title: 'Your company as the merchant', text: 'Payments go into your own payment aggregator account, and documents are issued under your GSTIN.' },
+];
+const customise = [
+  { icon: 'palette', title: 'Brand and domain', text: 'Your name, logo, colours and three web addresses on your own domain, on every screen, receipt and sticker.' },
+  { icon: 'globe', title: 'Languages', text: 'Driver pages in English, Hindi and Marathi; QR stickers in English, Hindi and the site’s own language.' },
+  { icon: 'tag', title: 'Prices', text: 'Energy and service charges, up to six time-of-day bands, versions published now or at a set time, and special prices for groups and fleets.' },
+  { icon: 'users', title: 'Roles and sites', text: 'Seven ready-made roles adjustable area by area, and site limits that keep each person to their regions or sites.' },
+  { icon: 'info', title: 'Alerts and on-call', text: 'Alert routing by severity and region to email or your team chat, with an on-call rota and one-click acknowledge links.' },
+  { icon: 'chart', title: 'Reports and accounts', text: 'Ready-made reports in Excel or PDF, and exports for TallyPrime and Zoho Books under your own account names.' },
+  { icon: 'globe', title: 'Integrations', text: 'A REST API with keys limited to what each system needs, and signed webhooks for payments, charging and refunds.' },
+  { icon: 'users', title: 'Groups and fleets', text: 'Members-only chargers, members’ prices, RFID cards and fleet accounts billed monthly on credit limits.' },
+  { icon: 'layers', title: 'Add-ons on request', text: 'A white-label driver app, host and investor portal, smart charging, OCPI roaming and more, when you need them.' },
+];
+const tech = [
+  ['Your own server', 'One virtual machine runs a small network; larger networks add nodes. Sizes are estimated for your charger count and confirmed by a load test.'],
+  ['Simple install', 'A release bundle runs with Docker Compose. The installer first checks the server: location, memory, disk, clock and ports.'],
+  ['Chargers connect securely', 'Over OCPP 1.6J on secure WebSocket (port 443), each with its own password. Unknown charger IDs are refused.'],
+  ['Three web addresses on your domain', 'The console, the charger connection and the driver pages.'],
+  ['Database', 'PostgreSQL with row-level security, so each person sees only the sites they work on.'],
+  ['Exact money', 'Amounts are kept in paise and energy in watt-hours, so nothing is lost to rounding.'],
+  ['Technician app', 'Runs in the phone’s browser, installs to the home screen and works offline.'],
+  ['Licence', 'Checked on your server, with no internet connection needed. Usage data goes to Proline only if you switch it on.'],
+];
+const addons = ['White-label driver app for Android and iOS', 'Host and investor portal', 'Advanced fleet portal (rider limits for 2W/3W fleets, depot scheduling)', 'Smart charging with solar, battery storage and DG', 'OCPI roaming', 'OCPP 2.0.1 and 2.1', 'High-availability cluster', 'Predictive maintenance', 'Plug & Charge'];
+const faqs = [
+  { q: 'What does “white label” mean for Proline CMS?', a: 'Your drivers, staff and customers see your brand, not ours: your name, logo, colours and web addresses on every screen, receipt and QR sticker.' },
+  { q: 'Can we run it on our own cloud account?', a: 'Yes. The CPO Edition runs on your servers in India, or in your own cloud account in an Indian region. The setup wizard records the location.' },
+  { q: 'Can Proline host it instead?', a: 'Yes. We can run it for you on our servers at a low running cost, with 24/7 support, so you don’t need your own IT team.' },
+  { q: 'Does Proline have access to our data?', a: 'Only when you approve a time-limited support grant: a named engineer, a stated reason, at most 72 hours, personal data masked and every step recorded. You can end it at any moment.' },
+  { q: 'What happens if the internet connection to Proline is down?', a: 'Nothing changes. The licence is checked on your own server and there is no call home, so your network keeps running.' },
+  { q: 'Do you offer a driver app with our brand?', a: 'Drivers don’t need an app: they pay from the QR page in their phone’s browser. A white-label driver app for Android and iOS is an add-on, on request.' },
+];
+const path = '/cms/white-label-self-hosted/';
+---
+<Base title="Customisable White-Label EV Charging Software | Proline" description="Customisable, white-label EV charging software you own: your brand and domain, prices, roles, reports and API, on your own server or hosted by us with 24/7 support." crumbs={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Your server, your brand' }]} schema={[faqNode(path, faqs)]} headerCta={{ label: 'Book a demo', href: '#quote' }} waText="Hello Proline, I would like a demo of Proline CMS.">
+  <CmsNav />
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Your server, your brand' }]} />
+      <div class="phero-grid">
+        <div>
+          <p class="eyebrow"><span class="dot"></span>CPO Edition</p>
+          <h1>Customisable, white-label EV charging software on your server or ours</h1>
+          <p class="lead">Proline CMS is software you own, built in your brand and handed over: your name, logo, colours and web address on everything, and no commission on your charging payments. Run it on your own servers in India, or let us host it for you at a low running cost with 24/7 support.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="#quote">Book a demo</a>
+            <a class="btn btn-outline btn-lg" href="/cms/features/">All features<Icon name="arrowRight" size={18} /></a>
+          </div>
+        </div>
+        <div><Screen item={screens.desktop[4]} kind="desktop" eager /></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="brand-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Your brand" title="Drivers and staff see your company, not ours" id="brand-title" />
+      <div class="grid grid-4">
+        {brandItems.map((b) => <div class="card"><span class="card-icon"><Icon name={b.icon} size={24} /></span><h3 style="font-size:17px">{b.title}</h3><p>{b.text}</p></div>)}
+      </div>
+      <div class="split" style="margin-top:48px">
+        <Screen item={screens.extra[5]} kind="phone" />
+        <div>
+          <h3 style="font-size:22px">Even the QR sticker carries your name</h3>
+          <p style="margin-top:10px">Each gun gets its own sticker, bound on site by a real plug-in, so a swapped sticker is caught before go-live. The sticker shows your payee name and reminds drivers that your staff never ask for a UPI PIN.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section" aria-labelledby="run-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Two ways to run it" title="On your server, or hosted by us" id="run-title" />
+      <div class="grid grid-2">
+        <div class="card"><span class="card-icon navy"><Icon name="server" size={24} /></span><h3>CPO Edition on your server</h3><p>Installed on your servers in India, or in your own cloud account in an Indian region. The licence is checked on your server, with no call home, and Proline gets in only when you approve a time-limited support grant.</p></div>
+        <div class="card"><span class="card-icon navy"><Icon name="globe" size={24} /></span><h3>Hosted by Proline</h3><p>Don’t want to run servers? We run Proline CMS for you on our servers at a low running cost, with 24/7 support. It is still your system, in your brand, with drivers paying into your own account.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="custom-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Customisable" title="What you can set up your way" lead="Beyond your brand, Proline CMS is built to fit how your network runs, without custom code for every change." id="custom-title" />
+      <div class="grid grid-3">
+        {customise.map((c) => <div class="card"><span class="card-icon"><Icon name={c.icon} size={24} /></span><h3 style="font-size:17px">{c.title}</h3><p>{c.text}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="tech-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Technology and deployment" title="What runs where" lead="Proline CMS is built to run on infrastructure you control, with nothing that depends on Proline’s servers." id="tech-title" />
+      <div class="table-wrap">
+        <table class="data-table">
+          <tbody>{tech.map(([a, b]) => <tr><th scope="row" style="width:30%;background:#fff">{a}</th><td>{b}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top:14px">Server sizes are estimates for your charger count, confirmed by a load test. Going live takes about 16 weeks in our plan: discovery, build and branding, a factory test in our lab with your charger models, installation and site test on your server, then a pilot and handover with training.</p>
+    </div>
+  </section>
+
+  <section class="section section-navy" aria-labelledby="addons-title">
+    <div class="wrap split top">
+      <div>
+        <p class="eyebrow-plain">Optional add-ons</p>
+        <h2 id="addons-title">On request</h2>
+        <p style="margin-top:14px">Not part of the standard CPO Edition. Ask us about any of them for your network.</p>
+      </div>
+      <ul class="ticks">{addons.map((a) => <li>{a}</li>)}</ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Self-hosting and white label: questions" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+
+  <CtaBand variant="demo" title="Talk to us about your deployment" lead="Tell us how many chargers and sites you run or plan, and where you want the system hosted. We show you the CPO Edition and how it would run for you." waText="Hello Proline, I would like a demo of Proline CMS." />
+</Base>

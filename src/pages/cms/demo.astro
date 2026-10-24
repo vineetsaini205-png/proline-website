@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import QuoteForm from '../../components/QuoteForm.astro';
+import CmsNav from '../../components/cms/CmsNav.astro';
+import site from '../../data/site.json';
+import { waLink } from '../../lib/text';
+
+const covers = [
+  { icon: 'qr', title: 'A charge from QR scan to refund', text: 'Scan the sticker, pay by UPI, watch the session live, stop, and see the automatic refund and GST documents.' },
+  { icon: 'grid', title: 'The console', text: 'Dashboard, live map, alerts and tickets, tariffs with time-of-day bands, and the refunds desk.' },
+  { icon: 'chart', title: 'Money and reports', text: 'The ledger, the 06:00 reconciliation, the GST register, Tally and Zoho exports and the report centre.' },
+  { icon: 'wrench', title: 'The technician app', text: 'Commissioning a charger in eight guided steps, binding QR stickers and closing a ticket on a phone.' },
+];
+---
+<Base title="Book a Proline CMS Demo | EV Charging Software" description="Book a live demo of Proline CMS: a charge from QR scan to UPI refund, the console, GST reports and the technician app, shown on sample data." crumbs={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Book a demo' }]} headerCta={{ label: 'Book a demo', href: '#demo-form' }} waText="Hello Proline, I would like a demo of Proline CMS.">
+  <CmsNav />
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Book a demo' }]} />
+      <div class="phero-grid" style="align-items:start">
+        <div>
+          <p class="eyebrow"><span class="dot"></span>Proline CMS demo</p>
+          <h1>Book a Proline CMS demo</h1>
+          <p class="lead">See Proline CMS working: we walk you through a charge from QR scan to refund, then the console, the reports and the technician app. Tell us how many chargers you run or plan, and we shape the demo around your network.</p>
+          <ul class="contact-list" style="margin-top:28px">
+            <li><span class="ci"><Icon name="whatsapp" size={22} /></span><div><strong><a href={waLink(site.whatsapp, 'Hello Proline, I would like a demo of Proline CMS.')} rel="noopener" target="_blank">WhatsApp {site.phoneDisplay}</a></strong><span>Any time</span></div></li>
+            <li><span class="ci"><Icon name="phone" size={22} /></span><div><strong><a href={`tel:${site.phoneE164}`}>Call {site.phoneDisplay}</a></strong><span>10 am–7 pm</span></div></li>
+            <li><span class="ci"><Icon name="mail" size={22} /></span><div><strong><a href={`mailto:${site.email}`}>{site.email}</a></strong><span>Ask for the product overview</span></div></li>
+          </ul>
+        </div>
+        <QuoteForm variant="demo" id="demo-form" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="covers-title">
+    <div class="wrap">
+      <SectionHead eyebrow="What the demo covers" title="What you see in the demo" id="covers-title" />
+      <div class="grid grid-4">
+        {covers.map((c) => <div class="card"><span class="card-icon navy"><Icon name={c.icon} size={24} /></span><h3 style="font-size:17px">{c.title}</h3><p>{c.text}</p></div>)}
+      </div>
+      <p class="note" style="margin-top:28px">The demo runs on the sample brand “Your Brand” with a test payment service, so no real money or customer data is used.</p>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="prep-title">
+    <div class="wrap split top">
+      <SectionHead eyebrow="Before the demo" title="Helpful to have ready" lead="None of this is needed to book, but it lets us show you the parts that matter most for your network." id="prep-title" />
+      <ul class="ticks">
+        <li>The charger makes and models you run or plan to buy.</li>
+        <li>How many sites and guns, and where they are.</li>
+        <li>Who pays: walk-in drivers, fleets on account, members of a society or office.</li>
+        <li>Where you want it to run: your own servers, your cloud account in India, or hosted by us.</li>
+        <li>Who should attend: operations, finance and IT usually get the most from it.</li>
+      </ul>
+    </div>
+  </section>
+</Base>

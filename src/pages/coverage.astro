@@ -1,0 +1,62 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import site from '../data/site.json';
+import tariffs from '../data/tariffs.json';
+import { formatDate } from '../lib/text';
+const t = (s: string) => tariffs.states.find((x) => x.state === s);
+const faqs = [
+  { q: 'Do you work outside these 10 states?', a: 'These are the states where our technicians work today. If your site is elsewhere, tell us where and what you need; for larger projects we plan crews with you.' },
+  { q: 'Where are you based?', a: `In ${site.city}. Our technicians travel to sites across North, South and West India.` },
+  { q: 'What is the EV tariff in my state?', a: 'The table on this page shows the LT tariff for public EV charging stations from the Bureau of Energy Efficiency’s state list. Your DISCOM’s latest tariff order is the final word, and HT connections differ.' },
+];
+---
+<SimplePage
+  title="EV Charger Installation in 10 Indian States | Proline"
+  description="Proline installs EV chargers in Delhi, Haryana, UP, Uttarakhand, Himachal, Maharashtra, MP, Chhattisgarh, Telangana and Tamil Nadu, with each state’s EV tariff."
+  h1="Where we install EV chargers"
+  eyebrow="Coverage"
+  crumb="Coverage"
+  lead={`Proline is based in ${site.city} and installs EV chargers in 10 states across North, South and West India. Here are the states, with the EV tariff that public charging stations pay in each.`}
+  faqs={faqs}>
+  <section class="section" aria-labelledby="regions-title">
+    <div class="wrap">
+      <SectionHead eyebrow="States we work in" title="North, South and West India" id="regions-title" />
+      <div class="regions">
+        {site.regions.map((r) => (
+          <div class="region">
+            <h3><Icon name="map" size={20} class="muted" />{r.name}</h3>
+            <ul>{r.states.map((s) => <li>{s}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="tariff-title">
+    <div class="wrap">
+      <SectionHead eyebrow="EV tariffs" title="What public charging stations pay for electricity" lead="LT tariff for public EV charging stations. Use it in the earnings calculator to see what a station could make in your state." id="tariff-title" />
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th scope="col">State</th><th scope="col">EV tariff (₹ a unit)</th><th scope="col">Fixed charge</th><th scope="col">Note</th></tr></thead>
+          <tbody>
+            {site.regions.flatMap((r) => r.states).map((s) => {
+              const x = t(s);
+              return <tr><td><strong>{s}</strong></td><td>{x ? x.tariff.toFixed(2) : '—'}</td><td>{x && x.fixedPerKw ? `₹${x.fixedPerKw} per kW a month` : 'None listed'}</td><td>{(x as any)?.note ?? ''}</td></tr>;
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top:12px">Source: <a href={tariffs.sourceUrl} rel="noopener" target="_blank">{tariffs.source}</a>, checked {formatDate(new Date(tariffs.checked))}. {tariffs.note}</p>
+      <p style="margin-top:20px"><a class="btn btn-primary" href="/tools/ev-charging-station-earnings-calculator/">Open the earnings calculator</a></p>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Coverage questions" center id="faq-title" />
+      <div class="faqs">
+        {faqs.map((f) => <details class="faq"><summary><span>{f.q}</span><span class="plus" aria-hidden="true"><Icon name="plus" size={16} stroke={2.5} /></span></summary><div class="faq-a"><p>{f.a}</p></div></details>)}
+      </div>
+    </div>
+  </section>
+</SimplePage>

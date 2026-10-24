@@ -1,0 +1,70 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import Faqs from '../components/Faqs.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import site from '../data/site.json';
+const buyers = [
+  { icon: 'home', title: 'Home owners', text: 'People choosing a wall box after buying an EV, who ask us which charger to get.' },
+  { icon: 'building', title: 'Businesses and societies', text: 'Hotels, offices, malls, hospitals and housing societies adding chargers for staff, guests and residents.' },
+  { icon: 'station', title: 'Operators and investors', text: 'Charge point operators and first-time station owners planning DC fast charging.' },
+  { icon: 'truck', title: 'Fleets', text: 'Cab, delivery, e-rickshaw and bus fleets that need depot charging.' },
+];
+const gives = [
+  { title: 'Brand-neutral advice that includes you', text: 'When your chargers fit a buyer’s site, we put them in front of that buyer, compared fairly on features, warranty and service.' },
+  { title: 'Installation and commissioning', text: 'Every unit we sell is installed and commissioned by our technicians, to your manual, with a handover report.' },
+  { title: 'Reach in 10 states', text: 'Buyers and crews in Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu.' },
+  { title: 'A simple commercial model', text: 'A commission on each sale or a resale margin, agreed directly with your team. Price lists stay private between us.' },
+];
+const steps = [
+  { title: 'Send your range', text: 'Models, specifications, connectors, software (app or OCPP), certificates and warranty terms.' },
+  { title: 'Commercial terms', text: 'We agree commission or resale terms and how warranty claims and spares are handled.' },
+  { title: 'Training and demo units', text: 'Your team trains our technicians on installation and commissioning; a demo unit helps us show buyers.' },
+  { title: 'Selling and installing', text: 'We recommend your chargers where they fit, then install, commission and hand over each one.' },
+];
+const faqs = [
+  { q: 'Which brands can apply?', a: 'Makers and importers of AC and DC EV chargers, 2W/3W chargers and EV batteries who can support their products in India with warranty, spares and firmware updates.' },
+  { q: 'Will you only recommend our brand?', a: 'No. We stay brand-neutral: we recommend a charger when it is the right fit for the buyer’s site and budget.' },
+  { q: 'Do you publish our prices?', a: 'No. Prices are never shown on our website. Buyers get a quote for their site.' },
+  { q: 'Can you also install for customers who bought from you directly?', a: 'Yes. See [installation for charger brands](/for/charger-brands/): our technicians install and commission units your customers buy, to your manual.' },
+  { q: 'Do you offer white-label chargers?', a: 'Yes, for companies that want their own brand on a proven charger. If your factory makes white-label units, tell us. See [white-label chargers](/chargers/white-label-chargers/).' },
+];
+---
+<SimplePage
+  title="EV Charger Distributor in India for Brands | Proline"
+  description="Charger brands: sell to homes, businesses, operators and fleets in 10 Indian states through Proline, with installation and commissioning by our technicians."
+  h1="Sell your EV chargers through Proline"
+  eyebrow="For charger brands"
+  crumb="Brand partners"
+  lead="Proline helps charger brands reach buyers in new cities and states without opening offices there. We advise buyers on the right charger, sell your units where they fit, and install and commission every one with our 200+ technicians."
+  cta={{ variant: 'brand', title: 'Become a brand partner', lead: 'Send your range and we come back to set up a call with your team.' }}
+  faqs={faqs}>
+  <section class="section" aria-labelledby="buyers-title">
+    <div class="wrap">
+      <SectionHead eyebrow="The buyers we reach" title="People who ask us which charger to buy" lead="Our free, brand-neutral consultation brings buyers to us before they have chosen a brand." id="buyers-title" />
+      <div class="grid grid-4">
+        {buyers.map((b) => <div class="card"><span class="card-icon"><Icon name={b.icon} size={24} /></span><h3 style="font-size:17px">{b.title}</h3><p>{b.text}</p></div>)}
+      </div>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="gives-title">
+    <div class="wrap split top">
+      <SectionHead eyebrow="What you get" title="Sales and installation in one partner" id="gives-title" />
+      <ul class="ticks">{gives.map((g) => <li><strong>{g.title}.</strong> {g.text}</li>)}</ul>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="steps-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Onboarding" title="How brands join" id="steps-title" />
+      <ProcessSteps steps={steps} />
+      <p style="margin-top:20px" class="muted">Prefer email? Write to <a href={`mailto:${site.email}`}>{site.email}</a> with your catalogue.</p>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Questions from brands" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+</SimplePage>

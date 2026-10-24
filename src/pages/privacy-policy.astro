@@ -1,0 +1,49 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import site from '../data/site.json';
+const updated = '24 October 2026';
+---
+<SimplePage
+  title="Privacy Policy | Proline Electrical Works"
+  description="How Proline Electrical Works collects, uses and protects the details you share through our website, WhatsApp, phone and email, and your rights."
+  h1="Privacy policy"
+  crumb="Privacy policy"
+  lead={`Last updated ${updated}. This policy explains what we collect when you contact ${site.name}, why, and the choices you have.`}
+  cta={false}>
+  <section class="section">
+    <div class="wrap-narrow prose">
+      <h2>Who we are</h2>
+      <p>{site.name} (“Proline”, “we”) installs and commissions EV chargers and related electrical work, based in {site.city}, India. For anything in this policy, write to <a href={`mailto:${site.email}`}>{site.email}</a> or WhatsApp {site.phoneDisplay}.</p>
+
+      <h2>What we collect</h2>
+      <ul>
+        <li><strong>What you send us:</strong> your name, phone number, city, company, the details of your site or question, and anything you type in a form, WhatsApp message or email, including photos you choose to share.</li>
+        <li><strong>Calculator inputs</strong>, only if you choose to send a result to us.</li>
+        <li><strong>Basic technical data:</strong> like any website, our hosting provider processes your IP address and browser details to deliver pages and protect the site. We do not use advertising cookies.</li>
+      </ul>
+
+      <h2>Why we use it</h2>
+      <ul>
+        <li>To reply to your enquiry, prepare a quote, plan a site survey or a demo, and do the work you ask for.</li>
+        <li>To keep records of enquiries, quotes and jobs, as businesses must.</li>
+        <li>To improve the website, using counts of visits that do not identify you.</li>
+      </ul>
+      <p>We do not sell your details, and we do not send marketing messages unless you ask for them.</p>
+
+      <h2>Where it is kept and who sees it</h2>
+      <p>Form entries are stored in our Google account (a Google Sheet and our business email). WhatsApp messages and calls stay on our business phone. Only Proline staff who handle your enquiry see your details, and the technicians who work on your job see what they need for it. We share details with others only when needed to do your job (for example, a charger maker for a warranty claim on your charger), or when the law requires it.</p>
+
+      <h2>How long we keep it</h2>
+      <p>Enquiries that do not lead to work are deleted within two years. Records of quotes, jobs and invoices are kept as long as Indian tax and business law requires.</p>
+
+      <h2>Your rights</h2>
+      <p>Under India’s Digital Personal Data Protection Act, 2023, you can ask us to tell you what we hold about you, correct it, or erase it where the law allows, and you can withdraw consent at any time. Write to <a href={`mailto:${site.email}`}>{site.email}</a>. If you are not satisfied with our reply, you can complain to the Data Protection Board of India.</p>
+
+      <h2>Children</h2>
+      <p>Our services are for adults and businesses. We do not knowingly collect details from children.</p>
+
+      <h2>Changes</h2>
+      <p>If we change this policy, we update this page and the date at the top.</p>
+    </div>
+  </section>
+</SimplePage>

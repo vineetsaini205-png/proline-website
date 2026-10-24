@@ -12,6 +12,8 @@ import ProcessSteps from '../components/ProcessSteps.astro';
 import RelatedLinks from '../components/RelatedLinks.astro';
 import CtaBand from '../components/CtaBand.astro';
 import SectionHead from '../components/SectionHead.astro';
+import DcInside from '../components/widgets/DcInside.astro';
+import WhiteLabel from '../components/widgets/WhiteLabel.astro';
 import site from '../data/site.json';
 import { linkInfo } from '../data/nav';
 import { serviceNode, faqNode, articleNode } from '../lib/schema';
@@ -50,7 +52,7 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
           {d.highlights.length > 0 && (
             <ul class="checks">{d.highlights.map((h) => <li><Icon name="check" size={18} stroke={2.5} />{h}</li>)}</ul>
           )}
-          {d.guide && <p class="updated" style="margin-top:18px">By {d.guide ? 'Vineet Saini, Proline Electrical Works' : ''} · Updated {formatDate(d.updated)}</p>}
+          {d.guide && <p class="updated" style="margin-top:18px">By Vineet Saini, Proline Electrical Works · Updated {formatDate(d.updated)}</p>}
         </div>
         {d.image && <div class="phero-media"><Photo name={d.image} eager sizes="(max-width: 900px) 100vw, 480px" /></div>}
       </div>
@@ -94,6 +96,12 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
       </aside>
     </div>
   </section>
+
+  {d.widget && (
+    <section class="section section-soft" id="widget">
+      <div class="wrap">{d.widget === 'dc-inside' ? <DcInside /> : <WhiteLabel />}</div>
+    </section>
+  )}
 
   {d.costFactors.length > 0 && (
     <section class="section section-soft"><div class="wrap"><CostFactors items={d.costFactors} /></div></section>

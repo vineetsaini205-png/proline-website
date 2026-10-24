@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import SimplePage from '../layouts/SimplePage.astro';
+import Faqs from '../components/Faqs.astro';
+import Icon from '../components/Icon.astro';
+import { cmsFaqs } from '../data/cms-faqs';
+const GROUPS = ['Home owners', 'Businesses and investors', 'Operators, brands and EV makers', 'Site survey and installation', 'Chargers, batteries and solar', 'Proline CMS', 'About Proline'] as const;
+const entries = await getCollection('faqs', ({ data }) => !data.draft && data.lang === 'en');
+const groups = GROUPS.map((g) => ({
+  name: g,
+  id: g.toLowerCase().replace(/[^a-z]+/g, '-').replace(/^-|-$/g, ''),
+  items: g === 'Proline CMS'
+    ? [...entries.filter((e) => e.data.group === g).sort((a, b) => a.data.order - b.data.order).map((e) => ({ q: e.data.question, a: e.data.answer })), ...cmsFaqs.slice(0, 8)]
+    : entries.filter((e) => e.data.group === g).sort((a, b) => a.data.order - b.data.order).map((e) => ({ q: e.data.question, a: e.data.answer })),
+})).filter((g) => g.items.length);
+const all = groups.flatMap((g) => g.items);
+---
+<SimplePage
+  title="EV Charger Installation FAQ: Answers by Buyer | Proline"
+  description="Answers to common questions on EV charger installation, site surveys, chargers, batteries, solar, charging stations and Proline CMS, grouped by who is asking."
+  h1="Frequently asked questions"
+  eyebrow="FAQ"
+  crumb="FAQ"
+  lead="Answers to the questions we hear most, grouped by who is asking. Can’t find yours? [Ask an expert](/ask/) or WhatsApp us."
+  faqs={all}>
+  <section class="section">
+    <div class="wrap">
+      <nav aria-label="FAQ groups" class="tag-row" style="margin-bottom:36px">
+        {groups.map((g) => <a class="pill" href={`#${g.id}`} style="text-decoration:none;font-size:14px;padding:8px 14px">{g.name}</a>)}
+      </nav>
+      <div class="wrap-narrow" style="padding:0;margin:0;max-width:860px">
+        {groups.map((g) => (
+          <section id={g.id} aria-labelledby={`${g.id}-t`} style="margin-bottom:44px">
+            <h2 id={`${g.id}-t`} style="font-size:clamp(22px,2.4vw,28px);margin-bottom:16px">{g.name}</h2>
+            <Faqs items={g.items} />
+          </section>
+        ))}
+      </div>
+      <p><a class="link-arrow" href="/ask/">Ask your own question<Icon name="arrowRight" size={16} /></a></p>
+    </div>
+  </section>
+</SimplePage>

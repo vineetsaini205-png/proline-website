@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Icon from '../../components/Icon.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import Faqs from '../../components/Faqs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import CmsNav from '../../components/cms/CmsNav.astro';
+import Screen from '../../components/cms/Screen.astro';
+import screens from '../../data/cms-screens.json';
+import { faqNode } from '../../lib/schema';
+
+const rows = [
+  ['UPI payments', 'Drivers pay with any UPI app, straight into your own payment aggregator account.'],
+  ['GST', 'Prices include GST. Receipt vouchers, tax invoices, refund vouchers and credit notes are issued automatically, with CGST and SGST or IGST by place of supply, and a GSTR-1 extract each month.'],
+  ['DPDP Act 2023', 'You are the Data Fiduciary. Drivers’ mobile numbers are optional and kept only as long as you set (30 to 365 days). Privacy requests have a register with deadlines and lawful erasure.'],
+  ['CERT-In', 'An incident register with the 6-hour reporting clock, and the server clock set by India’s official time servers (NIC and NPL).'],
+  ['DLT for SMS (on request)', 'Driver texts use templates registered on your DLT portal, and the system checks the registered text matches.'],
+  ['Ministry of Power tariff ceiling', 'The service charge is checked against the ceiling, which is lower in solar hours.'],
+  ['BEE EV Yatra', 'Station and energy files for the national list of public chargers.'],
+  ['Data in India', 'Your server in India, or your cloud account in an Indian region. The setup wizard records the location.'],
+  ['Your accountant', 'TallyPrime and Zoho Books exports, and a monthly GST register.'],
+  ['Languages', 'Driver pages in English, Hindi and Marathi. QR stickers in English, Hindi and the site’s own language.'],
+];
+const faqs = [
+  { q: 'How do UPI payments at an EV charger work?', a: 'The driver scans the QR sticker on the gun, chooses an amount, a number of kWh or “until full”, and pays with any UPI app. The charger starts by itself, the bill comes from the charger’s meter, and any unused money goes back automatically to the account that paid.' },
+  { q: 'Does the price shown to drivers include GST?', a: 'Yes. The price per kWh shown on the driver page includes GST and is split into energy and service charges. Receipt vouchers, tax invoices and refund vouchers are issued automatically.' },
+  { q: 'Can a driver get a B2B tax invoice?', a: 'Yes. When a driver gives a GSTIN, the tax invoice is issued in the buyer’s name, with CGST and SGST or IGST by place of supply.' },
+  { q: 'Who is the Data Fiduciary under the DPDP Act?', a: 'You, the operator. Drivers’ mobile numbers are optional, kept only as long as you set, and privacy requests have their own register with deadlines.' },
+  { q: 'What is the Ministry of Power ceiling check?', a: 'The Ministry of Power’s guidelines cap the service charge at public chargers, with a lower ceiling in solar hours. Proline CMS checks your service charge against the ceiling and records a reason if you go above it.' },
+];
+const path = '/cms/built-for-india/';
+---
+<Base title="UPI EV Charging Payments and GST | Proline CMS" description="UPI payments at EV chargers with automatic refunds, GST invoices, DPDP Act privacy, CERT-In incidents and BEE EV Yatra files, built into Proline CMS." crumbs={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Built for India' }]} schema={[faqNode(path, faqs)]} headerCta={{ label: 'Book a demo', href: '#quote' }} waText="Hello Proline, I would like a demo of Proline CMS.">
+  <CmsNav />
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Proline CMS', href: '/cms/' }, { label: 'Built for India' }]} />
+      <div class="phero-grid">
+        <div>
+          <p class="eyebrow"><span class="dot"></span>Built for India</p>
+          <h1>UPI EV charging payments, GST and Indian rules, built in</h1>
+          <p class="lead">With Proline CMS, drivers pay for charging with any UPI app and get unused money back automatically, while GST documents, privacy and reporting follow Indian rules. Here is how each requirement is handled.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="#quote">Book a demo</a>
+            <a class="btn btn-outline btn-lg" href="/cms/features/">All features<Icon name="arrowRight" size={18} /></a>
+          </div>
+        </div>
+        <div class="india-phones">
+          <Screen item={screens.phone[2]} kind="phone" eager />
+          <Screen item={screens.phone[3]} kind="phone" eager />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="table-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Requirement by requirement" title="What India requires, and how Proline CMS handles it" id="table-title" />
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th scope="col" style="width:28%">What India requires</th><th scope="col">How Proline CMS handles it</th></tr></thead>
+          <tbody>{rows.map(([a, b]) => <tr><td><strong>{a}</strong></td><td>{b}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="flow-title">
+    <div class="wrap split top">
+      <SectionHead eyebrow="UPI at the charger" title="A driver’s payment, start to finish" lead="No app, no sign-up, no cash. Every unused rupee goes back on its own." id="flow-title" />
+      <ol class="steps" style="grid-template-columns:1fr">
+        <li><h3>Scan and choose</h3><p>The QR sticker opens that gun’s page. The driver picks an amount, kWh or “until full”, with the GST-inclusive price shown first.</p></li>
+        <li><h3>Pay with any UPI app</h3><p>The money goes straight into your own payment aggregator account; you are the merchant.</p></li>
+        <li><h3>Charge, then refund</h3><p>The bill comes from the charger’s meter, capped at the amount paid. The rest is refunded automatically, and failed refunds are retried.</p></li>
+        <li><h3>Documents and reconciliation</h3><p>Receipt voucher, tax invoice and refund voucher are issued automatically, and everything is matched with your payment company and bank at 06:00 the next day.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Payments, GST and data: questions" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+
+  <CtaBand variant="demo" title="See a UPI charge from scan to refund" lead="In the demo we run a charge on a test payment service, then show the receipt, the refund and the next morning’s reconciliation." waText="Hello Proline, I would like a demo of Proline CMS." />
+</Base>
+<style>
+  .india-phones { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 460px; margin-left: auto; }
+  .india-phones :global(.frame-caption span:not(.concept-tag)) { display: none; }
+  @media (max-width: 900px) { .india-phones { margin: 0 auto; } }
+</style>

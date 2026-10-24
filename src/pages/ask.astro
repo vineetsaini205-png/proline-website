@@ -1,0 +1,30 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+import Icon from '../components/Icon.astro';
+---
+<SimplePage
+  title="Ask an EV Charging Expert | Proline Electrical Works"
+  description="Send your question about EV chargers, installation, earthing, cables, charging stations or Proline CMS, and an engineer replies on WhatsApp or email."
+  h1="Ask an EV charging expert"
+  eyebrow="Ask an expert"
+  crumb="Ask an expert"
+  lead="Not sure which charger fits, whether your connection can take it, or what a station needs? Send your question and one of our engineers replies on WhatsApp or by phone."
+  cta={false}>
+  <section class="section">
+    <div class="wrap" style="display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:48px;align-items:start" id="quote">
+      <div class="prose">
+        <h2 style="margin-top:0">How it works</h2>
+        <ol>
+          <li>Type your question. Photos help: send them on WhatsApp after you submit.</li>
+          <li>An engineer replies on WhatsApp or calls you between 10 am and 7 pm.</li>
+          <li>If you tick the box, we may publish the question and answer on this site, without your name or number, so others can use it.</li>
+        </ol>
+        <p>Common questions already answered: <a href="/faq/">see the FAQ</a>.</p>
+        <p><a class="link-arrow" href="/tools/">Or try our free tools<Icon name="arrowRight" size={16} /></a></p>
+      </div>
+      <QuoteForm variant="ask" id="quote-form" />
+    </div>
+  </section>
+</SimplePage>
+<style>@media (max-width: 900px) { #quote { grid-template-columns: minmax(0, 1fr) !important; } }</style>

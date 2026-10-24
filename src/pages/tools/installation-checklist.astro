@@ -1,0 +1,142 @@
+---
+import ToolPage from '../../layouts/ToolPage.astro';
+import Icon from '../../components/Icon.astro';
+import site from '../../data/site.json';
+import { SPECS, checklist, type ChecklistInput } from '../../lib/checklist';
+
+const def: ChecklistInput = { chargerId: 'ac-7', distance: 20, mount: 'wall', location: 'covered', crossing: false, earth: 'unknown', db: 'unknown', supply: 'single', society: true };
+const r0 = checklist(def);
+const opts = (name: string, list: string[][], cur: string) => list.map(([v, l]) => ({ v, l, checked: v === cur, name }));
+const faqs = [
+  { q: 'What do I need to install an EV charger?', a: 'A dedicated circuit from your meter or panel with the right cable, a DB box with an MCB and the residual-current protection the charger maker asks for, a tested earth, and a safe place to mount the charger. Bigger chargers add three-phase supply, civil work and permissions.' },
+  { q: 'What cable size do I need for a 7.4 kW charger?', a: 'Typically 6 sq mm copper for a run up to about 30 m, and 10 sq mm for longer runs. The final size depends on the length, how the cable is laid and the charger maker’s instructions. See [cabling for EV chargers](/services/ev-charger-cabling/).' },
+  { q: 'Do I need a separate earth pit?', a: 'Most charger makers ask for a dedicated earth with a low, tested resistance, so plan for one unless your existing dedicated earth tests well. See [earthing](/services/ev-charger-earthing/).' },
+  { q: 'Can I use my existing DB box?', a: 'Sometimes, if it has a spare way with the right rating and room for the RCD the charger needs. Often a small dedicated DB box is cleaner and safer. See [DB boxes](/services/ev-charger-db-box/).' },
+  { q: 'Is this checklist a quote?', a: 'No. It lists what the job is likely to need, so you know what to expect. Send it to us on WhatsApp or through the form and we reply with a quote; for larger sites we suggest a paid site survey, adjusted against your order.' },
+];
+---
+<ToolPage
+  title="EV Charger Installation Checklist: What You Need | Proline"
+  description="See what your EV charger installation needs: cable size and route, DB box and RCD, earthing, civil work and permissions, for AC and DC chargers."
+  h1="EV charger installation checklist"
+  label="Installation checklist"
+  intro="Tell us your charger, the cable distance and your site, and the checklist shows what the installation is likely to need: supply, cable, DB box and protection, earthing, civil work and permissions. Print it or send it to us for a quote."
+  faqs={faqs}
+  related={['/services/ev-charger-installation/', '/services/ev-charger-cabling/', '/services/ev-charger-earthing/', '/services/ev-charger-db-box/', '/services/site-survey/', '/tools/charger-finder/']}
+  form="quote" need="EV charger installation"
+  ctaTitle="Send us your checklist for a quote"
+  ctaLead="Add photos of your meter, DB and the parking spot on WhatsApp, and we reply with what the job needs and one clear quote."
+  waText="Hello Proline, I used your installation checklist and would like a quote.">
+
+  <div class="calc" id="check" data-wa={site.whatsapp}>
+    <form class="calc-in no-print" onsubmit="return false" aria-label="Your charger and site">
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field">
+          <label for="c-charger">Charger</label>
+          <select id="c-charger">{SPECS.map((s) => <option value={s.id} selected={s.id === def.chargerId}>{s.label}</option>)}</select>
+        </div>
+        <div class="field">
+          <label for="c-supply">Your supply</label>
+          <select id="c-supply">
+            <option value="single" selected>Single phase</option><option value="three">Three phase</option><option value="ht">HT / own transformer</option><option value="unknown">Not sure</option>
+          </select>
+        </div>
+      </div>
+      <div class="field range-field">
+        <div class="rf-top"><label for="c-dist">Cable distance from meter or panel to charger</label><output id="c-dist-out" for="c-dist">{def.distance} m</output></div>
+        <input id="c-dist" type="range" min="5" max="200" step="5" value={def.distance} />
+      </div>
+      {[
+        { name: 'c-mount', legend: 'Mounting', list: [['wall', 'On a wall'], ['pedestal', 'On a pedestal']], cur: def.mount },
+        { name: 'c-loc', legend: 'Where the charger goes', list: [['covered', 'Covered or basement parking'], ['open', 'Open parking'], ['public', 'Public or roadside']], cur: def.location },
+        { name: 'c-earth', legend: 'Earthing today', list: [['dedicated', 'Dedicated earth pit'], ['building', 'Building earth only'], ['unknown', 'Not sure']], cur: def.earth },
+        { name: 'c-db', legend: 'DB box', list: [['spare', 'Spare way in existing DB'], ['new', 'Need a new DB box'], ['unknown', 'Not sure']], cur: def.db },
+      ].map((g) => (
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend class="label">{g.legend}</legend>
+          <div class="radio-row">{opts(g.name, g.list, g.cur).map((o) => <label><input type="radio" name={o.name} value={o.v} checked={o.checked} />{o.l}</label>)}</div>
+        </fieldset>
+      ))}
+      <div class="field">
+        <label style="display:flex;gap:10px;align-items:center;font-weight:500"><input id="c-cross" type="checkbox" style="width:20px;height:20px;accent-color:#0B7D4A" />The cable has to cross a driveway or road</label>
+        <label style="display:flex;gap:10px;align-items:center;font-weight:500;margin-top:10px"><input id="c-soc" type="checkbox" checked style="width:20px;height:20px;accent-color:#0B7D4A" />It is in a housing society or shared building</label>
+      </div>
+    </form>
+
+    <div class="calc-out" aria-live="polite">
+      <div>
+        <p class="small">Your installation is likely to need</p>
+        <h2 style="font-size:24px;margin-top:4px" id="c-head">{SPECS.find((s) => s.id === def.chargerId)!.label} charger, about {def.distance} m of cable</h2>
+      </div>
+      <div id="c-flags">{r0.flags.map((f) => <p class="notice" style="margin-top:8px">{f}</p>)}</div>
+      <div id="c-out">
+        {r0.sections.map((s) => (
+          <div class="check-sec"><h3>{s.title}</h3><ul class="ticks">{s.items.map((i) => <li>{i}</li>)}</ul></div>
+        ))}
+      </div>
+      <div class="btn-row no-print">
+        <a class="btn btn-primary" id="c-wa" href="#" rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Send to WhatsApp</a>
+        <button class="btn btn-ghost-light" type="button" id="c-print"><Icon name="printer" size={18} />Print</button>
+      </div>
+      <p class="calc-note">Typical starting points, not a design. Cable sizes are for short runs in normal conditions; the survey confirms everything against the charger maker’s manual and your site.</p>
+    </div>
+  </div>
+
+  <div slot="method">
+    <h2 id="method-title">What the survey checks</h2>
+    <p>The checklist is a good first picture. A site survey, or photos for a simple home job, turns it into a plan. The survey is paid, and the fee is adjusted against your order if you go ahead with Proline.</p>
+    <ul>
+      <li><strong>Supply and load:</strong> phase, sanctioned load, what the building already uses, and the meter and main DB.</li>
+      <li><strong>Cable route:</strong> the shortest safe path, how it is fixed or buried, and the exact length.</li>
+      <li><strong>Earth:</strong> soil, existing earth pits and their tested resistance.</li>
+      <li><strong>Parking spot:</strong> wall or pedestal, height, reach of the cable, protection from vehicles and rain.</li>
+      <li><strong>Network:</strong> mobile signal or Wi-Fi for chargers that need the app or OCPP.</li>
+      <li><strong>Permissions:</strong> society NOC, load increase or a new connection, and anything your area needs for a public station.</li>
+    </ul>
+    <p>See <a href="/services/site-survey/">site survey</a> for what you get, or go back to the <a href="/tools/charger-finder/">charger finder</a> if you are still choosing a charger.</p>
+  </div>
+</ToolPage>
+
+<style>
+  .check-sec { border-top: 1px solid rgba(255,255,255,.12); padding-top: 14px; margin-top: 14px; }
+  .check-sec h3 { font-size: 16px; color: #fff; margin-bottom: 10px; }
+  .check-sec .ticks { font-size: 14.5px; gap: 8px; }
+  @media print {
+    .calc { display: block; border: 0; box-shadow: none; }
+    .calc-out { background: #fff; color: #000; padding: 0; }
+    .calc-out h2, .check-sec h3 { color: #000; }
+    .check-sec { border-color: #ccc; }
+    .ticks li::before { background-color: #eee; }
+  }
+</style>
+
+<script>
+  import { SPECS, checklist, type ChecklistInput, type Mount, type Location, type Earth, type Db, type SupplyKind } from '../../lib/checklist';
+  const root = document.getElementById('check');
+  if (root) {
+    const val = (n: string) => root.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value || '';
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const run = () => {
+      const dist = Number((document.getElementById('c-dist') as HTMLInputElement).value);
+      document.getElementById('c-dist-out')!.textContent = `${dist} m`;
+      const input: ChecklistInput = {
+        chargerId: (document.getElementById('c-charger') as HTMLSelectElement).value, distance: dist,
+        mount: val('c-mount') as Mount, location: val('c-loc') as Location, earth: val('c-earth') as Earth, db: val('c-db') as Db,
+        supply: (document.getElementById('c-supply') as HTMLSelectElement).value as SupplyKind,
+        crossing: (document.getElementById('c-cross') as HTMLInputElement).checked, society: (document.getElementById('c-soc') as HTMLInputElement).checked,
+      };
+      const spec = SPECS.find((s) => s.id === input.chargerId)!;
+      const r = checklist(input);
+      document.getElementById('c-head')!.textContent = `${spec.label} charger, about ${dist} m of cable`;
+      document.getElementById('c-flags')!.innerHTML = r.flags.map((f) => `<p class="notice" style="margin-top:8px">${esc(f)}</p>`).join('');
+      document.getElementById('c-out')!.innerHTML = r.sections.map((s) => `<div class="check-sec"><h3>${esc(s.title)}</h3><ul class="ticks">${s.items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>`).join('');
+      const summary = `Installation checklist: ${spec.label} charger, ${dist} m cable, ${val('c-mount')} mount, ${val('c-loc')} location, supply ${input.supply}${input.crossing ? ', crosses a driveway' : ''}${input.society ? ', in a society' : ''}.`;
+      (document.getElementById('c-wa') as HTMLAnchorElement).href = `https://wa.me/${root.dataset.wa}?text=${encodeURIComponent('Hello Proline, ' + summary + ' Please send a quote.')}`;
+      (window as any).prolineFill?.('#quote-form', summary, 'EV charger installation');
+    };
+    root.addEventListener('change', run);
+    root.addEventListener('input', run);
+    document.getElementById('c-print')?.addEventListener('click', () => window.print());
+    run();
+  }
+</script>

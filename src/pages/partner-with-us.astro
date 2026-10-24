@@ -1,0 +1,70 @@
+---
+import SimplePage from '../layouts/SimplePage.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import Faqs from '../components/Faqs.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import site from '../data/site.json';
+const offers = [
+  { icon: 'users', title: 'Crews in 10 states', text: '200+ technicians across North, South and West India, for single sites or rollouts across many cities.' },
+  { icon: 'clipboard', title: 'Your checklist, your format', text: 'Survey, installation and commissioning to your checklist, with handover reports and photos in the format you ask for.' },
+  { icon: 'plug', title: 'Any charger, AC or DC', text: 'We install chargers of any brand to the maker’s manual, from 3.3 kW AC points to 240 kW DC.' },
+  { icon: 'grid', title: 'Onto your CMS', text: 'Chargers connected and tested on your own CMS over OCPP, or on Proline CMS if you need one.' },
+  { icon: 'hardhat', title: 'Civil and electrical in one', text: 'Cabling, DB boxes, earthing, foundations and canopies by the same team, so there is one point of contact per site.' },
+  { icon: 'sun', title: 'Solar and storage', text: 'Solar supply and installation and batteries for sites that need them.' },
+];
+const steps = [
+  { title: 'Tell us the scope', text: 'Sites a month, states, charger types and your installation checklist. A short call or email is enough to start.' },
+  { title: 'Vendor onboarding', text: 'We complete your vendor registration and share our documents and rates directly with your team.' },
+  { title: 'Pilot site', text: 'We survey, install and commission a first site to your checklist, so you can check our work and our reports.' },
+  { title: 'Scale up', text: 'We plan crews city by city with your team as the rollout grows.' },
+];
+const faqs = [
+  { q: 'Who do you partner with?', a: 'Charge point operators, charger brands, EV makers and dealers, fleet operators, electrical and EPC contractors, and real-estate developers who need chargers installed and commissioned.' },
+  { q: 'Do you share a rate card?', a: 'Yes, directly with partner companies during vendor onboarding. We don’t publish prices on the website.' },
+  { q: 'Can you work in cities outside your 10 states?', a: 'Tell us where. For rollouts we plan crews with you; the 10 states listed on our [coverage page](/coverage/) are where we work today.' },
+  { q: 'Do you have a company profile or capability deck?', a: `Ask for it at ${site.email} and we send it to you.` },
+];
+---
+<SimplePage
+  title="Partner With Proline: EV Charger Installation Partner"
+  description="For CPOs, charger brands, EV makers and contractors: survey, installation and commissioning crews in 10 states, to your checklist and report format."
+  h1="Partner with Proline"
+  eyebrow="For companies"
+  crumb="Partner with us"
+  lead="Proline is the installation partner for companies that need EV chargers surveyed, installed and commissioned in many places. We work to your checklist and report format, with 200+ technicians across 10 states."
+  cta={{ variant: 'b2b', title: 'Start a partnership', lead: 'Share the sites a month, states and charger types. We reply with how we would run it and set up vendor onboarding.' }}
+  faqs={faqs}>
+  <section class="section" aria-labelledby="offer-title">
+    <div class="wrap">
+      <SectionHead eyebrow="What we bring" title="An installation team you can hand sites to" id="offer-title" />
+      <div class="grid grid-3">
+        {offers.map((o) => <div class="card"><span class="card-icon"><Icon name={o.icon} size={24} /></span><h3 style="font-size:17px">{o.title}</h3><p>{o.text}</p></div>)}
+      </div>
+      <p class="note" style="margin-top:24px"><strong>Installed for TATA, ThunderPlus, Bolt.Earth and KIA.</strong> 500+ chargers and DB boxes installed in two years.</p>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="steps-title">
+    <div class="wrap">
+      <SectionHead eyebrow="How it starts" title="From first call to sites across your network" id="steps-title" />
+      <ProcessSteps steps={steps} />
+    </div>
+  </section>
+  <section class="section" aria-labelledby="links-title">
+    <div class="wrap">
+      <h2 id="links-title" style="font-size:clamp(22px,2.4vw,28px);margin-bottom:20px">Pages for your kind of company</h2>
+      <div class="grid grid-4">
+        <a class="card" href="/for/charge-point-operators/"><h3>Charge point operators</h3><span class="card-cta">Read more<Icon name="arrowRight" size={16} /></span></a>
+        <a class="card" href="/for/charger-brands/"><h3>Charger brands</h3><span class="card-cta">Read more<Icon name="arrowRight" size={16} /></span></a>
+        <a class="card" href="/for/ev-makers-and-dealers/"><h3>EV makers and dealers</h3><span class="card-cta">Read more<Icon name="arrowRight" size={16} /></span></a>
+        <a class="card" href="/brand-partners/"><h3>Sell your chargers through Proline</h3><span class="card-cta">Read more<Icon name="arrowRight" size={16} /></span></a>
+      </div>
+    </div>
+  </section>
+  <section class="section section-soft" aria-labelledby="faq-title">
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="FAQ" title="Partnership questions" center id="faq-title" />
+      <Faqs items={faqs} />
+    </div>
+  </section>
+</SimplePage>

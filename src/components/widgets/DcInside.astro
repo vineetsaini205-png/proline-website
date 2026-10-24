@@ -1,0 +1,153 @@
+---
+// "Inside a DC charger": how power flows from the grid to the car, part by part.
+const parts = [
+  { id: 'grid', title: 'Grid supply', text: 'A three-phase LT connection at 415 V AC, or an HT connection with its own transformer for the largest sites. Its sanctioned load caps how much power the charger can draw.' },
+  { id: 'panel', title: 'LT panel', text: 'An outgoing feeder with an MCCB, metering and surge protection feeds the charger. Armoured cable runs from here to the charger, often in a trench.' },
+  { id: 'input', title: 'Input protection', text: 'Inside the cabinet, a main breaker, surge protection and filters protect the electronics and stop interference going back into the grid.' },
+  { id: 'modules', title: 'Power modules', text: 'The heart of the charger. Each module converts AC into DC at the voltage the car asks for. A 60 kW charger might use two 30 kW modules; bigger chargers add more, and dual-gun units share them between two cars.' },
+  { id: 'dcout', title: 'DC output', text: 'Contactors, fuses, a DC energy meter and an insulation monitor sit between the modules and the cable. The meter’s reading is what the driver is billed for.' },
+  { id: 'controller', title: 'Controller', text: 'The charger’s brain runs the safety checks, talks to the car, and connects to a CMS over OCPP using 4G or Ethernet, so the operator can start, stop, price and monitor every session.' },
+  { id: 'hmi', title: 'Screen, RFID and QR', text: 'How drivers start a session: a touch screen, an RFID card or a QR code that opens a payment page on their phone.' },
+  { id: 'cooling', title: 'Cooling', text: 'Converting power makes heat. Fans cool most chargers; the highest-power cables and modules use liquid cooling. Keeping air paths clear matters on site.' },
+  { id: 'gun', title: 'Cable and CCS2 gun', text: 'The CCS2 connector carries DC power plus the communication lines the car and charger use to agree voltage and current, second by second.' },
+  { id: 'car', title: 'Car battery and BMS', text: 'The car’s battery management system decides how much power it accepts. That is why cars charge fastest at low battery and slow down as they fill.' },
+];
+---
+<div class="dci" id="dci">
+  <div class="shead" style="margin-bottom:24px">
+    <p class="eyebrow-plain">Inside a DC charger</p>
+    <h2>How power gets from the grid to the car</h2>
+    <p class="lead">Tap any part to see what it does.</p>
+  </div>
+  <div class="dci-box">
+    <svg viewBox="0 0 960 400" role="img" aria-labelledby="dci-t" class="dci-svg">
+      <title id="dci-t">Diagram of a DC fast charger: grid supply, LT panel, the charger cabinet with input protection, power modules, DC output, controller, screen and cooling, then the cable and CCS2 gun to the car battery. A CMS connects to the controller over OCPP.</title>
+      <defs>
+        <marker id="dci-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#13B26B" /></marker>
+      </defs>
+      <!-- CMS cloud -->
+      <g class="part" data-part="controller-cms">
+        <rect x="380" y="8" width="200" height="40" rx="20" class="cloud" />
+        <text x="480" y="33" class="lbl c">CMS over OCPP (4G / Ethernet)</text>
+      </g>
+      <line x1="480" y1="48" x2="480" y2="92" class="data" />
+      <!-- cabinet -->
+      <rect x="250" y="80" width="460" height="300" rx="18" class="cabinet" />
+      <text x="268" y="372" class="lbl dim">DC charger cabinet</text>
+      <!-- power flow lines -->
+      <path d="M78 250 H140" class="flow" /><path d="M210 250 H272" class="flow" /><path d="M362 250 H398" class="flow" /><path d="M538 250 H566" class="flow" /><path d="M686 250 H760" class="flow" /><path d="M820 250 H858" class="flow" marker-end="url(#dci-arrow)" />
+      <!-- grid -->
+      <g class="part" data-part="grid" tabindex="0" role="button" aria-label="Grid supply">
+        <rect x="14" y="200" width="66" height="100" rx="12" class="blk" />
+        <path d="M47 214 l-16 70 M47 214 l16 70 M33 240 h28 M28 262 h38" class="ico" />
+        <text x="47" y="322" class="lbl c">Grid</text>
+      </g>
+      <g class="part" data-part="panel" tabindex="0" role="button" aria-label="LT panel">
+        <rect x="140" y="200" width="70" height="100" rx="12" class="blk" />
+        <rect x="156" y="216" width="38" height="16" rx="3" class="ico-f" /><rect x="156" y="240" width="38" height="16" rx="3" class="ico-f" /><rect x="156" y="264" width="38" height="16" rx="3" class="ico-f" />
+        <text x="175" y="322" class="lbl c">LT panel</text>
+      </g>
+      <g class="part" data-part="input" tabindex="0" role="button" aria-label="Input protection">
+        <rect x="272" y="200" width="90" height="100" rx="12" class="blk" />
+        <text x="317" y="244" class="lbl c">Input</text><text x="317" y="262" class="lbl c">protection</text>
+      </g>
+      <g class="part" data-part="modules" tabindex="0" role="button" aria-label="Power modules">
+        <rect x="398" y="170" width="140" height="160" rx="12" class="blk" />
+        <rect x="414" y="186" width="108" height="34" rx="6" class="mod" /><rect x="414" y="228" width="108" height="34" rx="6" class="mod" /><rect x="414" y="270" width="108" height="34" rx="6" class="mod" />
+        <text x="468" y="208" class="lbl c w">AC → DC</text><text x="468" y="250" class="lbl c w">AC → DC</text><text x="468" y="292" class="lbl c w">AC → DC</text>
+        <text x="468" y="322" class="lbl c">Power modules</text>
+      </g>
+      <g class="part" data-part="dcout" tabindex="0" role="button" aria-label="DC output">
+        <rect x="566" y="200" width="120" height="100" rx="12" class="blk" />
+        <text x="626" y="236" class="lbl c">DC output</text><text x="626" y="256" class="lbl c dim">contactors · fuses</text><text x="626" y="274" class="lbl c dim">DC meter</text>
+      </g>
+      <g class="part" data-part="controller" tabindex="0" role="button" aria-label="Controller">
+        <rect x="398" y="96" width="140" height="56" rx="12" class="blk" />
+        <text x="468" y="129" class="lbl c">Controller</text>
+      </g>
+      <line x1="468" y1="152" x2="468" y2="170" class="data" />
+      <g class="part" data-part="hmi" tabindex="0" role="button" aria-label="Screen, RFID and QR">
+        <rect x="566" y="96" width="120" height="76" rx="12" class="blk" />
+        <rect x="586" y="108" width="80" height="34" rx="4" class="ico-f" /><text x="626" y="160" class="lbl c">Screen · RFID · QR</text>
+      </g>
+      <g class="part" data-part="cooling" tabindex="0" role="button" aria-label="Cooling">
+        <rect x="272" y="96" width="90" height="76" rx="12" class="blk" />
+        <circle cx="317" cy="124" r="16" class="ico" /><path d="M317 108 v32 M301 124 h32" class="ico" />
+        <text x="317" y="160" class="lbl c">Cooling</text>
+      </g>
+      <g class="part" data-part="gun" tabindex="0" role="button" aria-label="Cable and CCS2 gun">
+        <rect x="760" y="210" width="60" height="80" rx="12" class="blk" />
+        <circle cx="782" cy="240" r="7" class="ico" /><circle cx="798" cy="240" r="7" class="ico" /><circle cx="790" cy="266" r="9" class="ico" />
+        <text x="790" y="312" class="lbl c">CCS2</text>
+      </g>
+      <g class="part" data-part="car" tabindex="0" role="button" aria-label="Car battery and BMS">
+        <rect x="858" y="196" width="90" height="108" rx="14" class="blk" />
+        <rect x="874" y="226" width="58" height="34" rx="5" class="ico" /><rect x="880" y="232" width="34" height="22" rx="2" class="batt" />
+        <text x="903" y="284" class="lbl c">Battery</text><text x="903" y="300" class="lbl c dim">BMS</text>
+      </g>
+      <path d="M538 124 C 700 60, 860 120, 903 196" class="data" />
+      <text x="760" y="92" class="lbl dim">car ↔ charger talk</text>
+    </svg>
+    <div class="dci-info" aria-live="polite">
+      <h3 id="dci-title">{parts[3].title}</h3>
+      <p id="dci-text">{parts[3].text}</p>
+    </div>
+  </div>
+  <div class="dci-list" role="list">
+    {parts.map((p, i) => <button type="button" role="listitem" data-part={p.id} aria-pressed={i === 3 ? 'true' : 'false'}>{p.title}</button>)}
+  </div>
+  <script type="application/json" id="dci-data" set:html={JSON.stringify(parts)} />
+</div>
+
+<style>
+  .dci-box { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: center; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 24px; }
+  .dci-svg { width: 100%; height: auto; }
+  .dci-svg .cabinet { fill: #F7FAFD; stroke: #C9D6E8; stroke-width: 2; stroke-dasharray: 6 6; }
+  .dci-svg .blk { fill: #fff; stroke: #0B2545; stroke-width: 2; transition: fill .15s, stroke .15s; }
+  .dci-svg .mod { fill: #0B2545; }
+  .dci-svg .cloud { fill: #E3F4EB; stroke: #0B7D4A; stroke-width: 1.5; }
+  .dci-svg .ico { fill: none; stroke: #0B2545; stroke-width: 2; stroke-linecap: round; }
+  .dci-svg .ico-f { fill: #E4EDF7; stroke: #0B2545; stroke-width: 1.5; }
+  .dci-svg .batt { fill: #13B26B; }
+  .dci-svg .lbl { font: 600 13px var(--font-body); fill: #0B2545; }
+  .dci-svg .lbl.c { text-anchor: middle; }
+  .dci-svg .lbl.w { fill: #fff; font-size: 12px; }
+  .dci-svg .lbl.dim { fill: #5A6B82; font-weight: 500; font-size: 12px; }
+  .dci-svg .flow { stroke: #13B26B; stroke-width: 5; fill: none; stroke-linecap: round; stroke-dasharray: 2 12; animation: dci-flow 1s linear infinite; }
+  .dci-svg .data { stroke: #5A6B82; stroke-width: 1.5; fill: none; stroke-dasharray: 4 5; }
+  .dci-svg .part { cursor: pointer; outline: none; }
+  .dci-svg .part:hover .blk, .dci-svg .part:focus-visible .blk { stroke: #0B7D4A; }
+  .dci-svg .part.on .blk { fill: #E3F4EB; stroke: #0B7D4A; stroke-width: 3; }
+  @keyframes dci-flow { to { stroke-dashoffset: -14; } }
+  @media (prefers-reduced-motion: reduce) { .dci-svg .flow { animation: none; stroke-dasharray: none; } }
+  .dci-info { background: var(--navy); color: #C9D6E8; border-radius: var(--radius-lg); padding: 20px; min-height: 180px; }
+  .dci-info h3 { color: #fff; font-size: 19px; margin-bottom: 8px; }
+  .dci-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .dci-list button { border: 1.5px solid var(--line-strong); background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; font-weight: 600; color: var(--ink); min-height: 40px; }
+  .dci-list button[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+  @media (max-width: 900px) { .dci-box { grid-template-columns: minmax(0, 1fr); padding: 14px; } .dci-info { min-height: 0; } }
+</style>
+
+<script>
+  const root = document.getElementById('dci');
+  if (root) {
+    const parts = JSON.parse(document.getElementById('dci-data')!.textContent || '[]') as { id: string; title: string; text: string }[];
+    const show = (id: string) => {
+      const p = parts.find((x) => x.id === id);
+      if (!p) return;
+      document.getElementById('dci-title')!.textContent = p.title;
+      document.getElementById('dci-text')!.textContent = p.text;
+      root.querySelectorAll('.part').forEach((g) => g.classList.toggle('on', (g as HTMLElement).dataset.part === id));
+      root.querySelectorAll<HTMLButtonElement>('.dci-list button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.part === id)));
+    };
+    root.addEventListener('click', (e) => {
+      const t = (e.target as Element).closest<HTMLElement>('[data-part]');
+      if (t) show(t.dataset.part === 'controller-cms' ? 'controller' : t.dataset.part!);
+    });
+    root.addEventListener('keydown', (e) => {
+      const t = (e.target as Element).closest<HTMLElement>('.part[data-part]');
+      if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(t.dataset.part!); }
+    });
+    show('modules');
+  }
+</script>

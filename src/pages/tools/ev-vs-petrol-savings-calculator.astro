@@ -1,0 +1,182 @@
+---
+import ToolPage from '../../layouts/ToolPage.astro';
+import Icon from '../../components/Icon.astro';
+import rates from '../../data/rates.json';
+import site from '../../data/site.json';
+import { VEHICLES, savings, rupees, type Fuel } from '../../lib/calc';
+import { formatDate } from '../../lib/text';
+
+const fuelUnit = (f: Fuel) => (f === 'cng' ? 'kg' : 'litre');
+const fuelName = (f: Fuel) => (f === 'cng' ? 'CNG' : f[0].toUpperCase() + f.slice(1));
+const v0 = VEHICLES.find((v) => v.id === 'car')!;
+const r0 = savings({ fuel: v0.fuel, kmPerDay: v0.kmPerDay, days: v0.days, fuelPrice: rates.fuel[v0.fuel].price, mileage: v0.mileage, evKmPerKwh: v0.evKmPerKwh, electricityRate: rates.homeElectricity.default, co2PerFuelUnit: rates.co2[v0.fuel], gridKgPerKwh: rates.co2.gridKgPerKwh });
+const charging = [
+  { id: 'home', label: 'At home', rate: rates.homeElectricity.default },
+  { id: 'ac', label: 'Public AC', rate: rates.publicCharging.ac.default },
+  { id: 'dc', label: 'Public DC fast', rate: rates.publicCharging.dc.default },
+];
+const cfg = { vehicles: VEHICLES, fuel: { petrol: rates.fuel.petrol.price, diesel: rates.fuel.diesel.price, cng: rates.fuel.cng.price }, co2: rates.co2, charging, wa: site.whatsapp };
+const examples = VEHICLES.map((v) => ({ v, r: savings({ fuel: v.fuel, kmPerDay: v.kmPerDay, days: v.days, fuelPrice: rates.fuel[v.fuel].price, mileage: v.mileage, evKmPerKwh: v.evKmPerKwh, electricityRate: rates.homeElectricity.default, co2PerFuelUnit: rates.co2[v.fuel], gridKgPerKwh: rates.co2.gridKgPerKwh }) }));
+const d = (s: string) => formatDate(new Date(s));
+
+const faqs = [
+  { q: 'How much does an electric car save over petrol in India?', a: `At ${v0.kmPerDay} km a day, a petrol car doing ${v0.mileage} km a litre spends about ${rupees(r0.fuelCost)} a month on petrol at ₹${rates.fuel.petrol.price.toFixed(2)} a litre (Delhi). An electric car doing ${v0.evKmPerKwh} km a unit, charged at home at ₹${rates.homeElectricity.default} a unit, spends about ${rupees(r0.evCost)}. That is roughly ${rupees(r0.monthly)} a month, or ${rupees(r0.yearly)} a year, saved on running costs.` },
+  { q: 'Does charging at public fast chargers still save money?', a: `Usually yes, but less. At ₹${rates.publicCharging.dc.default} a unit on a DC fast charger the running cost per km is more than double home charging. Pick “Public DC fast” in the calculator to see your numbers.` },
+  { q: 'What does this comparison leave out?', a: 'The price difference between the two vehicles, insurance, servicing, tyres, battery life and resale value. These vary a lot by model, so compare quotes for the vehicles you are considering. This calculator covers fuel versus electricity only.' },
+  { q: 'How is the CO₂ saving worked out?', a: `Tailpipe CO₂ from the fuel you no longer burn (petrol 2.31 kg a litre, diesel 2.68 kg a litre, CNG 2.75 kg a kg), minus the CO₂ from producing the electricity, using India’s grid average of ${rates.co2.gridKgPerKwh} kg CO₂ a unit from the Central Electricity Authority.` },
+  { q: 'What is the cheapest way to charge at home?', a: 'A dedicated wall box or socket on its own circuit, used overnight, is usually the cheapest and safest. Some DISCOMs offer a separate EV connection at a lower tariff; ask yours. See [home EV charger installation](/services/home-ev-charger-installation/).' },
+];
+---
+<ToolPage
+  title="EV vs Petrol Savings Calculator for India | Proline"
+  description="See how much an electric scooter, car, SUV or auto saves on fuel each month and year compared with petrol, diesel or CNG, plus the CO₂ you avoid."
+  h1="EV vs petrol savings calculator"
+  label="EV savings calculator"
+  intro="Find out how much money an electric vehicle saves you on running costs compared with petrol, diesel or CNG, using current fuel prices and your own driving. The result shows first: monthly and yearly savings, cost per km and the CO₂ you avoid."
+  faqs={faqs}
+  related={['/blog/ev-vs-petrol-savings/', '/services/home-ev-charger-installation/', '/chargers/ac-chargers/', '/tools/charger-finder/', '/chargers/2w-3w-chargers/']}
+  form="quote" need="Home charger installation"
+  ctaTitle="Charge at home for the lowest running cost"
+  ctaLead="We fit wall-box chargers with their own DB box and earthing, and help you choose a charger for your EV, any brand."
+  waText="Hello Proline, I used your EV savings calculator and want a home charger.">
+
+  <div class="calc" id="save" data-cfg={JSON.stringify(cfg)}>
+    <form class="calc-in" onsubmit="return false" aria-label="Your driving">
+      <div class="calc-sticky" aria-hidden="true"><span>You save a month</span><strong id="s-sticky">{rupees(r0.monthly)}</strong><a href="#s-monthly">Details ↓</a></div>
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field">
+          <label for="s-vehicle">Vehicle</label>
+          <select id="s-vehicle">{VEHICLES.map((v) => <option value={v.id} selected={v.id === v0.id}>{v.label}</option>)}</select>
+        </div>
+        <div class="field">
+          <label for="s-fuel">Compare with</label>
+          <select id="s-fuel">{(['petrol', 'diesel', 'cng'] as Fuel[]).map((f) => <option value={f} selected={f === v0.fuel}>{fuelName(f)}</option>)}</select>
+        </div>
+      </div>
+      <div class="field range-field">
+        <div class="rf-top"><label for="s-km">Kilometres a day</label><output id="s-km-out" for="s-km">{v0.kmPerDay} km</output></div>
+        <input id="s-km" type="range" min="5" max="300" step="5" value={v0.kmPerDay} />
+      </div>
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field"><label for="s-days">Driving days a month</label><input id="s-days" type="number" min="1" max="31" value={v0.days} inputmode="numeric" /></div>
+        <div class="field"><label for="s-price" id="s-price-l">Petrol price (₹ a litre)</label><input id="s-price" type="number" min="0" step="0.01" value={rates.fuel[v0.fuel].price} inputmode="decimal" /><p class="hint" id="s-price-hint">Delhi, {d(rates.fuel.petrol.date)}</p></div>
+        <div class="field"><label for="s-mileage" id="s-mileage-l">Mileage (km a litre)</label><input id="s-mileage" type="number" min="1" step="0.5" value={v0.mileage} inputmode="decimal" /></div>
+        <div class="field"><label for="s-ev">EV efficiency (km a unit)</label><input id="s-ev" type="number" min="1" step="0.5" value={v0.evKmPerKwh} inputmode="decimal" /><p class="hint">Including charging losses</p></div>
+      </div>
+      <div class="field">
+        <span class="label" id="s-where-l">Where you charge</span>
+        <div class="radio-row" role="radiogroup" aria-labelledby="s-where-l">
+          {charging.map((c, i) => <label><input type="radio" name="s-where" value={c.id} checked={i === 0} />{c.label}</label>)}
+        </div>
+      </div>
+      <div class="field"><label for="s-rate">Electricity rate (₹ a unit)</label><input id="s-rate" type="number" min="0" step="0.5" value={rates.homeElectricity.default} inputmode="decimal" /><p class="hint" id="s-rate-hint">{rates.homeElectricity.note}</p></div>
+    </form>
+
+    <div class="calc-out" aria-live="polite">
+      <div>
+        <p class="small">You save about</p>
+        <p class="calc-big" id="s-monthly">{rupees(r0.monthly)}<small> /month</small></p>
+        <p class="small" id="s-sub" style="margin-top:6px">{rupees(r0.yearly)} a year on running costs</p>
+      </div>
+      <dl class="calc-rows">
+        <div><dt id="s-fuelcost-l">Petrol a month</dt><dd id="s-fuelcost">{rupees(r0.fuelCost)}</dd></div>
+        <div><dt>Charging a month</dt><dd id="s-evcost">{rupees(r0.evCost)}</dd></div>
+        <div><dt>Saved in 5 years</dt><dd id="s-5y">{rupees(r0.fiveYear)}</dd></div>
+        <div><dt>Cost per km</dt><dd id="s-perkm">₹{r0.fuelPerKm.toFixed(2)} vs ₹{r0.evPerKm.toFixed(2)}</dd></div>
+        <div><dt>Distance a month</dt><dd id="s-kmm">{Math.round(r0.kmMonth).toLocaleString('en-IN')} km</dd></div>
+        <div><dt>CO₂ avoided a year</dt><dd id="s-co2">{Math.round(r0.co2YearKg).toLocaleString('en-IN')} kg</dd></div>
+      </dl>
+      <div class="btn-row">
+        <a class="btn btn-primary" id="s-wa" href="#" rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Send this to WhatsApp</a>
+        <a class="btn btn-ghost-light" href="#quote">Get a home charger quote</a>
+      </div>
+      <p class="calc-note">Running costs only: fuel against electricity. Fuel prices change often; type today’s price for your city. The vehicle price, insurance and servicing are not included.</p>
+    </div>
+  </div>
+
+  <div slot="method">
+    <h2 id="method-title">How the savings are worked out</h2>
+    <ol>
+      <li><strong>Distance a month</strong> = kilometres a day × driving days.</li>
+      <li><strong>Fuel cost</strong> = distance ÷ mileage × fuel price.</li>
+      <li><strong>Charging cost</strong> = distance ÷ EV efficiency (km a unit) × electricity rate.</li>
+      <li><strong>Saving</strong> = fuel cost − charging cost, a month, a year and over 5 years at today’s prices.</li>
+      <li><strong>CO₂ avoided</strong> = CO₂ from the fuel not burnt − CO₂ from the electricity used, over a year.</li>
+    </ol>
+    <h3>Prices and factors used</h3>
+    <ul>
+      <li>Petrol ₹{rates.fuel.petrol.price.toFixed(2)} and diesel ₹{rates.fuel.diesel.price.toFixed(2)} a litre in Delhi on {d(rates.fuel.petrol.date)} (<a href={rates.fuel.petrol.sourceUrl} rel="noopener" target="_blank">The Hans India</a>).</li>
+      <li>CNG ₹{rates.fuel.cng.price.toFixed(2)} a kg in Delhi from {d(rates.fuel.cng.date)} (<a href={rates.fuel.cng.sourceUrl} rel="noopener" target="_blank">Angel One</a>).</li>
+      <li>Home charging ₹{rates.homeElectricity.default} a unit: {rates.homeElectricity.note} Public charging ₹{rates.publicCharging.ac.default} a unit on AC and ₹{rates.publicCharging.dc.default} on DC, the middle of the ranges reported by <a href={rates.publicCharging.sourceUrl} rel="noopener" target="_blank">Statiq</a>.</li>
+      <li>Grid CO₂: {rates.co2.gridKgPerKwh} kg a unit (<a href={rates.co2.gridSourceUrl} rel="noopener" target="_blank">Central Electricity Authority, 2023-24</a>). {rates.co2.fuelNote}</li>
+    </ul>
+    <h3>Typical results at these prices</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">Vehicle</th><th scope="col">Compared with</th><th scope="col">Km a day</th><th scope="col">Saving a month</th><th scope="col">Saving a year</th></tr></thead>
+        <tbody>{examples.map(({ v, r }) => <tr><td>{v.label}</td><td>{fuelName(v.fuel)}, {v.mileage} km/{fuelUnit(v.fuel)}</td><td>{v.kmPerDay}</td><td>{rupees(r.monthly)}</td><td>{rupees(r.yearly)}</td></tr>)}</tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin-top:10px">EV charged at home at ₹{rates.homeElectricity.default} a unit; EV efficiency as in the calculator presets.</p>
+    <p>For more detail and what this comparison leaves out, read <a href="/blog/ev-vs-petrol-savings/">EV vs petrol: how much an electric vehicle really saves</a>.</p>
+  </div>
+</ToolPage>
+
+<script>
+  import { savings, rupees, type Fuel, type VehiclePreset } from '../../lib/calc';
+  const root = document.getElementById('save');
+  if (root) {
+    const cfg = JSON.parse(root.dataset.cfg || '{}') as { vehicles: VehiclePreset[]; fuel: Record<Fuel, number>; co2: Record<string, number>; charging: { id: string; label: string; rate: number }[]; wa: string };
+    const el = <T extends HTMLElement = HTMLInputElement>(id: string) => document.getElementById(id) as T;
+    const num = (id: string) => Number(el(id).value) || 0;
+    const fuelName = (f: Fuel) => (f === 'cng' ? 'CNG' : f[0].toUpperCase() + f.slice(1));
+    const unit = (f: Fuel) => (f === 'cng' ? 'kg' : 'litre');
+    const setFuel = (f: Fuel) => {
+      el('s-price').value = String(cfg.fuel[f]);
+      el('s-price-l').textContent = `${fuelName(f)} price (₹ a ${unit(f)})`;
+      el('s-mileage-l').textContent = `Mileage (km a ${unit(f)})`;
+      el('s-price-hint').textContent = 'Delhi price; type yours';
+    };
+    const calc = () => {
+      const f = el<HTMLSelectElement>('s-fuel').value as Fuel;
+      const km = num('s-km');
+      el('s-km-out').textContent = `${km} km`;
+      const r = savings({ fuel: f, kmPerDay: km, days: num('s-days'), fuelPrice: num('s-price'), mileage: num('s-mileage'), evKmPerKwh: num('s-ev'), electricityRate: num('s-rate'), co2PerFuelUnit: cfg.co2[f], gridKgPerKwh: cfg.co2.gridKgPerKwh });
+      el('s-monthly').innerHTML = `${rupees(r.monthly)}<small> /month</small>`;
+      el('s-sticky').textContent = rupees(r.monthly);
+      el('s-sub').textContent = r.monthly >= 0 ? `${rupees(r.yearly)} a year on running costs` : 'Charging costs more than fuel at these numbers';
+      el('s-fuelcost-l').textContent = `${fuelName(f)} a month`;
+      el('s-fuelcost').textContent = rupees(r.fuelCost);
+      el('s-evcost').textContent = rupees(r.evCost);
+      el('s-5y').textContent = rupees(r.fiveYear);
+      el('s-perkm').textContent = `₹${r.fuelPerKm.toFixed(2)} vs ₹${r.evPerKm.toFixed(2)}`;
+      el('s-kmm').textContent = `${Math.round(r.kmMonth).toLocaleString('en-IN')} km`;
+      el('s-co2').textContent = `${Math.round(r.co2YearKg).toLocaleString('en-IN')} kg`;
+      const v = el<HTMLSelectElement>('s-vehicle').selectedOptions[0].textContent;
+      const summary = `EV savings calculator: ${v} vs ${fuelName(f)}, ${km} km a day → about ${rupees(r.monthly)} a month saved (${rupees(r.yearly)} a year).`;
+      (el('s-wa') as unknown as HTMLAnchorElement).href = `https://wa.me/${cfg.wa}?text=${encodeURIComponent('Hello Proline, ' + summary + ' I would like a home charger.')}`;
+      (window as any).prolineFill?.('#quote-form', summary, 'Home charger installation');
+    };
+    root.addEventListener('change', (e) => {
+      const t = e.target as HTMLInputElement;
+      if (t.id === 's-vehicle') {
+        const v = cfg.vehicles.find((x) => x.id === t.value)!;
+        el<HTMLSelectElement>('s-fuel').value = v.fuel;
+        setFuel(v.fuel);
+        el('s-mileage').value = String(v.mileage);
+        el('s-ev').value = String(v.evKmPerKwh);
+        el('s-km').value = String(v.kmPerDay);
+        el('s-days').value = String(v.days);
+      }
+      if (t.id === 's-fuel') setFuel(t.value as Fuel);
+      if (t.name === 's-where') {
+        const c = cfg.charging.find((x) => x.id === t.value)!;
+        el('s-rate').value = String(c.rate);
+        el('s-rate-hint').textContent = t.value === 'home' ? 'Use the rate on your electricity bill' : t.value === 'ac' ? 'Public AC charging is usually ₹8–15 a unit' : 'Public DC fast charging is usually ₹15–25 a unit';
+      }
+      calc();
+    });
+    root.addEventListener('input', calc);
+    calc();
+  }
+</script>

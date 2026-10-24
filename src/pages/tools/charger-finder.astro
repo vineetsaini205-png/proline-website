@@ -1,0 +1,134 @@
+---
+import ToolPage from '../../layouts/ToolPage.astro';
+import Icon from '../../components/Icon.astro';
+import site from '../../data/site.json';
+import { findCharger, type FinderInput } from '../../lib/finder';
+
+const def: FinderInput = { vehicles: ['car'], place: 'home', stay: 'long', supply: 'single', loadKw: null, budget: 'mid' };
+const r0 = findCharger(def);
+const vehicles = [['2w', 'Scooters and bikes'], ['3w', 'E-rickshaws and 3Ws'], ['car', 'Cars and SUVs'], ['bus', 'Buses and trucks']];
+const places = [['home', 'Home'], ['society', 'Housing society'], ['business', 'Office, hotel, mall'], ['public', 'Public or highway station'], ['depot', 'Fleet depot']];
+const stays = [['long', 'Overnight or 8+ hours'], ['medium', '1–8 hours'], ['short', 'Under an hour']];
+const supplies = [['single', 'Single phase'], ['three', 'Three phase'], ['unknown', 'Not sure']];
+const budgets = [['basic', 'Basic'], ['mid', 'Mid'], ['premium', 'Premium']];
+const faqs = [
+  { q: 'Which EV charger should I buy for home?', a: 'For most cars, a 7.4 kW AC wall box on a single-phase connection, or 11 kW on three phase if your car accepts it. Check your sanctioned load first; a 3.3 kW charger suits low loads and two-wheelers. See [AC and home chargers](/chargers/ac-chargers/).' },
+  { q: 'Is a 22 kW charger better than 7.4 kW?', a: 'Only if your car accepts 22 kW on AC, and few cars in India do. Most accept 7.2 kW and some 11 kW, so a 22 kW charger would charge them at those speeds anyway, while needing three-phase supply.' },
+  { q: 'When do I need a DC fast charger?', a: 'When vehicles stop for under an hour: highways, public stations, fleets that need quick top-ups. DC chargers need a three-phase commercial connection with a much higher load. See [DC fast chargers](/chargers/dc-fast-chargers/).' },
+  { q: 'Why don’t you name brands here?', a: 'Because the right brand depends on your site and budget, and models change often. Tell us your answers and we send options from up to three brands we work with, compared on features, warranty and service.' },
+  { q: 'Is the advice free?', a: 'Yes. Advice on choosing a charger is free, for any brand. Installation, and the site survey where one is needed, are quoted separately.' },
+];
+---
+<ToolPage
+  title="EV Charger Finder: Which Charger Do You Need? | Proline"
+  description="Answer six questions about your vehicles, site and supply, and see which EV charger type and power fits, what to look for, and what the installation needs."
+  h1="EV charger finder"
+  label="Charger finder"
+  intro="Pick your vehicles, where they park and your electricity supply, and the finder suggests the charger type and power that fit, the features worth paying for and what the installation needs. Then ask us for options from up to three brands."
+  faqs={faqs}
+  related={['/chargers/', '/chargers/ac-chargers/', '/chargers/dc-fast-chargers/', '/tools/installation-checklist/', '/services/ev-charger-installation/']}
+  form="quote" need="Help choosing a charger (any brand)"
+  ctaTitle="Get options from up to three brands"
+  ctaLead="Send your answers and we reply with charger options compared on features, warranty and service, plus a quote for installation. The advice is free."
+  waText="Hello Proline, I used your charger finder and would like charger options.">
+
+  <div class="calc" id="finder" data-wa={site.whatsapp}>
+    <form class="calc-in" onsubmit="return false" aria-label="Your vehicles and site">
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label">Vehicles to charge</legend>
+        <div class="radio-row">{vehicles.map(([v, l]) => <label><input type="checkbox" name="f-veh" value={v} checked={def.vehicles.includes(v as any)} />{l}</label>)}</div>
+      </fieldset>
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label">Where they park</legend>
+        <div class="radio-row">{places.map(([v, l]) => <label><input type="radio" name="f-place" value={v} checked={v === def.place} />{l}</label>)}</div>
+      </fieldset>
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label">How long they stay</legend>
+        <div class="radio-row">{stays.map(([v, l]) => <label><input type="radio" name="f-stay" value={v} checked={v === def.stay} />{l}</label>)}</div>
+      </fieldset>
+      <fieldset class="field" style="border:0;padding:0;margin:0">
+        <legend class="label">Electricity supply</legend>
+        <div class="radio-row">{supplies.map(([v, l]) => <label><input type="radio" name="f-supply" value={v} checked={v === def.supply} />{l}</label>)}</div>
+      </fieldset>
+      <div class="grid grid-2" style="gap:14px">
+        <div class="field"><label for="f-load">Sanctioned load (kW) <span class="opt">(optional)</span></label><input id="f-load" type="number" min="0" step="1" inputmode="decimal" placeholder="On your bill" /></div>
+        <fieldset class="field" style="border:0;padding:0;margin:0">
+          <legend class="label">Budget level</legend>
+          <div class="radio-row">{budgets.map(([v, l]) => <label><input type="radio" name="f-budget" value={v} checked={v === def.budget} />{l}</label>)}</div>
+        </fieldset>
+      </div>
+    </form>
+
+    <div class="calc-out" aria-live="polite">
+      <div id="f-picks">
+        <p class="small">Suggested charger</p>
+        {r0.picks.map((p) => (
+          <div class="pick"><h3>{p.title}</h3><p class="pick-meta">{p.power} · {p.connector}</p><p>{p.why}</p></div>
+        ))}
+      </div>
+      <div>
+        <h3 style="font-size:16px">Worth having at this budget</h3>
+        <ul class="ticks" id="f-features" style="margin-top:10px;font-size:14.5px">{r0.features.map((f) => <li>{f}</li>)}</ul>
+      </div>
+      <div>
+        <h3 style="font-size:16px">What the installation needs</h3>
+        <ul class="ticks" id="f-install" style="margin-top:10px;font-size:14.5px">{r0.install.map((f) => <li>{f}</li>)}</ul>
+      </div>
+      <div id="f-notes">{r0.notes.map((n) => <p class="calc-note" style="margin-top:6px">{n}</p>)}</div>
+      <div class="btn-row">
+        <a class="btn btn-primary" id="f-wa" href="#" rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Get options on WhatsApp</a>
+        <a class="btn btn-ghost-light" href="#quote">Ask for a quote</a>
+      </div>
+    </div>
+  </div>
+
+  <div slot="method">
+    <h2 id="method-title">How the finder chooses</h2>
+    <p>It applies the same rules of thumb we use on a first call. The site survey, or photos of your meter and DB, confirm the choice.</p>
+    <ul>
+      <li><strong>How long vehicles stay decides AC or DC.</strong> Parked for hours: AC. Stopping for under an hour: DC fast charging.</li>
+      <li><strong>The car decides AC power.</strong> Most cars in India accept 7.2 kW on AC and some 11 kW, so 7.4 kW fits most homes and 22 kW only helps cars that accept it.</li>
+      <li><strong>Your supply sets the limit.</strong> 7.4 kW works on single phase if the load allows; 11–22 kW AC and all DC chargers need three phase, and DC needs a much higher load.</li>
+      <li><strong>Two- and three-wheelers</strong> mostly charge from portable chargers on 16 A sockets; newer models also use Type 6 (AC) and Type 7 (DC) connectors.</li>
+      <li><strong>Budget changes features, not safety.</strong> Every option needs proper protection and earthing; higher budgets add apps, OCPP, load management and payment.</li>
+    </ul>
+    <p>Next, see what your job involves with the <a href="/tools/installation-checklist/">installation checklist</a>, or read about <a href="/chargers/">all chargers we supply</a>.</p>
+  </div>
+</ToolPage>
+
+<style>
+  .pick { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 16px; margin-top: 10px; }
+  .pick h3 { font-size: 18px; color: #fff; }
+  .pick .pick-meta { color: var(--green); font-weight: 600; font-size: 14px; margin-top: 4px; }
+  .pick p:last-child { font-size: 14.5px; margin-top: 6px; color: #C9D6E8; }
+</style>
+
+<script>
+  import { findCharger, type FinderInput, type Vehicle, type Place, type Stay, type Supply, type Budget } from '../../lib/finder';
+  const root = document.getElementById('finder');
+  if (root) {
+    const val = (n: string) => root.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value || '';
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const run = () => {
+      const load = Number((document.getElementById('f-load') as HTMLInputElement).value);
+      const input: FinderInput = {
+        vehicles: Array.from(root.querySelectorAll<HTMLInputElement>('input[name="f-veh"]:checked')).map((x) => x.value as Vehicle),
+        place: val('f-place') as Place, stay: val('f-stay') as Stay, supply: val('f-supply') as Supply, budget: val('f-budget') as Budget,
+        loadKw: load > 0 ? load : null,
+      };
+      const r = findCharger(input);
+      document.getElementById('f-picks')!.innerHTML = '<p class="small">Suggested charger</p>' + r.picks.map((p) => `<div class="pick"><h3>${esc(p.title)}</h3><p class="pick-meta">${esc(p.power)} · ${esc(p.connector)}</p><p>${esc(p.why)}</p></div>`).join('');
+      document.getElementById('f-features')!.innerHTML = r.features.map((f) => `<li>${esc(f)}</li>`).join('');
+      document.getElementById('f-install')!.innerHTML = r.install.map((f) => `<li>${esc(f)}</li>`).join('');
+      document.getElementById('f-notes')!.innerHTML = r.notes.map((n) => `<p class="calc-note" style="margin-top:6px">${esc(n)}</p>`).join('');
+      const label = (n: string) => root.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.parentElement?.textContent?.trim() || '';
+      const vehicles = Array.from(root.querySelectorAll<HTMLInputElement>('input[name="f-veh"]:checked')).map((x) => x.parentElement?.textContent?.trim()).join(', ') || 'not chosen';
+      const summary = `Charger finder: ${vehicles}; ${label('f-place')}; ${label('f-stay')}; ${label('f-supply')}${input.loadKw ? `, ${input.loadKw} kW load` : ''}; ${label('f-budget')} budget → ${r.picks.map((p) => `${p.title} (${p.power})`).join(' + ')}.`;
+      (document.getElementById('f-wa') as HTMLAnchorElement).href = `https://wa.me/${root.dataset.wa}?text=${encodeURIComponent('Hello Proline, ' + summary + ' Please send me options from up to three brands.')}`;
+      (window as any).prolineFill?.('#quote-form', summary, 'Help choosing a charger (any brand)');
+    };
+    root.addEventListener('change', run);
+    root.addEventListener('input', run);
+    run();
+  }
+</script>
