@@ -12,7 +12,7 @@
   "callHours": "Calls 10 am–7 pm",
   "whatsappHours": "WhatsApp any time",
   "offerStrip": "Free consultation: we help you pick the right charger, any brand.",
-  "formEndpoint": "",
+  "formEndpoint": "https://script.google.com/macros/s/AKfycbxN4j9jji98iwzhmkJmu2sBzweAR8uLDRBlWd619E4uyNCXesUa9E_w4y6GJFA9mTmb4w/exec",
   "stats": [
     { "value": "500+", "label": "chargers installed" },
     { "value": "200+", "label": "technicians" },

@@ -146,7 +146,7 @@ Company
 - [x] `404`
 
 ### Site-wide
-- [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → Google Apps Script (`docs/apps-script.gs`: Sheet + email to Sales@); prefilled WhatsApp until the script URL is set in `site.json`
+- [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → **live** Google Apps Script web app (owner's Sheet "Website Inquiry", tab "Enquiries"; Apps Script project "Proline website enquiries", deployed 24 Oct as the owner, access Anyone). URL in `site.json` → `formEndpoint`. Test row sent 24 Oct and arrived. If the script changes: Deploy → Manage deployments → Edit → New version (same URL)
 - [x] SEO: titles ≤ 60, descriptions, canonical, Open Graph, sitemap, robots.txt (AI bots blocked), breadcrumbs (`npm run check:seo`)
 - [x] Schema: Organization/Electrician (Delhi, no street; hours left out until days are confirmed), Service, BreadcrumbList, BlogPosting, FAQPage, SoftwareApplication (/cms/), WebApplication (tools)
 - [x] Brand search: "Proline Electrical Works" in home title, `alternateName` Proline / Proline EV / Proline Electrical / Proline CMS
@@ -163,7 +163,6 @@ Company
 - Which CMS features are live at launch (copy section 10)
 - AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)?
 - Project stories, client quotes (with permission), registrations (GST, Udyam, licence) — none received, so none shown
-- Enquiry Sheet: owner created it and shared the link (24 Oct). Waiting for the Apps Script web-app URL (ends in /exec) → put it in `src/data/site.json` → `formEndpoint`
 - GitHub logins for admin users
 
 ## Decisions log
@@ -177,3 +176,4 @@ Company
 - 24 Oct 2026: photos re-exported with minimal blur; PROGRESS.md created; first push.
 - 24 Oct 2026: skeleton, homepage, templates and hubs built and pushed. Seven writers drafting Markdown in parallel: services (10), chargers (5), batteries (4) + /solar-ev-charging/, audiences (7), blog (3), start-a-station guide + FAQs. If a session ends before they report back, check which files exist in `src/content/` and run the checker; write only the missing ones.
 - 24 Oct 2026: CMS pages (7), tools (4 + hub), company and resource pages, blog template, widgets built and pushed. Owner asked for cheapest/safest/feature-rich/customisable CMS searches → security + cost pages, re-titles, buyer's guide. Owner confirmed: no commission, no per-charger fee, hosted option with 24/7 support.
+- 24 Oct 2026: enquiry Sheet connected: Apps Script set up in the owner's Sheet via Chrome (owner approved permissions), web app deployed, test enquiry arrived, URL added to site.json.
