@@ -40,7 +40,7 @@ export function findCharger(i: FinderInput): FinderResult {
     }
   }
   if (v.has('3w')) picks.push({ kind: 'lev', title: 'E-rickshaw and 3-wheeler charging', power: 'Off-board battery chargers (48/60 V) on 16 A socket points; DC Type 7 for 3Ws that support it', connector: '16 A sockets, Type 7 (LECCS)', why: 'Most e-rickshaws charge their packs from a portable charger on a socket; newer 3Ws can fast-charge on Type 7 DC.' });
-  if (v.has('2w')) picks.push({ kind: 'lev', title: 'Two-wheeler charging points', power: '3.3 kW AC socket points; Type 6 AC or Type 7 DC where scooters support them', connector: '16 A sockets, Type 6, Type 7', why: 'Most e-scooters use a portable charger on a 16 A socket; some models also accept Type 6 or Type 7 charging.' });
+  if (v.has('2w')) picks.push({ kind: 'lev', title: 'Two-wheeler charging points', power: '3.3 kW AC socket points; Type 6 (DC) or Type 7 (AC and DC) where scooters support them', connector: '16 A sockets, Type 6, Type 7', why: 'Most e-scooters use a portable charger on a 16 A socket; some models also accept Type 6 or Type 7 charging.' });
 
   if (single && picks.some((p) => p.kind === 'dc')) notes.push('You chose a single-phase supply: DC charging needs a three-phase connection, so a new connection or load increase comes first.');
   if (single && !v.has('bus') && i.place !== 'home') notes.push('Three-phase supply opens up 11–22 kW AC and spreads the load better across many chargers.');

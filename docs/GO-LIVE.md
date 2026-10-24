@@ -2,6 +2,8 @@
 
 Everything here is free. Steps 1–4 put the site live; 5–9 switch on forms, the admin area and search. Allow about an hour in total, and do the steps in order.
 
+**Status, 24 October 2026:** steps 1, 2, 3 and 5 are done. The site is live at https://www.prolineelectricalworks.com from the Cloudflare Pages project **proline-website**, the bare address redirects to www, and the forms write to your Sheet. Still to do: step 4 (check the settings), and steps 6–9.
+
 The code is at **github.com/vineetsaini205-png/proline-website**. Every change pushed to the `main` branch rebuilds the live site automatically once step 1 is done.
 
 ---
@@ -33,12 +35,13 @@ The `.pages.dev` copy is hidden from Google (see `public/_headers`), so it never
 
 ## 3. Move your domain to the new project
 
-1. Old project **proline** → **Custom domains** → remove `prolineelectricalworks.com` (and `www.` if it is there).
-2. New project → **Custom domains** → **Set up a custom domain** → `prolineelectricalworks.com`, then again for `www.prolineelectricalworks.com`.
-3. Cloudflare updates DNS itself because the domain is already on Cloudflare. It takes a few minutes.
-4. Optional: **Rules → Redirect Rules** → redirect `www.prolineelectricalworks.com/*` to `https://www.prolineelectricalworks.com/${1}` (301), so only one address is used.
+Done on 24 October. What was set up, in case you need to check or undo it:
 
-Keep the old project for a week in case you need to switch back, then delete it.
+1. Old project **proline** → **Custom domains**: `www.prolineelectricalworks.com` removed.
+2. New project **proline-website** → **Custom domains**: `www.prolineelectricalworks.com` (the main address) and `prolineelectricalworks.com`. Cloudflare added the two DNS records itself (CNAME to `proline-website.pages.dev`). The Zoho mail records (MX, SPF, DKIM, DMARC) were not changed.
+3. **Rules → Redirect Rules → "Bare domain to www"**: any address on `prolineelectricalworks.com` goes to the same page on `https://www.prolineelectricalworks.com` (301, keeps the page path and anything after `?`). So Google sees one address.
+
+The old project **proline** now serves only `proline-3da.pages.dev`. Keep it for a week in case you need to switch back, then delete it yourself: Workers & Pages → proline → Settings → Delete project.
 
 ## 4. Cloudflare settings to keep or check
 
@@ -62,7 +65,7 @@ Later, to stop spam bots: add Cloudflare Turnstile (free). The forms already hav
 
 ## 6. Admin area: edit blogs, FAQs, prices of fuel and tariffs, screenshots
 
-The admin is at **prolineelectricalworks.com/admin**. It saves straight to GitHub, and the site rebuilds in about 2 minutes.
+The admin is at **www.prolineelectricalworks.com/admin**. It saves straight to GitHub, and the site rebuilds in about 2 minutes.
 
 Each person needs a free GitHub account with access to the repository: GitHub → repository → Settings → Collaborators → Add people.
 
@@ -76,7 +79,7 @@ Each person needs a free GitHub account with access to the repository: GitHub �
    - Callback: `https://YOUR-WORKER.workers.dev/callback`
 3. In the worker's settings, add these variables:
    - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`, from the OAuth app;
-   - `ALLOWED_DOMAINS` = `prolineelectricalworks.com`.
+   - `ALLOWED_DOMAINS` = `www.prolineelectricalworks.com`.
 4. In `public/admin/config.yml`, un-comment `base_url:` and set it to the worker address.
 
 What you can edit there:

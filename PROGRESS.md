@@ -11,7 +11,7 @@ Never redo a ticked item unless the owner asks for a change.
 | Code (this repo) | github.com/vineetsaini205-png/proline-website, branch `main` |
 | Approved plan | Claude Docs: https://claude.ai/artifact/BbomKbPKuGQ3w2mU2rUbE9 |
 | Approved first-screen design | https://claude.ai/artifact/5muNhLbEwLBg2W8et8yY3U (desktop + phone) |
-| Live site | **https://www.prolineelectricalworks.com** (www is the main address; canonical URLs use www). New Cloudflare Pages project **proline-website** (Git-linked to `main`, build `npm run build`, output `dist`, NODE_VERSION 22) — every push to `main` redeploys in ~2 min. Old Direct Upload project "proline" (proline-3da.pages.dev) is retired |
+| Live site | **https://www.prolineelectricalworks.com** (www is the main address; canonical URLs use www). New Cloudflare Pages project **proline-website** (Git-linked to `main`, build `npm run build`, output `dist`, NODE_VERSION 22) — every push to `main` redeploys in ~2 min. Bare domain prolineelectricalworks.com is also on the project and 301-redirects to www (Cloudflare → Rules → Redirect Rules → "Bare domain to www"). Old Direct Upload project "proline" (proline-3da.pages.dev) no longer has the domain; owner can delete it after a week |
 | Owner | Vineet Saini, Proline Electrical Works, Delhi |
 | Stack | Astro 5 static site, Markdown content collections, Sveltia CMS at /admin, Cloudflare Pages |
 
@@ -73,16 +73,16 @@ Home
 Services
 - [x] `/services/` hub
 - [x] `/services/ev-charger-installation/` (model page for writers)
-- [ ] `/services/home-ev-charger-installation/`
-- [ ] `/services/dc-fast-charger-installation/`
-- [ ] `/services/ev-charging-station-setup/`
-- [ ] `/services/site-survey/`
-- [ ] `/services/ev-charger-commissioning/`
-- [ ] `/services/ev-charger-earthing/`
-- [ ] `/services/ev-charger-cabling/`
-- [ ] `/services/ev-charger-db-box/`
-- [ ] `/services/ev-charging-civil-work/`
-- [ ] `/services/solar-installation/`
+- [x] `/services/home-ev-charger-installation/`
+- [x] `/services/dc-fast-charger-installation/`
+- [x] `/services/ev-charging-station-setup/`
+- [x] `/services/site-survey/`
+- [x] `/services/ev-charger-commissioning/`
+- [x] `/services/ev-charger-earthing/`
+- [x] `/services/ev-charger-cabling/`
+- [x] `/services/ev-charger-db-box/`
+- [x] `/services/ev-charging-civil-work/`
+- [x] `/services/solar-installation/`
 - held: `/services/ev-charger-amc/`, `/services/ev-charging-power-approval/` (owner to confirm)
 
 Proline CMS (copy from owner's `proline-cms-website-copy.md`, sections 1–9; section 10 = not-ready list)
@@ -97,27 +97,27 @@ Proline CMS (copy from owner's `proline-cms-website-copy.md`, sections 1–9; se
 
 Chargers and products
 - [x] `/chargers/` hub (cards fill from content)
-- [ ] `/chargers/ac-chargers/`
-- [ ] `/chargers/dc-fast-chargers/` (+ "Inside a DC charger" widget: done, `src/components/widgets/DcInside.astro`, shown via `widget: dc-inside`)
-- [ ] `/chargers/2w-3w-chargers/`
-- [ ] `/chargers/bus-truck-chargers/`
-- [ ] `/chargers/white-label-chargers/` (+ "Your brand on the charger" widget: done, `WhiteLabel.astro`, via `widget: white-label`)
+- [x] `/chargers/ac-chargers/`
+- [x] `/chargers/dc-fast-chargers/` (+ "Inside a DC charger" widget: done, `src/components/widgets/DcInside.astro`, shown via `widget: dc-inside`)
+- [x] `/chargers/2w-3w-chargers/`
+- [x] `/chargers/bus-truck-chargers/`
+- [x] `/chargers/white-label-chargers/` (+ "Your brand on the charger" widget: done, `WhiteLabel.astro`, via `widget: white-label`)
 - [x] `/batteries/` hub (cards fill from content)
-- [ ] `/batteries/2-wheeler-batteries/`
-- [ ] `/batteries/e-rickshaw-batteries/`
-- [ ] `/batteries/inverter-solar-batteries/`
-- [ ] `/batteries/bess-for-ev-charging/`
-- [ ] `/solar-ev-charging/`
+- [~] `/batteries/2-wheeler-batteries/`
+- [~] `/batteries/e-rickshaw-batteries/`
+- [~] `/batteries/inverter-solar-batteries/`
+- [~] `/batteries/bess-for-ev-charging/`
+- [~] `/solar-ev-charging/`
 
 Who we serve
 - [x] `/for/` hub (cards fill from content)
-- [ ] `/for/charge-point-operators/`
-- [ ] `/for/charger-brands/`
-- [ ] `/for/ev-makers-and-dealers/`
-- [ ] `/for/businesses/`
-- [ ] `/for/housing-societies/`
-- [ ] `/for/fleets/`
-- [ ] `/for/government-and-psu/`
+- [x] `/for/charge-point-operators/`
+- [x] `/for/charger-brands/`
+- [x] `/for/ev-makers-and-dealers/`
+- [~] `/for/businesses/`
+- [~] `/for/housing-societies/`
+- [~] `/for/fleets/`
+- [x] `/for/government-and-psu/`
 
 Tools (result first, no contact wall, no Proline prices)
 - [x] `/tools/` hub
@@ -127,10 +127,10 @@ Tools (result first, no contact wall, no Proline prices)
 - [x] `/tools/installation-checklist/` (rules in `src/lib/checklist.ts`, printable)
 
 Resources
-- [ ] `/start-an-ev-charging-station/`
+- [x] `/start-an-ev-charging-station/`
 - [x] `/coverage/` (state list by region + BEE EV tariffs; no India map)
 - [x] `/blog/` list and post template (`ArticlePage.astro`)
-- [~] 3 posts by a writer: earnings, home installation, EV vs petrol savings
+- [x] 3 posts: `/blog/ev-charging-station-earnings/`, `/blog/home-ev-charger-installation-guide/`, `/blog/ev-vs-petrol-savings/` (figures match `src/lib/calc.ts`)
 - [x] `/faq/` page (groups fill from `src/content/faqs/`; CMS group from `cms-faqs.ts`)
 - [x] `/ask/`
 - [x] `/brands/` (client names as text until logo files arrive)
@@ -152,7 +152,7 @@ Company
 - [x] Brand search: "Proline Electrical Works" in home title, `alternateName` Proline / Proline EV / Proline Electrical / Proline CMS
 - [x] `/admin` (Sveltia CMS 0.230.1, `public/admin/config.yml`): blog, FAQs, all page collections, site settings, rates, tariffs, CMS screenshots. Sign-in setup is owner's step (GO-LIVE 6)
 - [x] Cloudflare `_headers` (security, caching, noindex on *.pages.dev)
-- [ ] Checks: build passes, no broken internal links, titles/descriptions lengths, mobile screenshots, page weight
+- [~] Checks: build passes, no broken internal links, titles/descriptions lengths, mobile screenshots, page weight
 - [x] Go-live guide `docs/GO-LIVE.md`
 - [ ] Final zip of `dist/` sent to owner
 
@@ -178,4 +178,5 @@ Company
 - 24 Oct 2026: CMS pages (7), tools (4 + hub), company and resource pages, blog template, widgets built and pushed. Owner asked for cheapest/safest/feature-rich/customisable CMS searches → security + cost pages, re-titles, buyer's guide. Owner confirmed: no commission, no per-charger fee, hosted option with 24/7 support.
 - 24 Oct 2026: enquiry Sheet connected: Apps Script set up in the owner's Sheet via Chrome (owner approved permissions), web app deployed, test enquiry arrived, URL added to site.json.
 - 24 Oct 2026 (15:45 IST): the first writers stopped at 14:44 when a request was interrupted. Done by then: services ev-charger-installation, home, dc-fast, earthing, cabling; chargers/ac-chargers; pages/start-an-ev-charging-station; blog/how-to-choose-ev-charging-cms. Relaunched 8 writers for everything else (6 services, 4 chargers, 4 batteries + solar-ev-charging, 7 audiences, 3 blog posts, FAQs). If they stop again: check `ls src/content/*/` and write only what is missing.
-- Deployment: NOT done yet. Live domain still shows the old site. Next: new Git-linked Cloudflare Pages project (GO-LIVE steps 1–3), then move the domain once all pages are in and checked.
+- 24 Oct 2026: **site live** at https://www.prolineelectricalworks.com (owner: "put online … directly, I do not require a test"). New Git-linked Pages project proline-website; www moved from the old project; bare domain added and redirected to www (301, path and query kept). Zoho MX/TXT records untouched.
+- 24 Oct 2026: writers finished services (6), chargers (4), audiences (4) and 3 blog posts; reviewed and pushed. Fixes: Type 6 is DC-only and Type 7 (LECCS) is AC+DC (brief, finder, start guide, FAQ, dealers page); "free advice and installation" reworded so installation never reads as free; signage and single-line diagram removed as unconfirmed services; customers never asked to open a DB cover; 3.3 kW breaker: 16 A for a socket, 20 A wired.

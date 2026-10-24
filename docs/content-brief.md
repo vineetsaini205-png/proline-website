@@ -28,7 +28,7 @@ For anyone writing or editing pages (people or Claude sessions). The owner's rul
 
 ## 3. Technical facts to get right
 
-- AC chargers: 3.3 kW (16 A single phase), 7.4 kW (32 A single phase), 11 kW and 22 kW (three phase). Many cars in India accept 7.2 kW AC; some 11 kW. Car connector: Type 2. DC: CCS2 (most new cars); older Bharat DC-001/GB/T exist. Light EVs (2W/3W): IS 17017-2-6 "Type 6" (LEV AC) and IS 17017-2-7 "Type 7" (LECCS DC).
+- AC chargers: 3.3 kW (16 A single phase), 7.4 kW (32 A single phase), 11 kW and 22 kW (three phase). Many cars in India accept 7.2 kW AC; some 11 kW. Car connector: Type 2. DC: CCS2 (most new cars); older Bharat DC-001/GB/T exist. Light EVs (2W/3W): IS 17017-2-6 "Type 6" (DC only, up to 120 V) and IS 17017-2-7 "Type 7" (LECCS: AC and DC through one inlet). Source: EVreporter, Apr 2024.
 - DC chargers: 30–60 kW (LT three phase), 120–240 kW (high LT load or HT with transformer, depends on the state's LT limit). Dual-gun units share power.
 - Protection: dedicated circuit, MCB, RCD (Type A with 6 mA DC detection, or Type B, as the charger maker asks), surge protection (SPD). Cable sized for continuous current and voltage drop; armoured cable underground.
 - Standards/rules to name (no clause numbers unless verified): charger maker's manual; CEA safety regulations; IS 17017 (EV charging), IS 732 (wiring), IS 3043 (earthing).

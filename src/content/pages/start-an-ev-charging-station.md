@@ -118,7 +118,7 @@ A good charger in the wrong place stays idle. Before you look at chargers, look 
 
 **DC fast chargers** convert the power inside the charger and feed the battery directly. Most new cars use the CCS2 connector, though older Bharat DC-001 and GB/T chargers still exist. Chargers of 30–60 kW run on a three-phase LT connection, while 120–240 kW units need a high LT load or an HT connection with a transformer. Dual-gun chargers share their power when two vehicles charge at once. See [DC fast chargers](/chargers/dc-fast-chargers/).
 
-**Light EVs** use their own connectors: IS 17017-2-6 "Type 6" for AC and IS 17017-2-7 "Type 7" (LECCS) for DC. If e-scooters and e-rickshaws are your market, see [2W and 3W chargers](/chargers/2w-3w-chargers/).
+**Light EVs** use their own connectors: IS 17017-2-6 "Type 6" for DC charging, and IS 17017-2-7 "Type 7" (LECCS), which takes both AC and DC charging through one inlet. If e-scooters and e-rickshaws are your market, see [2W and 3W chargers](/chargers/2w-3w-chargers/).
 
 How many? For a fleet or depot, work backwards: vehicles × kilometres a day ÷ kilometres per unit gives the energy you must deliver each day, and dividing that by the hours the vehicles stand idle gives the charging power you need. For a public station, start with the chargers your first year's demand supports and build for the next step: lay conduits and size the trench, panel and canopy for the chargers you expect to add, so you don't dig up the site twice. Ask for the load you need now if your DISCOM lets you raise it later, because a higher sanctioned load can mean a higher fixed charge every month.
 

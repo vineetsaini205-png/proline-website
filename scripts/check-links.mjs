@@ -15,7 +15,12 @@ for (const f of pages) {
     let href = m[1].replace(/&amp;/g, '&');
     if (/^(https?:|mailto:|tel:|data:|javascript:)/.test(href)) continue;
     const [path, hash] = href.split('#');
-    const target = path === '' ? from : path;
+    if (path === '') {
+      // Same-page anchor (also works for 404.html, which has no /404/index.html).
+      if (hash && !ids.get(from)?.has(decodeURIComponent(hash))) { broken++; console.log(`ANCHOR  ${from} → ${href}`); }
+      continue;
+    }
+    const target = path;
     if (!target.startsWith('/')) continue;
     const clean = target.split('?')[0];
     const file = clean.endsWith('/') ? join(DIST, clean, 'index.html') : join(DIST, clean);

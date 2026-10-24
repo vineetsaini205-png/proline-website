@@ -4,7 +4,7 @@
 export interface ChargerSpec { id: string; label: string; kind: 'ac' | 'dc'; phase: 1 | 3; amps: number; cable: string; cableLong: string; breaker: string }
 
 export const SPECS: ChargerSpec[] = [
-  { id: 'ac-3', label: '3.3 kW AC', kind: 'ac', phase: 1, amps: 16, cable: '2.5–4 sq mm copper', cableLong: '6 sq mm copper', breaker: 'a 20 A MCB (or as the maker asks)' },
+  { id: 'ac-3', label: '3.3 kW AC', kind: 'ac', phase: 1, amps: 16, cable: '2.5–4 sq mm copper', cableLong: '6 sq mm copper', breaker: 'a 16 A MCB for a socket, or a 20 A MCB for a wired charger (or as the maker asks)' },
   { id: 'ac-7', label: '7.4 kW AC', kind: 'ac', phase: 1, amps: 32, cable: '6 sq mm copper', cableLong: '10 sq mm copper', breaker: 'a 40 A MCB (or as the maker asks)' },
   { id: 'ac-11', label: '11 kW AC', kind: 'ac', phase: 3, amps: 16, cable: '4 sq mm copper, 5-core', cableLong: '6 sq mm copper, 5-core', breaker: 'a 20 A four-pole MCB' },
   { id: 'ac-22', label: '22 kW AC', kind: 'ac', phase: 3, amps: 32, cable: '6–10 sq mm copper, 5-core', cableLong: '16 sq mm copper, 5-core', breaker: 'a 40 A four-pole MCB' },
