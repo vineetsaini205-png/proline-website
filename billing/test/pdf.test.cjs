@@ -16,7 +16,7 @@ const settings = {
   firm: { legalName: 'Proline Electrical Works', tradeName: 'Proline Electrical Works', address1: 'Sample address line 1', address2: '', city: 'New Delhi', stateCode: '07', pin: '110001', gstin: g('07ABCDE1234F1Z'), pan: 'ABCDE1234F', phone: '+91 00000 00000', email: 'Sales@prolineelectricalworks.com', website: 'www.prolineelectricalworks.com' },
   bank: { name: 'Sample Bank', accountName: 'Proline Electrical Works', accountNo: '000000000000', ifsc: 'SAMP0000001', branch: 'New Delhi', upi: 'proline@upi' },
   sign: { name: 'Vineet Saini', designation: 'Proprietor' },
-  pdf: { copies: 'Original + Duplicate', showUpiQr: 'yes' }
+  pdf: { copies: 'Original + Duplicate' }
 };
 const items = [
   { name: 'AC EV charger 7.4 kW', description: 'Wall-mounted, Type 2 socket, OCPP 1.6J', type: 'Goods', hsn: '85044090', qty: 2, unit: 'Nos', rate: 48500, discountPct: 5, gstRate: 5 },

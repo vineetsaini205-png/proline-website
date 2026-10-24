@@ -74,6 +74,8 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
 
   // New tax invoice to the Pune registration: IGST.
   await page.click('.new [data-new="INV"]');
+  await page.waitForSelector('[data-party-pick]');
+  await idle();
   await page.fill('[data-party-pick]', 'Sample Customer Pvt Ltd');
   await page.dispatchEvent('[data-party-pick]', 'change');
   await page.waitForSelector('[data-reg-pick]');
@@ -118,6 +120,8 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
 
   // Make a proforma with an annexure, finalise, then turn it into a tax invoice.
   await page.click('.new [data-new="PI"]');
+  await page.waitForSelector('[data-party-pick]');
+  await idle();
   await page.fill('[data-party-pick]', 'Sample Customer Pvt Ltd');
   await page.dispatchEvent('[data-party-pick]', 'change');
   await page.waitForSelector('[data-reg-pick]');
@@ -147,6 +151,8 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
 
   // Purchase order from the Haryana vendor (IGST into Delhi).
   await page.click('.new [data-new="PO"]');
+  await page.waitForSelector('[data-party-pick]');
+  await idle();
   await page.fill('[data-party-pick]', 'Sample Charger Maker');
   await page.dispatchEvent('[data-party-pick]', 'change');
   await page.waitForFunction(() => /Sample Charger Maker/.test(document.querySelector('.party-box') ? document.querySelector('.party-box').textContent : ''));
@@ -185,6 +191,8 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   // Phone layout.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.click('.new [data-new="INV"]');
+  await page.waitForSelector('[data-party-pick]');
+  await idle();
   await page.waitForSelector('.line');
   await page.screenshot({ path: path.join(out, '10-phone-invoice.png'), fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);

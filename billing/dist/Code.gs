@@ -1,4 +1,4 @@
-// Proline Billing 2026-10-24 12:35 — built from billing/src (shared.js + server.js). Edit the source, not this file.
+// Proline Billing 2026-10-24 20:23 — built from billing/src (shared.js + server.js). Edit the source, not this file.
 
 /*
  * Proline Billing — shared rules, used by the server (Code.gs) and the browser (Index.html).
@@ -276,7 +276,7 @@ var DEFAULT_SETTINGS = {
   'sign.name': 'Vineet Saini', 'sign.designation': 'Proprietor',
   'brand.logoFileId': '', 'brand.signatureFileId': '',
   'series.INV.prefix': 'PEW', 'series.PI.prefix': 'PEW-PI', 'series.PO.prefix': 'PEW-PO', 'series.pad': '4',
-  'pdf.copies': 'Original', 'pdf.showUpiQr': 'yes',
+  'pdf.copies': 'Original',
   'terms.INV': '1. Payment is due by the due date shown. Please quote the invoice number when you pay.\n2. Warranty on chargers, batteries and other equipment is as per the manufacturer\'s terms.\n3. Goods once supplied are not taken back except under the manufacturer\'s warranty.\n4. Subject to Delhi jurisdiction.',
   'terms.PI': '1. This is a proforma invoice and not a tax invoice. A tax invoice will be issued on supply.\n2. Prices are valid until the date shown.\n3. Work starts after the advance payment is received.\n4. Subject to Delhi jurisdiction.',
   'terms.PO': '1. Please quote this PO number on your invoice, delivery challan and all letters.\n2. Supply must match the specifications and quantities in this order; goods that do not may be returned at your cost.\n3. Send your tax invoice with GSTIN and HSN codes, and the e-way bill where required.\n4. Payment as per the terms in this order, after the goods are received and checked.\n5. Subject to Delhi jurisdiction.',

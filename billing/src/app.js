@@ -64,7 +64,8 @@
     document.body.classList.add('noscroll');
     if (onOpen) onOpen($('#modal-body'));
     var f = $('#modal-body input, #modal-body textarea, #modal-body select');
-    if (f) setTimeout(function () { f.focus(); }, 30);
+    // Focus the first field, unless a field in the dialog already has the focus.
+    if (f) setTimeout(function () { if (!m.contains(document.activeElement)) f.focus(); }, 30);
   }
   function closeModal() {
     var m = $('#modal');
@@ -280,7 +281,6 @@
       '<section class="card"><h2>Bank and UPI (on invoices and proformas)</h2><div class="grid2">' +
       sField('bank.name', 'Bank name') + sField('bank.accountName', 'Account name') + sField('bank.accountNo', 'Account number', { inputmode: 'numeric' }) +
       sField('bank.ifsc', 'IFSC') + sField('bank.branch', 'Branch') + sField('bank.upi', 'UPI ID', { placeholder: 'name@bank' }) +
-      sField('pdf.showUpiQr', 'UPI QR code on final invoices', { select: options([['yes', 'Show'], ['no', 'Hide']], s.pdf.showUpiQr) }) +
       '</div></section>' +
       '<section class="card"><h2>Logo and signature</h2><div class="grid2">' +
       '<div><b>Logo</b><div class="imgbox" id="img-logo">' + imgPreview('logo') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="logo"><button class="link" data-action="img-remove" data-kind="logo">Use the standard mark</button></div>' +

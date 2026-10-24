@@ -106,7 +106,7 @@ Open **www.prolineelectricalworks.com/admin/billing/** while signed in to Google
 
 First time, in **Settings**:
 
-1. Firm details: GSTIN, address and PAN. Bank details and UPI ID (the UPI QR code goes on final invoices). Upload your logo and signature.
+1. Firm details: GSTIN, address and PAN. Bank details and UPI ID. Upload your signature (and a logo, if you want one instead of the standard mark).
 2. **Numbering:** if you already issued invoices this financial year in another system, set "Continue after" to the last number, so the series carries on.
 3. Check the HSN/SAC codes and GST rates in **Items** with your CA.
 

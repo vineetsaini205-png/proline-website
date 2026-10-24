@@ -147,27 +147,23 @@ var PBPDF = (function () {
   }
   function fmtQty(q) { return (Math.round(q * 1000) / 1000).toString(); }
 
-  function hsnTable(calc) {
-    var intra = calc.intra, s = calc.sgstLabel;
-    var head = intra ? ['HSN/SAC', 'Taxable (₹)', 'CGST', '₹', s, '₹', 'Total tax (₹)'] : ['HSN/SAC', 'Taxable (₹)', 'IGST', '₹', 'Total tax (₹)'];
-    var body = [head.map(function (h, i) { return { text: h, bold: true, color: C.ink, fillColor: C.navy50, alignment: i ? 'right' : 'left' }; })];
-    calc.hsnSummary.forEach(function (h) {
-      var r = [{ text: h.hsn || '–' }, { text: m(h.taxable), alignment: 'right' }];
-      if (intra) r.push({ text: fmtQty(h.rate / 2) + '%', alignment: 'right' }, { text: m(h.cgst), alignment: 'right' }, { text: fmtQty(h.rate / 2) + '%', alignment: 'right' }, { text: m(h.sgst), alignment: 'right' });
-      else r.push({ text: fmtQty(h.rate) + '%', alignment: 'right' }, { text: m(h.igst), alignment: 'right' });
-      r.push({ text: m(h.tax), alignment: 'right' });
-      body.push(r);
-    });
-    var widths = intra ? ['*', 50, 24, 38, 24, 38, 46] : ['*', 58, 28, 50, 56];
-    return { table: { widths: widths, body: body }, layout: { hLineWidth: function () { return 0.5; }, vLineWidth: function () { return 0; }, hLineColor: function () { return C.line; }, paddingLeft: function () { return 4; }, paddingRight: function () { return 4; }, paddingTop: function () { return 3; }, paddingBottom: function () { return 3; } }, fontSize: 7, margin: [0, 6, 0, 0] };
-  }
-
   function totalsTable(calc) {
     var b = [];
     var row = function (k, v, opt) { b.push([{ text: k, color: C.muted }, { text: v, alignment: 'right', color: C.ink, bold: !!(opt && opt.bold) }]); };
     if (calc.discount > 0) { row('Gross amount', m(calc.gross)); row('Discount', '- ' + m(calc.discount)); }
     row('Taxable value', m(calc.taxable));
-    if (calc.intra) { row('CGST', m(calc.cgst)); row(calc.sgstLabel, m(calc.sgst)); } else row('IGST', m(calc.igst));
+    // Tax by rate, e.g. CGST 9% and SGST 9%, or IGST 18% (GST rule 46: rate and amount of each tax).
+    var rates = {}, order = [];
+    calc.lines.forEach(function (l) {
+      var k = String(l.gstRate);
+      if (!rates[k]) { rates[k] = { rate: l.gstRate, cgst: 0, sgst: 0, igst: 0 }; order.push(k); }
+      rates[k].cgst += l.cgst; rates[k].sgst += l.sgst; rates[k].igst += l.igst;
+    });
+    order.map(function (k) { return rates[k]; }).sort(function (a, b) { return b.rate - a.rate; }).forEach(function (g) {
+      if (calc.intra) {
+        if (g.cgst || g.sgst) { row('CGST ' + fmtQty(g.rate / 2) + '%', m(PB.r2(g.cgst))); row(calc.sgstLabel + ' ' + fmtQty(g.rate / 2) + '%', m(PB.r2(g.sgst))); }
+      } else if (g.igst) row('IGST ' + fmtQty(g.rate) + '%', m(PB.r2(g.igst)));
+    });
     if (calc.roundOff) row('Round off', (calc.roundOff > 0 ? '+ ' : '- ') + m(Math.abs(calc.roundOff)));
     var t1 = { table: { widths: ['*', 'auto'], body: b }, layout: { hLineWidth: function (i) { return i === 0 ? 0 : 0.5; }, vLineWidth: function () { return 0; }, hLineColor: function () { return C.line; }, paddingLeft: function () { return 8; }, paddingRight: function () { return 8; }, paddingTop: function () { return 4; }, paddingBottom: function () { return 4; } }, fontSize: 8.3 };
     var t2 = { table: { widths: ['*', 'auto'], body: [[{ text: 'Total', bold: true, color: C.white, fontSize: 10 }, { text: '₹ ' + m(calc.payable), bold: true, color: C.white, fontSize: 12, alignment: 'right' }]] },
@@ -175,20 +171,13 @@ var PBPDF = (function () {
     return { stack: [t1, t2] };
   }
 
-  function bankBlock(doc, bank, calc, settings) {
+  function bankBlock(doc, bank) {
     if (doc.type === 'PO' || !bank) return null;
     var rows = [];
     var r = function (k, v) { if (v) rows.push([{ text: k, color: C.muted }, { text: v, color: C.ink, bold: k === 'A/c no.' }]); };
     r('Bank', bank.name); r('A/c name', bank.accountName); r('A/c no.', bank.accountNo); r('IFSC', bank.ifsc); r('Branch', bank.branch); r('UPI', bank.upi);
     if (!rows.length) return null;
-    var cols = [{ width: '*', stack: [label('PAY TO'), { table: { widths: [44, '*'], body: rows }, layout: noLines, fontSize: 7.8 }] }];
-    if (bank.upi && (!settings || !settings.pdf || settings.pdf.showUpiQr !== 'no') && calc.payable > 0 && doc.status === 'FINAL') {
-      var payee = encodeURIComponent((doc.firm && (doc.firm.tradeName || doc.firm.legalName)) || '');
-      var note = encodeURIComponent((doc.type === 'INV' ? 'Invoice ' : 'Proforma ') + (doc.number || ''));
-      var upi = 'upi://pay?pa=' + encodeURIComponent(bank.upi) + '&pn=' + payee + '&am=' + calc.payable.toFixed(2) + '&cu=INR&tn=' + note;
-      cols.push({ width: 74, stack: [{ qr: upi, fit: 66, foreground: C.navy, alignment: 'center' }, { text: 'Scan to pay by UPI', fontSize: 6.5, color: C.muted, alignment: 'center', margin: [0, 2, 0, 0] }] });
-    }
-    return { columns: cols, columnGap: 8, margin: [0, 10, 0, 0] };
+    return { stack: [label('PAY TO'), { table: { widths: [44, '*'], body: rows }, layout: noLines, fontSize: 7.8 }], margin: [0, 10, 0, 0] };
   }
 
   function signBlock(doc, firm, sign, images) {
@@ -210,19 +199,17 @@ var PBPDF = (function () {
 
   function copyContent(doc, calc, firm, bank, sign, settings, images, copyLabel) {
     var left = [label('AMOUNT IN WORDS'), { text: calc.words, bold: true, color: C.ink, fontSize: 8.2 }];
-    if (calc.tax > 0) left.push({ text: ' ', fontSize: 4 }, label('TAX SUMMARY'), hsnTable(calc));
-    var bankB = bankBlock(doc, bank, calc, settings);
+    var bankB = bankBlock(doc, bank);
     if (bankB) left.push(bankB);
-    var right = [totalsTable(calc), { margin: [0, 18, 0, 0], stack: [signBlock(doc, firm, sign, images)] }];
     var c = [
       header(doc, firm, images, copyLabel),
       rule(),
       partyBlock(doc, firm),
       itemsTable(calc),
-      { columns: [{ width: '*', stack: left }, { width: 196, stack: right }], columnGap: 18, margin: [0, 12, 0, 0], unbreakable: true }
+      { columns: [{ width: '*', stack: left }, { width: 196, stack: [totalsTable(calc)] }], columnGap: 18, margin: [0, 12, 0, 0], unbreakable: true },
+      // Notes and terms on the left, signature on the right, kept together on one page.
+      { columns: [{ width: '*', stack: notesTerms(doc) }, { width: 196, stack: [signBlock(doc, firm, sign, images)] }], columnGap: 18, margin: [0, 16, 0, 0], unbreakable: true }
     ];
-    var nt = notesTerms(doc);
-    if (nt.length) c.push({ stack: nt, margin: [0, 14, 0, 0] });
     if (doc.type === 'PO') c.push({ margin: [0, 16, 0, 0], text: 'Accepted by the vendor (signature and stamp): ______________________________', fontSize: 7.5, color: C.muted });
     if (doc.status === 'CANCELLED' && doc.meta && doc.meta.cancelReason) {
       c.splice(2, 0, { text: 'CANCELLED on ' + PB.prettyDate(String(doc.meta.cancelledAt || '').slice(0, 10)) + ': ' + doc.meta.cancelReason, color: C.red, bold: true, fontSize: 8.5, margin: [0, 0, 0, 8] });
