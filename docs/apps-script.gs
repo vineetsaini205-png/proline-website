@@ -2,10 +2,11 @@
  * Proline website enquiry forms → Google Sheet + email to Sales@.
  *
  * Setup (once, about 10 minutes) — see docs/GO-LIVE.md step 5:
- *  1. In the Google account that should own the enquiries, create a Google Sheet named "Proline website enquiries".
+ *  1. Open the enquiries Google Sheet (owner created it on 24 Oct 2026).
  *  2. In the Sheet: Extensions → Apps Script. Delete the sample code, paste this whole file, Save.
- *  3. Deploy → New deployment → type "Web app". Execute as: Me. Who has access: Anyone. Deploy, allow access.
- *  4. Copy the Web app URL (ends in /exec) into the admin: Site settings → Contact details → "Form web app address".
+ *  3. Choose the function "setup" at the top and click Run once; allow the permissions it asks for.
+ *  4. Deploy → New deployment → type "Web app". Execute as: Me. Who has access: Anyone. Deploy.
+ *  5. Copy the Web app URL (ends in /exec) into the admin: Site settings → Contact details → "Form web app address".
  *     (Or edit "formEndpoint" in src/data/site.json.) From then on, every form also lands here.
  */
 
@@ -52,12 +53,25 @@ function getSheet() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
-    sh = ss.insertSheet(SHEET_NAME);
+    // Use the first tab if it is still empty, otherwise add an "Enquiries" tab.
+    const first = ss.getSheets()[0];
+    if (first && first.getLastRow() === 0) {
+      sh = first.setName(SHEET_NAME);
+    } else {
+      sh = ss.insertSheet(SHEET_NAME);
+    }
     sh.appendRow(COLUMNS.map(label));
     sh.setFrozenRows(1);
     sh.getRange(1, 1, 1, COLUMNS.length).setFontWeight('bold');
   }
   return sh;
+}
+
+// Run this once from the Apps Script editor (select "setup", click Run) to create the header row
+// and give the script permission to use the Sheet and send email.
+function setup() {
+  getSheet();
+  MailApp.getRemainingDailyQuota();
 }
 
 // Text only, max 2,000 characters, and never a formula (cells starting with = + - @ are made safe).

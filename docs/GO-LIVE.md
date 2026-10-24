@@ -48,12 +48,15 @@ Keep the old project for a week in case you need to switch back, then delete it.
 
 ## 5. Send form enquiries to a Google Sheet and your email
 
-1. Sign in to the Google account that should own the enquiries. Create a Google Sheet called "Proline website enquiries".
-2. In the Sheet: **Extensions → Apps Script**. Delete what is there, paste everything from `docs/apps-script.gs`, and click **Save**.
-3. **Deploy → New deployment →** type **Web app**. Set *Execute as*: **Me** and *Who has access*: **Anyone**. Click **Deploy** and allow access. If Google warns "unverified app", click Advanced → Go to project; it is your own script.
-4. Copy the **Web app URL** (it ends in `/exec`).
-5. Put it in the site: open `/admin` → **Site settings → Contact details** → *Form web app address* → paste → **Save**. You can also edit `formEndpoint` in `src/data/site.json`.
-6. After the rebuild (about 2 minutes), send a test enquiry. A row should appear in the Sheet and an email should arrive at Sales@prolineelectricalworks.com. Download the Sheet as Excel any time: File → Download → .xlsx.
+The enquiries Sheet already exists (you created it on 24 October).
+
+1. Open the Sheet, then **Extensions → Apps Script**. Delete what is there, paste everything from `docs/apps-script.gs`, and click **Save**.
+2. In the function list at the top, choose **setup** and click **Run**. Allow the permissions it asks for: the Sheet and sending email. If Google says "unverified app", click Advanced → Go to project; it is your own script. This adds the header row.
+3. **Deploy → New deployment →** gear icon → **Web app**. Set *Execute as*: **Me** and *Who has access*: **Anyone**. Click **Deploy**.
+4. Copy the **Web app URL** (it ends in `/exec`) and send it to us, or paste it yourself: `/admin` → **Site settings → Contact details** → *Form web app address* → **Save** (or `formEndpoint` in `src/data/site.json`).
+5. After the rebuild (about 2 minutes), send a test enquiry. A row should appear in the Sheet and an email should arrive at Sales@prolineelectricalworks.com. Download the Sheet as Excel any time: File → Download → .xlsx.
+
+If you change the script later: **Deploy → Manage deployments → Edit → Version: New version**, so the same URL keeps working.
 
 Later, to stop spam bots: add Cloudflare Turnstile (free). The forms already have a hidden spam trap.
 

@@ -163,7 +163,8 @@ Company
 - Which CMS features are live at launch (copy section 10)
 - AMC and power approvals: offered or not? · Which Tata company (Tata Power EZ Charge / Tata Motors)?
 - Project stories, client quotes (with permission), registrations (GST, Udyam, licence) — none received, so none shown
-- Google account for the enquiry Sheet (Apps Script) and GitHub logins for admin users
+- Enquiry Sheet: owner created it and shared the link (24 Oct). Waiting for the Apps Script web-app URL (ends in /exec) → put it in `src/data/site.json` → `formEndpoint`
+- GitHub logins for admin users
 
 ## Decisions log
 - 23 Oct: plan approved; build in chat; Astro on Cloudflare Pages.
