@@ -2,8 +2,8 @@
 
 Website of **Proline Electrical Works**: EV charger installation and commissioning across India, chargers of any brand, batteries, solar, and Proline CMS.
 
-- **Live:** https://prolineelectricalworks.com (Cloudflare Pages, rebuilt from `main`)
-- **Admin:** https://prolineelectricalworks.com/admin (Sveltia CMS: blog, FAQs, pages, prices of fuel, tariffs, screenshots)
+- **Live:** https://www.prolineelectricalworks.com (Cloudflare Pages, rebuilt from `main`)
+- **Admin:** https://www.prolineelectricalworks.com/admin (Sveltia CMS: blog, FAQs, pages, prices of fuel, tariffs, screenshots)
 - **Go-live steps:** [`docs/GO-LIVE.md`](docs/GO-LIVE.md)
 - **What is done / not done, owner's rules, where things live:** [`PROGRESS.md`](PROGRESS.md)
 - **How to write pages:** [`docs/content-brief.md`](docs/content-brief.md)

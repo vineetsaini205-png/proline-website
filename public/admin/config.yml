@@ -13,8 +13,8 @@ backend:
     update: "Update {{collection}} “{{slug}}” (admin)"
     delete: "Delete {{collection}} “{{slug}}” (admin)"
 
-site_url: https://prolineelectricalworks.com
-display_url: https://prolineelectricalworks.com
+site_url: https://www.prolineelectricalworks.com
+display_url: https://www.prolineelectricalworks.com
 logo_url: /favicon.svg
 media_folder: public/images/uploads
 public_folder: /images/uploads

@@ -11,7 +11,7 @@ Never redo a ticked item unless the owner asks for a change.
 | Code (this repo) | github.com/vineetsaini205-png/proline-website, branch `main` |
 | Approved plan | Claude Docs: https://claude.ai/artifact/BbomKbPKuGQ3w2mU2rUbE9 |
 | Approved first-screen design | https://claude.ai/artifact/5muNhLbEwLBg2W8et8yY3U (desktop + phone) |
-| Live site today | prolineelectricalworks.com = old one-page site on Cloudflare Pages project "proline" (Direct Upload, cannot be linked to Git) |
+| Live site | **https://www.prolineelectricalworks.com** (www is the main address; canonical URLs use www). New Cloudflare Pages project **proline-website** (Git-linked to `main`, build `npm run build`, output `dist`, NODE_VERSION 22) — every push to `main` redeploys in ~2 min. Old Direct Upload project "proline" (proline-3da.pages.dev) is retired |
 | Owner | Vineet Saini, Proline Electrical Works, Delhi |
 | Stack | Astro 5 static site, Markdown content collections, Sveltia CMS at /admin, Cloudflare Pages |
 

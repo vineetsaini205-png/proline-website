@@ -36,7 +36,7 @@ The `.pages.dev` copy is hidden from Google (see `public/_headers`), so it never
 1. Old project **proline** → **Custom domains** → remove `prolineelectricalworks.com` (and `www.` if it is there).
 2. New project → **Custom domains** → **Set up a custom domain** → `prolineelectricalworks.com`, then again for `www.prolineelectricalworks.com`.
 3. Cloudflare updates DNS itself because the domain is already on Cloudflare. It takes a few minutes.
-4. Optional: **Rules → Redirect Rules** → redirect `www.prolineelectricalworks.com/*` to `https://prolineelectricalworks.com/${1}` (301), so only one address is used.
+4. Optional: **Rules → Redirect Rules** → redirect `www.prolineelectricalworks.com/*` to `https://www.prolineelectricalworks.com/${1}` (301), so only one address is used.
 
 Keep the old project for a week in case you need to switch back, then delete it.
 
@@ -72,7 +72,7 @@ Each person needs a free GitHub account with access to the repository: GitHub �
 
 1. Deploy the free sign-in helper: https://github.com/sveltia/sveltia-cms-auth. Click its "Deploy to Cloudflare Workers" button.
 2. GitHub → Settings → Developer settings → **OAuth Apps → New**:
-   - Homepage: `https://prolineelectricalworks.com`
+   - Homepage: `https://www.prolineelectricalworks.com`
    - Callback: `https://YOUR-WORKER.workers.dev/callback`
 3. In the worker's settings, add these variables:
    - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`, from the OAuth app;
@@ -94,7 +94,7 @@ New page layouts and new tools still need a developer.
 ## 7. Google Search Console and Bing Webmaster Tools
 
 1. https://search.google.com/search-console → **Add property** → **Domain** → `prolineelectricalworks.com`. Verify it with the DNS TXT record (Cloudflare → DNS → Add record).
-2. **Sitemaps** → submit `https://prolineelectricalworks.com/sitemap-index.xml`.
+2. **Sitemaps** → submit `https://www.prolineelectricalworks.com/sitemap-index.xml`.
 3. **URL inspection** → request indexing for these pages:
    - the home page;
    - `/services/ev-charger-installation/`;
@@ -111,7 +111,7 @@ New pages usually take days to weeks to be indexed, and longer to rank.
 2. Category: *Electrician*, plus the closest EV-charging category Google offers.
 3. Choose **service-area business**. Google asks for your address to verify it; then **hide the address**, so customers see only Delhi.
 4. Service area: Delhi NCR. Google keeps it within about 2 hours of your base.
-5. Hours: when calls are answered. Phone: +91 73038 87364. Website: https://prolineelectricalworks.com.
+5. Hours: when calls are answered. Phone: +91 73038 87364. Website: https://www.prolineelectricalworks.com.
 6. Add photos of your real installs, post finished jobs weekly, and ask happy customers for a Google review.
 
 Use exactly the same name, phone and "Delhi" on IndiaMART, JustDial and LinkedIn. Add those profile links in the admin (Site settings → Social and directory profiles) so Google connects them to the site.
