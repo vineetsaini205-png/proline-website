@@ -1,0 +1,12 @@
+---
+// One-off landing pages and guides at the site root, from src/content/pages/*.md
+// (e.g. /solar-ev-charging/, /start-an-ev-charging-station/).
+import { getCollection } from 'astro:content';
+import LandingPage from '../layouts/LandingPage.astro';
+export async function getStaticPaths() {
+  const entries = await getCollection('pages', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<LandingPage entry={entry} crumbs={[{ label: entry.data.label }]} />

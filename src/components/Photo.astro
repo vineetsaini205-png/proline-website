@@ -1,0 +1,15 @@
+---
+// Responsive photo from public/images (1600w + 800w WebP), sizes and alt from src/data/images.json.
+import images from '../data/images.json';
+interface Props { name: string; alt?: string; sizes?: string; eager?: boolean; class?: string; style?: string }
+const { name, alt, sizes = '(max-width: 900px) 100vw, 50vw', eager = false, class: cls, style } = Astro.props;
+const meta = (images as Record<string, { alt: string; sizes: Record<string, [number, number]> }>)[name];
+if (!meta) throw new Error(`Photo "${name}" is not in src/data/images.json`);
+const [w, h] = meta.sizes['1600'];
+const [w8] = meta.sizes['800'];
+const src = `/images/${name}.webp`;
+const srcset = `/images/${name}-800.webp ${w8}w, /images/${name}.webp ${w}w`;
+---
+<img src={src} srcset={srcset} sizes={sizes} width={w} height={h} alt={alt ?? meta.alt}
+  loading={eager ? 'eager' : 'lazy'} decoding={eager ? 'sync' : 'async'} fetchpriority={eager ? 'high' : undefined}
+  class={cls} style={style} />

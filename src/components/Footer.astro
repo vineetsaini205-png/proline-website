@@ -1,0 +1,45 @@
+---
+import site from '../data/site.json';
+import { services, products, batteries, audiences, cms, tools, resources, company } from '../data/nav';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { waLink } from '../lib/text';
+const year = new Date().getFullYear();
+const cols = [
+  { title: 'Services', links: [...services, { label: 'All services', href: '/services/' }] },
+  { title: 'Chargers and batteries', links: [{ label: 'All chargers', href: '/chargers/' }, ...products.filter((l) => l.href !== '/batteries/'), { label: 'All batteries', href: '/batteries/' }, ...batteries] },
+  { title: 'Who we serve', links: [...audiences.filter((l) => l.href.startsWith('/for/')), { label: 'Home owners', href: '/services/home-ev-charger-installation/' }, { label: 'Investors and landowners', href: '/start-an-ev-charging-station/' }] },
+  { title: 'Proline CMS and tools', links: [...cms, ...tools] },
+  { title: 'Resources and company', links: [...resources, ...company.filter((l) => !['/privacy-policy/', '/terms/'].includes(l.href))] },
+];
+---
+<footer class="site-footer">
+  <div class="wrap footer-top">
+    <div class="footer-brand">
+      <Logo />
+      <p>Brand-neutral EV charging partner. We survey, install and commission chargers of any brand across India, help you choose the right charger, and give you Proline CMS to run them all.</p>
+      <ul class="footer-contact">
+        <li><Icon name="phone" size={18} /><span><a href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a><span class="fc-note">{site.callHours}</span></span></li>
+        <li><Icon name="whatsapp" size={18} /><span><a href={waLink(site.whatsapp)} rel="noopener" target="_blank">WhatsApp {site.phoneDisplay}</a><span class="fc-note">{site.whatsappHours}</span></span></li>
+        <li><Icon name="mail" size={18} /><span><a href={`mailto:${site.email}`}>{site.email}</a></span></li>
+        <li><Icon name="map" size={18} /><span>{site.city}, India<span class="fc-note">Working across 10 states</span></span></li>
+      </ul>
+    </div>
+    {cols.map((c) => (
+      <div class="footer-col">
+        <h2>{c.title}</h2>
+        <ul>{c.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+      </div>
+    ))}
+  </div>
+  <div class="footer-bottom">
+    <div class="wrap">
+      <p>© {year} {site.name}, {site.city}. Brand names and logos belong to their owners.</p>
+      <ul>
+        <li><a href="/privacy-policy/">Privacy policy</a></li>
+        <li><a href="/terms/">Terms</a></li>
+        <li><a href="/sitemap-index.xml">Sitemap</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

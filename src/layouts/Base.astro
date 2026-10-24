@@ -1,0 +1,85 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource/plus-jakarta-sans/700.css';
+import '@fontsource/plus-jakarta-sans/800.css';
+import '../styles/global.css';
+import site from '../data/site.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import MobileBar from '../components/MobileBar.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { orgNode, websiteNode, webPageNode, breadcrumbNode, abs } from '../lib/schema';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+  noindex?: boolean;
+  crumbs?: { label: string; href?: string }[];
+  schema?: object[];
+  headerCta?: { label: string; href: string };
+  waText?: string;
+  ogType?: 'website' | 'article';
+  lang?: string;
+  alternates?: { hreflang: string; href: string }[];
+}
+const {
+  title, description, image = '/images/og-default.jpg', imageAlt = 'Proline Electrical Works: EV charger installation across India',
+  noindex = false, crumbs, schema = [], headerCta, waText, ogType = 'website', lang = 'en-IN', alternates = [],
+} = Astro.props;
+
+const path = Astro.url.pathname;
+const canonical = abs(path);
+if (import.meta.env.DEV && title.length > 60) console.warn(`[seo] title over 60 chars (${title.length}) on ${path}: ${title}`);
+const crumbsNode = crumbs && crumbs.length ? breadcrumbNode(path, crumbs) : undefined;
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [orgNode(), websiteNode(), webPageNode(path, title, description, crumbsNode?.['@id']), ...(crumbsNode ? [crumbsNode] : []), ...schema],
+};
+const wa = waText ?? `Hello Proline, I found you on your website (${title.replace(/ \| Proline.*$/, '')}). I would like to know more.`;
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  {noindex ? <meta name="robots" content="noindex, follow" /> : <meta name="robots" content="index, follow, max-image-preview:large" />}
+  {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={abs(a.href)} />)}
+  <meta name="theme-color" content="#0B2545" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="sitemap" href="/sitemap-index.xml" />
+
+  <meta property="og:type" content={ogType} />
+  <meta property="og:site_name" content={site.name} />
+  <meta property="og:locale" content="en_IN" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={abs(image)} />
+  <meta property="og:image:alt" content={imageAlt} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={abs(image)} />
+  <slot name="head" />
+  <JsonLd data={graph} />
+</head>
+<body>
+  <Header cta={headerCta} waText={wa} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer />
+  <MobileBar waText={wa} />
+  <script>
+    import '../scripts/forms.ts';
+  </script>
+</body>
+</html>

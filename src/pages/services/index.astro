@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import HubPage from '../../layouts/HubPage.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+const items = (await getCollection('services', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ icon: e.data.icon, label: e.data.label, summary: e.data.summary, href: `/services/${e.id}/` }));
+const faqs = [
+  { q: 'Do you install chargers of any brand?', a: 'Yes. We install and commission AC and DC chargers from any maker, follow the maker’s installation manual, and can help you choose a charger first. Advice on choosing is free.' },
+  { q: 'Which states do you work in?', a: 'Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We are based in Delhi and our technicians travel to sites across these states. See [coverage](/coverage/).' },
+  { q: 'Do I need a site survey?', a: 'For a home wall box, photos of your meter, DB and parking spot on WhatsApp are often enough to quote. For DC chargers, charging stations and large sites, a [site survey](/services/site-survey/) is the safe first step. The survey is paid, and the fee is adjusted against your order if you go ahead with us.' },
+  { q: 'Why don’t you show prices?', a: 'Because no two installations are the same. The charger, the cable run, earthing, the DB box, civil work and your electricity connection all change the cost. Send us a few details and we reply with one clear quote. The [installation checklist](/tools/installation-checklist/) shows what your job is likely to need.' },
+];
+---
+<HubPage
+  title="EV Charger Installation Services in India | Proline"
+  description="EV charger installation, home and DC fast chargers, site surveys, commissioning, earthing, cabling, DB boxes, civil work and solar, across 10 states."
+  h1="EV charging installation services"
+  eyebrow="Services"
+  intro="Proline does the whole job of putting EV chargers in: site survey, cabling, DB boxes, earthing, civil work, installation and commissioning, for chargers of any brand. Our 200+ technicians work across 10 states in North, South and West India."
+  crumb="Services" items={items} itemsTitle="What we do" image="dc-hub-bays" faqs={faqs}>
+  <section class="section section-soft" aria-labelledby="how-title">
+    <div class="wrap">
+      <SectionHead eyebrow="How we work" title="Six steps from survey to handover" id="how-title" />
+      <ProcessSteps />
+    </div>
+  </section>
+</HubPage>

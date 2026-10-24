@@ -1,0 +1,122 @@
+---
+// Template for service, charger, battery, audience and one-off landing pages (Markdown in src/content/).
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Photo from '../components/Photo.astro';
+import Icon from '../components/Icon.astro';
+import Faqs from '../components/Faqs.astro';
+import CostFactors from '../components/CostFactors.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import RelatedLinks from '../components/RelatedLinks.astro';
+import CtaBand from '../components/CtaBand.astro';
+import SectionHead from '../components/SectionHead.astro';
+import site from '../data/site.json';
+import { linkInfo } from '../data/nav';
+import { serviceNode, faqNode, articleNode } from '../lib/schema';
+import { inlineMd, plainText, waLink, formatDate } from '../lib/text';
+
+type Entry = CollectionEntry<'services'> | CollectionEntry<'chargers'> | CollectionEntry<'batteries'> | CollectionEntry<'audiences'> | CollectionEntry<'pages'>;
+interface Props { entry: Entry; crumbs: { label: string; href?: string }[]; headerCta?: { label: string; href: string } }
+const { entry, crumbs, headerCta } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const path = Astro.url.pathname;
+
+const ctaLabel = { survey: 'Book a site survey', demo: 'Book a demo', station: 'Plan your station', b2b: 'Partner with us', brand: 'Become a brand partner', technician: 'Apply now', ask: 'Ask your question', quote: 'Get a quote' }[d.form];
+const schema: object[] = [];
+if (d.serviceType) schema.push(serviceNode(path, d.h1, plainText(d.intro), d.serviceType));
+if (d.faqs.length) schema.push(faqNode(path, d.faqs));
+if (d.guide) schema.push(articleNode(path, { title: d.h1, description: d.description, date: d.updated, updated: d.updated, image: d.image ? `/images/${d.image}.webp` : undefined }));
+const toc = headings.filter((h) => h.depth === 2);
+const tool = d.related.find((r) => r.startsWith('/tools/'));
+const toolInfo = tool ? linkInfo(tool) : undefined;
+const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you help?`;
+---
+<Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={d.image ? `/images/og/${d.image}.jpg` : undefined} imageAlt={d.h1} waText={wa} headerCta={headerCta ?? { label: ctaLabel, href: '#quote' }} ogType={d.guide ? 'article' : 'website'}>
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={crumbs} />
+      <div class:list={['phero-grid', { 'no-media': !d.image }]}>
+        <div>
+          {d.eyebrow && <p class="eyebrow">{d.eyebrow}</p>}
+          <h1>{d.h1}</h1>
+          <p class="lead" set:html={inlineMd(d.intro)} />
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="#quote">{ctaLabel}</a>
+            <a class="btn btn-outline btn-lg" href={waLink(site.whatsapp, wa)} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />WhatsApp us</a>
+          </div>
+          {d.highlights.length > 0 && (
+            <ul class="checks">{d.highlights.map((h) => <li><Icon name="check" size={18} stroke={2.5} />{h}</li>)}</ul>
+          )}
+          {d.guide && <p class="updated" style="margin-top:18px">By {d.guide ? 'Vineet Saini, Proline Electrical Works' : ''} · Updated {formatDate(d.updated)}</p>}
+        </div>
+        {d.image && <div class="phero-media"><Photo name={d.image} eager sizes="(max-width: 900px) 100vw, 480px" /></div>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap layout-side">
+      <article class="prose">
+        <Content />
+        {d.guide && (
+          <div class="author" style="margin-top:40px">
+            <span class="avatar" aria-hidden="true">VS</span>
+            <div><strong>Vineet Saini</strong><span>Proline Electrical Works, Delhi. Installing EV chargers across India for {site.stats[3].value}, with {site.stats[0].value} chargers installed.</span></div>
+          </div>
+        )}
+      </article>
+      <aside class="side-sticky" aria-label="Contact and contents">
+        <div class="side-card navy">
+          <h3>Talk to an engineer</h3>
+          <p>Send photos of your meter, DB and parking spot on WhatsApp and we tell you what the job needs.</p>
+          <a class="btn btn-primary" href="#quote">{ctaLabel}</a>
+          <p class="small" style="margin-top:12px;color:#A9BBD3">WhatsApp any time · Calls 10 am–7 pm<br /><a href={`tel:${site.phoneE164}`} style="color:#fff;font-weight:600">{site.phoneDisplay}</a></p>
+        </div>
+        {toc.length > 2 && (
+          <nav class="side-card" aria-label="On this page">
+            <h3>On this page</h3>
+            <ul style="list-style:none;display:grid;gap:8px;font-size:15px">
+              {toc.map((h) => <li><a href={`#${h.slug}`} style="text-decoration:none">{h.text}</a></li>)}
+            </ul>
+          </nav>
+        )}
+        {toolInfo && (
+          <a class="side-card" href={toolInfo.href} style="display:block;text-decoration:none;border:1px solid var(--line);background:#fff">
+            <span class="pill pill-green">Free tool</span>
+            <h3 style="margin-top:10px">{toolInfo.label}</h3>
+            <p>{toolInfo.note}</p>
+            <span class="link-arrow" style="margin-top:8px">Open<Icon name="arrowRight" size={16} /></span>
+          </a>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  {d.costFactors.length > 0 && (
+    <section class="section section-soft"><div class="wrap"><CostFactors items={d.costFactors} /></div></section>
+  )}
+
+  {d.showProcess && (
+    <section class="section" aria-labelledby="process-title">
+      <div class="wrap">
+        <SectionHead eyebrow="How we work" title={d.steps ? 'How the job runs' : 'Six steps from survey to handover'} id="process-title" />
+        <ProcessSteps steps={d.steps} />
+      </div>
+    </section>
+  )}
+
+  {d.faqs.length > 0 && (
+    <section class="section section-soft" aria-labelledby="faq-title">
+      <div class="wrap-narrow">
+        <SectionHead eyebrow="FAQ" title={`${d.label}: questions and answers`} center id="faq-title" />
+        <Faqs items={d.faqs} />
+      </div>
+    </section>
+  )}
+
+  <RelatedLinks links={d.related} />
+  <CtaBand variant={d.form} need={d.need} waText={wa} />
+</Base>

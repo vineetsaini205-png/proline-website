@@ -1,0 +1,18 @@
+---
+import site from '../data/site.json';
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+---
+<section class="trust" aria-label="Proline in numbers">
+  <div class="wrap">
+    <div class="stats">
+      {site.stats.map((s) => <div class="stat"><strong>{s.value}</strong><span>{s.label}</span></div>)}
+    </div>
+    {!compact && (
+      <div class="clients">
+        <p class="label">Installed for</p>
+        {site.clients.map((c) => <p class="client">{c}</p>)}
+      </div>
+    )}
+  </div>
+</section>

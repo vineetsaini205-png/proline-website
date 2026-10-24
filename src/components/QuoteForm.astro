@@ -1,0 +1,221 @@
+---
+// One enquiry form, several shapes. Sends to the Google Apps Script URL in src/data/site.json
+// (formEndpoint). Until that URL is set, the form opens WhatsApp with the details filled in.
+import site from '../data/site.json';
+import Icon from './Icon.astro';
+
+export type FormVariant = 'quote' | 'survey' | 'station' | 'demo' | 'b2b' | 'brand' | 'technician' | 'ask';
+interface Props {
+  variant?: FormVariant;
+  title?: string;
+  intro?: string;
+  need?: string;
+  submitLabel?: string;
+  id?: string;
+}
+const { variant = 'quote', title, intro, need, submitLabel, id = 'enquiry-form' } = Astro.props;
+
+const needs = [
+  'EV charger installation',
+  'Home charger installation',
+  'DC fast charger or charging station',
+  'Help choosing a charger (any brand)',
+  'Site survey',
+  'Earthing, cabling or DB box',
+  'Civil work or canopy',
+  'Solar installation',
+  'Batteries',
+  'Proline CMS',
+  'Something else',
+];
+const siteTypes = ['Home or villa', 'Housing society or apartment', 'Office, hotel, mall or hospital', 'Fuel station, highway or public parking', 'Fleet depot or e-rickshaw hub', 'Factory or warehouse', 'Government or PSU site', 'Other'];
+const states = ['Delhi', 'Haryana', 'Uttar Pradesh', 'Uttarakhand', 'Himachal Pradesh', 'Maharashtra', 'Madhya Pradesh', 'Chhattisgarh', 'Telangana', 'Tamil Nadu', 'Other state'];
+
+const defaults: Record<FormVariant, { title: string; submit: string; intro?: string }> = {
+  quote: { title: 'Get a quote', submit: 'Send enquiry' },
+  survey: { title: 'Book a site survey', submit: 'Request a survey', intro: 'Site surveys are paid. The fee is adjusted against your order if you go ahead with Proline.' },
+  station: { title: 'Plan a charging station', submit: 'Send site details' },
+  demo: { title: 'Book a Proline CMS demo', submit: 'Book a demo' },
+  b2b: { title: 'Partner with Proline', submit: 'Send partnership enquiry' },
+  brand: { title: 'Sell your chargers through Proline', submit: 'Send brand details' },
+  technician: { title: 'Join our technician network', submit: 'Send my details' },
+  ask: { title: 'Ask an expert', submit: 'Send my question' },
+};
+const d = defaults[variant];
+const heading = title ?? d.title;
+const lead = intro ?? d.intro;
+const defaultNeed = need ?? (variant === 'survey' ? 'Site survey' : variant === 'demo' ? 'Proline CMS' : undefined);
+const f = (n: string) => `${id}-${n}`;
+---
+<form class="form-card" id={id} data-enquiry data-variant={variant} data-endpoint={site.formEndpoint} data-wa={site.whatsapp} novalidate>
+  <div class="form-body">
+    <h3>{heading}</h3>
+    {lead && <p class="small muted" style="margin-top:6px">{lead}</p>}
+    <input type="hidden" name="form" value={variant} />
+    <input type="hidden" name="extra" value="" />
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label></div>
+
+    <div class="form-grid">
+      <div class="field">
+        <label for={f('name')}>Your name</label>
+        <input id={f('name')} name="name" type="text" autocomplete="name" required maxlength="80" />
+        <p class="err">Please enter your name.</p>
+      </div>
+      <div class="field">
+        <label for={f('phone')}>Phone or WhatsApp number</label>
+        <input id={f('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel" required maxlength="16" placeholder="10-digit mobile" />
+        <p class="err">Please enter a 10-digit mobile number.</p>
+      </div>
+
+      {['demo', 'b2b', 'brand'].includes(variant) && (
+        <div class="field">
+          <label for={f('company')}>{variant === 'brand' ? 'Brand or company' : 'Company'}</label>
+          <input id={f('company')} name="company" type="text" autocomplete="organization" required maxlength="100" />
+          <p class="err">Please enter the company name.</p>
+        </div>
+      )}
+
+      <div class="field">
+        <label for={f('city')}>City</label>
+        <input id={f('city')} name="city" type="text" autocomplete="address-level2" required maxlength="60" />
+        <p class="err">Please enter your city.</p>
+      </div>
+
+      {['station', 'technician'].includes(variant) && (
+        <div class="field">
+          <label for={f('state')}>State</label>
+          <select id={f('state')} name="state" required>
+            <option value="">Choose a state</option>
+            {states.map((s) => <option>{s}</option>)}
+          </select>
+          <p class="err">Please choose a state.</p>
+        </div>
+      )}
+
+      {variant === 'quote' && (
+        <div class="field">
+          <label for={f('need')}>What do you need?</label>
+          <select id={f('need')} name="need" required>
+            <option value="">Choose one</option>
+            {needs.map((n) => <option selected={n === defaultNeed}>{n}</option>)}
+          </select>
+          <p class="err">Please choose what you need.</p>
+        </div>
+      )}
+
+      {['survey', 'station'].includes(variant) && (
+        <div class="field">
+          <label for={f('site')}>Type of site</label>
+          <select id={f('site')} name="site_type" required>
+            <option value="">Choose one</option>
+            {siteTypes.map((s) => <option>{s}</option>)}
+          </select>
+          <p class="err">Please choose the type of site.</p>
+        </div>
+      )}
+
+      {variant === 'station' && (
+        <div class="field">
+          <label for={f('load')}>Sanctioned load <span class="opt">(if you know it)</span></label>
+          <input id={f('load')} name="sanctioned_load" type="text" maxlength="40" placeholder="e.g. 15 kW, three phase" />
+        </div>
+      )}
+
+      {variant === 'demo' && (
+        <div class="field">
+          <label for={f('chargers')}>Chargers you run or plan</label>
+          <select id={f('chargers')} name="chargers" required>
+            <option value="">Choose one</option>
+            <option>1–10</option><option>11–50</option><option>51–200</option><option>More than 200</option><option>Not yet, planning</option>
+          </select>
+          <p class="err">Please choose one.</p>
+        </div>
+      )}
+
+      {variant === 'b2b' && (
+        <>
+          <div class="field">
+            <label for={f('sites')}>Sites a month</label>
+            <select id={f('sites')} name="sites_per_month" required>
+              <option value="">Choose one</option>
+              <option>1–5</option><option>6–20</option><option>21–50</option><option>More than 50</option><option>One project</option>
+            </select>
+            <p class="err">Please choose one.</p>
+          </div>
+          <div class="field full">
+            <label for={f('states')}>States and charger types <span class="opt">(optional)</span></label>
+            <input id={f('states')} name="states_types" type="text" maxlength="160" placeholder="e.g. Maharashtra and Telangana, 60 kW DC and 7.4 kW AC" />
+          </div>
+        </>
+      )}
+
+      {variant === 'brand' && (
+        <>
+          <div class="field">
+            <label for={f('types')}>Chargers you make or sell</label>
+            <input id={f('types')} name="charger_types" type="text" required maxlength="160" placeholder="e.g. 7.4 kW AC, 60 kW DC, 3W chargers" />
+            <p class="err">Please tell us what you sell.</p>
+          </div>
+          <div class="field">
+            <label for={f('website')}>Website <span class="opt">(optional)</span></label>
+            <input id={f('website')} name="website" type="url" inputmode="url" maxlength="120" placeholder="https://" />
+          </div>
+        </>
+      )}
+
+      {variant === 'technician' && (
+        <>
+          <div class="field">
+            <label for={f('exp')}>Experience</label>
+            <select id={f('exp')} name="experience" required>
+              <option value="">Choose one</option>
+              <option>Less than 1 year</option><option>1–3 years</option><option>3–5 years</option><option>More than 5 years</option>
+            </select>
+            <p class="err">Please choose one.</p>
+          </div>
+          <div class="field full">
+            <label for={f('skills')}>Skills and licences <span class="opt">(optional)</span></label>
+            <input id={f('skills')} name="skills" type="text" maxlength="200" placeholder="e.g. wiring licence, AC/DC charger installation, earthing, civil work, team size" />
+          </div>
+        </>
+      )}
+
+      <div class="field full">
+        {variant === 'ask' ? (
+          <>
+            <label for={f('msg')}>Your question</label>
+            <textarea id={f('msg')} name="message" required maxlength="1500" rows="5" placeholder="e.g. Can I install a 7.4 kW charger on a single-phase connection?"></textarea>
+            <p class="err">Please type your question.</p>
+          </>
+        ) : (
+          <>
+            <label for={f('msg')}>{variant === 'station' ? 'About the site' : 'Message'} <span class="opt">(optional)</span></label>
+            <textarea id={f('msg')} name="message" maxlength="1500" rows="3" placeholder={variant === 'station' ? 'Location, parking spaces, chargers you have in mind…' : variant === 'demo' ? 'What you want to see in the demo…' : 'Charger, site, timeline, anything that helps…'}></textarea>
+          </>
+        )}
+      </div>
+
+      {variant === 'ask' && (
+        <div class="field full">
+          <label style="display:flex;gap:10px;align-items:flex-start;font-weight:500"><input type="checkbox" name="publish_ok" value="yes" style="width:20px;min-height:20px;margin-top:2px;accent-color:#0B7D4A" />You may publish my question and the answer on this site, without my name or number.</label>
+        </div>
+      )}
+    </div>
+
+    <div class="form-foot">
+      <button class="btn btn-primary btn-lg" type="submit">{submitLabel ?? d.submit}<Icon name="arrowRight" size={18} /></button>
+      <p class="small">We use your details only to reply to you. <a href="/privacy-policy/">Privacy policy</a></p>
+    </div>
+    <p class="small muted form-status" role="status" aria-live="polite" style="margin-top:10px"></p>
+  </div>
+
+  <div class="form-done" tabindex="-1">
+    <div class="done-icon"><Icon name="check" size={26} stroke={2.5} /></div>
+    <h3 data-done-title>Thank you, we have your details</h3>
+    <p style="margin-top:8px" data-done-text>We reply on WhatsApp or by phone. Calls are answered 10 am–7 pm; WhatsApp any time.</p>
+    <div class="btn-row" style="margin-top:18px">
+      <a class="btn btn-outline" data-done-wa href={`https://wa.me/${site.whatsapp}`} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Open WhatsApp</a>
+      <button class="btn btn-sm" type="button" data-reset style="background:var(--soft);color:var(--ink)">Send another enquiry</button>
+    </div>
+  </div>
+</form>

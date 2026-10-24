@@ -1,0 +1,10 @@
+---
+interface Props { eyebrow?: string; title: string; lead?: string; center?: boolean; id?: string; as?: 'h2' | 'h1' }
+const { eyebrow, title, lead, center = false, id, as: Tag = 'h2' } = Astro.props;
+---
+<div class:list={['shead', { center }]}>
+  {eyebrow && <p class="eyebrow-plain">{eyebrow}</p>}
+  <Tag id={id} set:html={title} />
+  {lead && <p class="lead" set:html={lead} />}
+  <slot />
+</div>

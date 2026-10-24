@@ -1,0 +1,17 @@
+---
+// The six-step way Proline works. Pages can pass their own steps.
+export interface Step { title: string; text: string }
+interface Props { steps?: Step[] }
+const defaultSteps: Step[] = [
+  { title: 'Site survey', text: 'An engineer checks your supply and sanctioned load, earthing, the cable route, the parking spot and any civil work. The survey is paid; the fee is adjusted against your order if you go ahead.' },
+  { title: 'Plan and quote', text: 'You get charger options from any brand that fits, the electrical plan and one clear quote for the whole job.' },
+  { title: 'Permissions checklist', text: 'We tell you which permissions your site needs, such as a society NOC, a load increase or a separate EV connection, and the documents to keep ready.' },
+  { title: 'Installation', text: 'Our technicians lay the cable, fit the DB box and earthing, and finish any foundation or canopy work, following the charger maker’s manual.' },
+  { title: 'Commissioning', text: 'We test the earthing, insulation and protection, power up the charger, set up its app or OCPP connection and run a test charge.' },
+  { title: 'Handover', text: 'You get the test results, photos of the work and a short how-to-use session, plus one number to call if anything needs attention.' },
+];
+const { steps = defaultSteps } = Astro.props;
+---
+<ol class="steps">
+  {steps.map((s) => <li><h3>{s.title}</h3><p>{s.text}</p></li>)}
+</ol>

@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+import { inlineMd } from '../lib/text';
+interface Props { items: string[]; title?: string; lead?: string }
+const { items, title = 'What decides the cost', lead = 'We don’t publish prices, because no two sites are the same. These are the things that decide yours. Share them with us and you get one clear quote.' } = Astro.props;
+---
+<div class="cost-factors">
+  <h2 style="font-size:clamp(24px,2.6vw,30px)">{title}</h2>
+  <p style="margin-top:10px;max-width:720px">{lead}</p>
+  <ul class="factors" style="margin-top:20px">
+    {items.map((t) => <li><Icon name="checkCircle" size={20} /><span set:html={inlineMd(t)} /></li>)}
+  </ul>
+  <div class="btn-row" style="margin-top:20px">
+    <a class="btn btn-primary" href="#quote">Get a quote</a>
+    <a class="btn btn-outline" href="/tools/installation-checklist/">See what your installation needs</a>
+  </div>
+</div>

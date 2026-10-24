@@ -1,0 +1,16 @@
+---
+// FAQ list. Answers may contain simple Markdown-style links: [text](/url/) and **bold**.
+import Icon from './Icon.astro';
+import { inlineMd } from '../lib/text';
+export interface FaqItem { q: string; a: string }
+interface Props { items: FaqItem[]; open?: boolean }
+const { items, open = false } = Astro.props;
+---
+<div class="faqs">
+  {items.map((f, i) => (
+    <details class="faq" open={open && i === 0 ? true : undefined}>
+      <summary><span>{f.q}</span><span class="plus" aria-hidden="true"><Icon name="plus" size={16} stroke={2.5} /></span></summary>
+      <div class="faq-a">{f.a.split(/\n\s*\n/).map((p) => <p set:html={inlineMd(p)} />)}</div>
+    </details>
+  ))}
+</div>

@@ -1,0 +1,69 @@
+---
+import Base from './Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Icon from '../components/Icon.astro';
+import Faqs from '../components/Faqs.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Photo from '../components/Photo.astro';
+import { faqNode } from '../lib/schema';
+import { inlineMd } from '../lib/text';
+import type { FormVariant } from '../components/QuoteForm.astro';
+
+export interface HubItem { icon: string; label: string; summary: string; href: string }
+interface Props {
+  title: string; description: string; h1: string; intro: string; eyebrow?: string;
+  crumb: string; items: HubItem[]; itemsTitle?: string; image?: string;
+  faqs?: { q: string; a: string }[]; form?: FormVariant; need?: string;
+  ctaTitle?: string; ctaLead?: string; cols?: 2 | 3 | 4;
+}
+const { title, description, h1, intro, eyebrow, crumb, items, itemsTitle, image, faqs = [], form = 'quote', need, ctaTitle, ctaLead, cols = 3 } = Astro.props;
+const path = Astro.url.pathname;
+---
+<Base title={title} description={description} crumbs={[{ label: crumb }]} schema={faqs.length ? [faqNode(path, faqs)] : []}>
+  <section class="phero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: crumb }]} />
+      <div class:list={['phero-grid', { 'no-media': !image }]}>
+        <div>
+          {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+          <h1>{h1}</h1>
+          <p class="lead" set:html={inlineMd(intro)} />
+          <div class="btn-row">
+            <a class="btn btn-primary btn-lg" href="#quote">Get a quote</a>
+            <a class="btn btn-outline btn-lg" href="#list">See all<Icon name="arrowRight" size={18} /></a>
+          </div>
+        </div>
+        {image && <div class="phero-media"><Photo name={image} eager sizes="(max-width: 900px) 100vw, 480px" /></div>}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="list" aria-label={itemsTitle ?? h1}>
+    <div class="wrap">
+      {itemsTitle && <h2 style="font-size:clamp(24px,2.6vw,30px);margin-bottom:24px">{itemsTitle}</h2>}
+      <div class:list={['grid', `grid-${cols}`]}>
+        {items.map((s) => (
+          <a class="card" href={s.href}>
+            <span class="card-icon"><Icon name={s.icon} size={24} /></span>
+            <h3>{s.label}</h3>
+            <p>{s.summary}</p>
+            <span class="card-cta">Learn more<Icon name="arrowRight" size={16} /></span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <slot />
+
+  {faqs.length > 0 && (
+    <section class="section section-soft" aria-labelledby="faq-title">
+      <div class="wrap-narrow">
+        <SectionHead eyebrow="FAQ" title="Questions and answers" center id="faq-title" />
+        <Faqs items={faqs} />
+      </div>
+    </section>
+  )}
+  <CtaBand variant={form} need={need} title={ctaTitle} lead={ctaLead} />
+</Base>

@@ -1,0 +1,32 @@
+{
+  "checked": "2026-10-24",
+  "source": "Bureau of Energy Efficiency, state-wise EV tariff list (Annexure A)",
+  "sourceUrl": "https://beeindia.gov.in/sites/default/files/annexure-A.pdf",
+  "note": "LT supply for public EV charging stations. Energy charge in ₹ per unit (kWh), fixed charge in ₹ per kW (or kVA) per month where the state has one. HT rates differ; check your DISCOM's latest tariff order.",
+  "states": [
+    { "state": "Delhi", "tariff": 4.5, "fixedPerKw": 0, "served": true },
+    { "state": "Haryana", "tariff": 6.62, "fixedPerKw": 0, "served": true },
+    { "state": "Uttar Pradesh", "tariff": 7.7, "fixedPerKw": 0, "served": true },
+    { "state": "Uttarakhand", "tariff": 6.25, "fixedPerKw": 0, "served": true },
+    { "state": "Himachal Pradesh", "tariff": 5.82, "fixedPerKw": 0, "served": true },
+    { "state": "Maharashtra", "tariff": 6.08, "fixedPerKw": 75, "served": true },
+    { "state": "Madhya Pradesh", "tariff": 6.79, "fixedPerKw": 0, "served": true },
+    { "state": "Chhattisgarh", "tariff": 5.0, "fixedPerKw": 0, "served": true },
+    { "state": "Telangana", "tariff": 6.0, "fixedPerKw": 50, "served": true },
+    { "state": "Tamil Nadu", "tariff": 6.0, "fixedPerKw": 25, "served": true, "note": "₹6–9 a unit by time of day; fixed charge ₹25–138 per kVA" },
+    { "state": "Andhra Pradesh", "tariff": 6.7, "fixedPerKw": 0 },
+    { "state": "Bihar", "tariff": 8.87, "fixedPerKw": 0 },
+    { "state": "Chandigarh", "tariff": 3.8, "fixedPerKw": 0 },
+    { "state": "Goa", "tariff": 4.7, "fixedPerKw": 0 },
+    { "state": "Gujarat", "tariff": 4.1, "fixedPerKw": 0, "fixedFlat": 25, "note": "Fixed charge ₹25 per installation per month" },
+    { "state": "Jharkhand", "tariff": 6.15, "fixedPerKw": 100, "note": "Urban rate; rural ₹5.80 with ₹50/kW fixed" },
+    { "state": "Karnataka", "tariff": 5.0, "fixedPerKw": 70, "note": "Fixed charge ₹70/kW below 50 kW, ₹170/kW above" },
+    { "state": "Kerala", "tariff": 5.5, "fixedPerKw": 90 },
+    { "state": "Odisha", "tariff": 5.5, "fixedPerKw": 0 },
+    { "state": "Punjab", "tariff": 6.28, "fixedPerKw": 0, "note": "Billed per kVAh" },
+    { "state": "Rajasthan", "tariff": 6.0, "fixedPerKw": 40, "note": "Fixed charge per kVA" },
+    { "state": "West Bengal", "tariff": 6.0, "fixedPerKw": 0 },
+    { "state": "Jammu and Kashmir", "tariff": 5.1, "fixedPerKw": 100 },
+    { "state": "Assam", "tariff": 5.9, "fixedPerKw": 150 }
+  ]
+}

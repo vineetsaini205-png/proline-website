@@ -1,0 +1,35 @@
+---
+import site from '../data/site.json';
+import Icon from './Icon.astro';
+import QuoteForm, { type FormVariant } from './QuoteForm.astro';
+import { waLink } from '../lib/text';
+interface Props {
+  title?: string;
+  lead?: string;
+  variant?: FormVariant;
+  need?: string;
+  formTitle?: string;
+  waText?: string;
+  navy?: boolean;
+}
+const {
+  title = 'Tell us about your site',
+  lead = 'Share a few details and we come back with the right charger options and one clear quote. Choosing a charger? The advice is free, for any brand.',
+  variant = 'quote', need, formTitle, waText, navy = true,
+} = Astro.props;
+---
+<section class:list={['section cta-band', navy ? 'section-navy' : 'section-soft']} id="quote" aria-labelledby="quote-title">
+  <div class="wrap">
+    <div class="cta-copy">
+      <p class="eyebrow-plain">Talk to Proline</p>
+      <h2 id="quote-title">{title}</h2>
+      <p class="lead">{lead}</p>
+      <ul class="contact-list">
+        <li><span class="ci"><Icon name="whatsapp" size={22} /></span><div><strong><a href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank">WhatsApp {site.phoneDisplay}</a></strong><span>Any time. Photos of your site and meter help us reply faster.</span></div></li>
+        <li><span class="ci"><Icon name="phone" size={22} /></span><div><strong><a href={`tel:${site.phoneE164}`}>Call {site.phoneDisplay}</a></strong><span>10 am–7 pm</span></div></li>
+        <li><span class="ci"><Icon name="mail" size={22} /></span><div><strong><a href={`mailto:${site.email}`}>{site.email}</a></strong><span>For tenders, documents and drawings</span></div></li>
+      </ul>
+    </div>
+    <QuoteForm variant={variant} need={need} title={formTitle} id="quote-form" />
+  </div>
+</section>

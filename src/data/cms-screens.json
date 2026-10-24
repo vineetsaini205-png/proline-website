@@ -1,0 +1,26 @@
+{
+  "note": "Screens from the CPO CMS deck are concept designs with sample data. Swap in real screenshots from the demo console (sample brand 'Your Brand') and set concept to false.",
+  "desktop": [
+    { "id": "D1", "title": "Dashboard", "caption": "Chargers online, sessions, energy, money collected and alerts on one screen", "image": "/images/cms/d1-dashboard.webp", "concept": true },
+    { "id": "D2", "title": "Add a charger", "caption": "Pick the model, the station and the connection values the technician will type in", "image": "/images/cms/d2-add-charger.webp", "concept": true },
+    { "id": "D3", "title": "Tariffs", "caption": "Energy charge, service charge and GST, with versions and solar-hour rates", "image": "/images/cms/d3-tariffs.webp", "concept": true },
+    { "id": "D4", "title": "Reports", "caption": "Sessions, GST, refunds, uptime and ESG reports to download as PDF or Excel", "image": "/images/cms/d4-reports.webp", "concept": true },
+    { "id": "D5", "title": "System health", "caption": "Backups, certificates, licence and updates in plain words", "image": "/images/cms/d5-health.webp", "concept": true }
+  ],
+  "phone": [
+    { "id": "P1", "title": "Live charging", "caption": "The driver watches energy, power and money used, and can stop any time", "image": "/images/cms/p1-live.webp", "concept": true },
+    { "id": "P2", "title": "Scan", "caption": "Drivers scan the QR sticker with the phone camera; no app to install", "image": "/images/cms/p2-scan.webp", "concept": true },
+    { "id": "P3", "title": "Choose", "caption": "Choose an amount, an energy or a full charge, with the price shown first", "image": "/images/cms/p3-choose.webp", "concept": true },
+    { "id": "P4", "title": "Pay", "caption": "Pay with any UPI app, straight into the operator’s own payment account", "image": "/images/cms/p4-pay.webp", "concept": true },
+    { "id": "P5", "title": "Technician connect", "caption": "The technician app shows the exact OCPP values to type into the charger", "image": "/images/cms/p5-tech-connect.webp", "concept": true },
+    { "id": "P6", "title": "Sticker binding", "caption": "Each QR sticker is bound to its gun, with a photo and a live test", "image": "/images/cms/p6-sticker-binding.webp", "concept": true }
+  ],
+  "extra": [
+    { "id": "X1", "title": "Alerts and tickets", "image": "/images/cms/d6-alerts.webp", "concept": true },
+    { "id": "X2", "title": "Charger access", "image": "/images/cms/d7-access.webp", "concept": true },
+    { "id": "X3", "title": "Setup wizard", "image": "/images/cms/d8-setup.webp", "concept": true },
+    { "id": "X4", "title": "Support access", "image": "/images/cms/d9-support-access.webp", "concept": true },
+    { "id": "X5", "title": "Receipt and refund", "image": "/images/cms/p7-receipt.webp", "concept": true },
+    { "id": "X6", "title": "QR sticker", "image": "/images/cms/qr-sticker.webp", "concept": true }
+  ]
+}

@@ -1,0 +1,125 @@
+---
+// Two quick calculators for the homepage: station earnings and EV-vs-fuel savings.
+// Results are rendered at build time (so search engines see real numbers) and updated live in the browser.
+import rates from '../data/rates.json';
+import Icon from './Icon.astro';
+import { CHARGERS, earnings, savings, VEHICLES, rupees, type Busy } from '../lib/calc';
+
+const TARIFF = 6; // median EV tariff of the 10 states Proline works in (BEE list)
+const quick = ['ac-7', 'dc-30', 'dc-60', 'dc-120'];
+const chargers = CHARGERS.filter((c) => quick.includes(c.id));
+const earn = (id: string, busy: Busy) => {
+  const c = CHARGERS.find((x) => x.id === id)!;
+  return earnings({
+    chargerId: id, count: 1, hoursPerDay: c.hours[busy], pricePerKwh: c.kind === 'dc' ? rates.publicCharging.dc.default : rates.publicCharging.ac.default,
+    priceIncludesGst: true, gstPct: rates.gstOnCharging, tariff: TARIFF, fixedPerKw: 0, rentMonthly: 0, revenueSharePct: 0, appCommissionPct: 0, otherMonthly: 0,
+  });
+};
+const def = earn('dc-60', 'likely');
+
+const vehicles = VEHICLES.filter((v) => ['scooter', 'car', 'suv', 'auto'].includes(v.id));
+const fuelPrice = (f: 'petrol' | 'diesel' | 'cng') => rates.fuel[f].price;
+const sv = (id: string, km: number) => {
+  const v = VEHICLES.find((x) => x.id === id)!;
+  return savings({ fuel: v.fuel, kmPerDay: km, days: v.days, fuelPrice: fuelPrice(v.fuel), mileage: v.mileage, evKmPerKwh: v.evKmPerKwh, electricityRate: rates.homeElectricity.default, co2PerFuelUnit: rates.co2[v.fuel], gridKgPerKwh: rates.co2.gridKgPerKwh });
+};
+const defS = sv('car', 40);
+const cfg = {
+  tariff: TARIFF, gst: rates.gstOnCharging, ac: rates.publicCharging.ac.default, dc: rates.publicCharging.dc.default,
+  home: rates.homeElectricity.default, fuel: { petrol: rates.fuel.petrol.price, diesel: rates.fuel.diesel.price, cng: rates.fuel.cng.price },
+  co2: rates.co2,
+};
+---
+<div class="grid grid-2" id="home-tools" data-cfg={JSON.stringify(cfg)}>
+  <div class="card" style="padding:28px;gap:16px">
+    <div style="display:flex;gap:14px;align-items:center">
+      <span class="card-icon navy"><Icon name="trending" size={24} /></span>
+      <div><h3>What could a charging station earn?</h3><p class="small muted">One charger, after electricity and GST</p></div>
+    </div>
+    <div class="field">
+      <label for="ht-charger">Charger</label>
+      <select id="ht-charger">
+        {chargers.map((c) => <option value={c.id} selected={c.id === 'dc-60'}>{c.label}</option>)}
+      </select>
+    </div>
+    <div class="field">
+      <span class="label" id="ht-busy-label">How busy will the site be?</span>
+      <div class="radio-row" role="radiogroup" aria-labelledby="ht-busy-label">
+        <label><input type="radio" name="ht-busy" value="quiet" />Quiet</label>
+        <label><input type="radio" name="ht-busy" value="likely" checked />Likely</label>
+        <label><input type="radio" name="ht-busy" value="busy" />Busy</label>
+      </div>
+    </div>
+    <div style="background:var(--navy);border-radius:16px;padding:20px;color:#C9D6E8">
+      <p class="small">Estimated profit a month</p>
+      <p class="calc-big" id="ht-earn">{rupees(def.profit)}<small> /month</small></p>
+      <p class="small" id="ht-earn-note" style="margin-top:6px">{Math.round(def.kwhSold).toLocaleString('en-IN')} units sold a month at ₹{rates.publicCharging.dc.default}/unit incl. GST, EV tariff ₹{TARIFF}/unit</p>
+    </div>
+    <p class="small muted">Before rent, staff and the cost of the station. New stations usually take 6–12 months to get busy.</p>
+    <a class="link-arrow" href="/tools/ev-charging-station-earnings-calculator/">Full earnings calculator: your state, prices and quote<Icon name="arrowRight" size={16} /></a>
+  </div>
+
+  <div class="card" style="padding:28px;gap:16px">
+    <div style="display:flex;gap:14px;align-items:center">
+      <span class="card-icon"><Icon name="fuel" size={24} /></span>
+      <div><h3>How much does an EV save you?</h3><p class="small muted">Running cost against petrol, diesel or CNG</p></div>
+    </div>
+    <div class="field">
+      <label for="hs-vehicle">Vehicle</label>
+      <select id="hs-vehicle">
+        {vehicles.map((v) => <option value={v.id} selected={v.id === 'car'}>{v.label} ({v.fuel === 'cng' ? 'CNG' : v.fuel})</option>)}
+      </select>
+    </div>
+    <div class="field range-field">
+      <div class="rf-top"><label for="hs-km">Kilometres a day</label><output id="hs-km-out" for="hs-km">40 km</output></div>
+      <input id="hs-km" type="range" min="5" max="250" step="5" value="40" />
+    </div>
+    <div style="background:var(--green-50);border-radius:16px;padding:20px">
+      <p class="small" style="color:var(--green-text);font-weight:600">You save about</p>
+      <p class="calc-big" style="color:var(--ink)" id="hs-save">{rupees(defS.monthly)}<small style="color:var(--muted)"> /month</small></p>
+      <p class="small" id="hs-note" style="margin-top:6px">{rupees(defS.yearly)} a year · ₹{defS.fuelPerKm.toFixed(2)}/km on petrol vs ₹{defS.evPerKm.toFixed(2)}/km charging at home</p>
+    </div>
+    <p class="small muted">Petrol ₹{rates.fuel.petrol.price.toFixed(2)}, diesel ₹{rates.fuel.diesel.price.toFixed(2)} a litre and CNG ₹{rates.fuel.cng.price.toFixed(2)} a kg (Delhi), home charging ₹{rates.homeElectricity.default} a unit.</p>
+    <a class="link-arrow" href="/tools/ev-vs-petrol-savings-calculator/">Full savings calculator: your fuel price, mileage and CO₂<Icon name="arrowRight" size={16} /></a>
+  </div>
+</div>
+
+<script>
+  import { CHARGERS, VEHICLES, earnings, savings, rupees, type Busy } from '../lib/calc';
+  const root = document.getElementById('home-tools');
+  if (root) {
+    const cfg = JSON.parse(root.dataset.cfg || '{}');
+    const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+    const updEarn = () => {
+      const id = $<HTMLSelectElement>('ht-charger').value;
+      const busy = (root.querySelector<HTMLInputElement>('input[name="ht-busy"]:checked')?.value || 'likely') as Busy;
+      const c = CHARGERS.find((x) => x.id === id)!;
+      const price = c.kind === 'dc' ? cfg.dc : cfg.ac;
+      const r = earnings({ chargerId: id, count: 1, hoursPerDay: c.hours[busy], pricePerKwh: price, priceIncludesGst: true, gstPct: cfg.gst, tariff: cfg.tariff, fixedPerKw: 0, rentMonthly: 0, revenueSharePct: 0, appCommissionPct: 0, otherMonthly: 0 });
+      $('ht-earn').innerHTML = `${rupees(r.profit)}<small> /month</small>`;
+      $('ht-earn-note').textContent = `${Math.round(r.kwhSold).toLocaleString('en-IN')} units sold a month at ₹${price}/unit incl. GST, EV tariff ₹${cfg.tariff}/unit`;
+    };
+    const updSave = () => {
+      const v = VEHICLES.find((x) => x.id === $<HTMLSelectElement>('hs-vehicle').value)!;
+      const km = Number($<HTMLInputElement>('hs-km').value);
+      $('hs-km-out').textContent = `${km} km`;
+      const r = savings({ fuel: v.fuel, kmPerDay: km, days: v.days, fuelPrice: cfg.fuel[v.fuel], mileage: v.mileage, evKmPerKwh: v.evKmPerKwh, electricityRate: cfg.home, co2PerFuelUnit: cfg.co2[v.fuel], gridKgPerKwh: cfg.co2.gridKgPerKwh });
+      const fuelName = v.fuel === 'cng' ? 'CNG' : v.fuel;
+      $('hs-save').innerHTML = `${rupees(r.monthly)}<small style="color:var(--muted)"> /month</small>`;
+      $('hs-note').textContent = `${rupees(r.yearly)} a year · ₹${r.fuelPerKm.toFixed(2)}/km on ${fuelName} vs ₹${r.evPerKm.toFixed(2)}/km charging at home`;
+    };
+    root.addEventListener('input', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.closest('#ht-charger') || (t as HTMLInputElement).name === 'ht-busy') updEarn();
+      if (t.id === 'hs-vehicle' || t.id === 'hs-km') updSave();
+    });
+    root.addEventListener('change', (e) => {
+      const t = e.target as HTMLElement;
+      if (t.id === 'hs-vehicle') {
+        const v = VEHICLES.find((x) => x.id === (t as HTMLSelectElement).value)!;
+        $<HTMLInputElement>('hs-km').value = String(v.kmPerDay);
+      }
+      updEarn(); updSave();
+    });
+  }
+</script>

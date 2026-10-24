@@ -1,0 +1,25 @@
+{
+  "checked": "2026-10-24",
+  "publicCharging": {
+    "ac": { "min": 8, "max": 15, "default": 12 },
+    "dc": { "min": 15, "max": 25, "default": 20 },
+    "source": "Statiq, Public EV charging cost in India, 12 Oct 2026",
+    "sourceUrl": "https://statiq.in/blog/2026/10/12/public-ev-charging-cost-india/"
+  },
+  "fuel": {
+    "petrol": { "price": 102.12, "unit": "litre", "city": "Delhi", "date": "2026-10-20", "source": "The Hans India, fuel prices on 20 Oct 2026", "sourceUrl": "https://www.thehansindia.com/business/market-compass/petrol-and-diesel-prices-today-in-hyderabad-delhi-chennai-and-mumbai-on-20-october-2026-1134118" },
+    "diesel": { "price": 95.20, "unit": "litre", "city": "Delhi", "date": "2026-10-20", "source": "The Hans India, fuel prices on 20 Oct 2026", "sourceUrl": "https://www.thehansindia.com/business/market-compass/petrol-and-diesel-prices-today-in-hyderabad-delhi-chennai-and-mumbai-on-20-october-2026-1134118" },
+    "cng": { "price": 86.98, "unit": "kg", "city": "Delhi", "date": "2026-08-29", "source": "Angel One: IGL raises Delhi CNG rate to ₹86.98/kg, 29 Aug 2026", "sourceUrl": "https://www.angelone.in/news/economy/igl-raises-delhi-cng-rates-to-86-98-kg-on-rising-lng-input-costs" }
+  },
+  "homeElectricity": { "default": 8, "note": "Typical cost of one extra unit at home in Delhi once the higher slabs and charges apply. Use the rate on your own bill." },
+  "co2": {
+    "petrol": 2.31, "diesel": 2.68, "cng": 2.75,
+    "gridKgPerKwh": 0.727,
+    "gridSource": "Central Electricity Authority, CO2 Baseline Database: weighted average grid emission factor 0.727 t CO2/MWh for 2023-24 (reported by SolarQuarter, Jan 2025)",
+    "gridSourceUrl": "https://solarquarter.com/2025/01/06/co2-baseline-database-highlights-indias-progress-in-renewable-energy-and-emission-reduction-cea/",
+    "fuelNote": "Tailpipe CO2 from burning the fuel: petrol 2.31 kg per litre, diesel 2.68 kg per litre, CNG 2.75 kg per kg."
+  },
+  "gstOnCharging": 18,
+  "todRule": "Ministry of Power guidelines (2024): single-part tariff for public charging, capped at the average cost of supply till 31 March 2028; solar hours 0.7× and non-solar hours 1.3× where time-of-day tariffs apply.",
+  "todSourceUrl": "https://eparlib.sansad.in/bitstream/123456789/2994845/1/AU3099_jxi0H3.pdf"
+}

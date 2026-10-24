@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import HubPage from '../../layouts/HubPage.astro';
+import SectionHead from '../../components/SectionHead.astro';
+const chargers = (await getCollection('chargers', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ icon: e.data.icon, label: e.data.label, summary: e.data.summary, href: `/chargers/${e.id}/` }));
+const items = [
+  ...chargers,
+  { icon: 'battery', label: 'Batteries', summary: 'Lithium batteries for e-scooters and e-rickshaws, inverter and solar batteries, and BESS for stations.', href: '/batteries/' },
+  { icon: 'sun', label: 'Solar + EV charging', summary: 'Solar carports and rooftops that power your chargers, with storage where it pays off.', href: '/solar-ev-charging/' },
+];
+const faqs = [
+  { q: 'Do you sell chargers of one brand only?', a: 'No. We are tied up with several charger makers and suggest the one that fits your vehicles, site, supply and budget. You can ask for options from up to three brands, compared on features, software, warranty and service.' },
+  { q: 'Do you install the charger as well?', a: 'Yes. Every charger we supply can come with installation and commissioning by our technicians, including cabling, the DB box, earthing and any civil work. We also install chargers you buy elsewhere.' },
+  { q: 'AC or DC: which charger do I need?', a: 'AC chargers (3.3–22 kW) suit homes, offices and places where vehicles park for hours. DC fast chargers (30–240 kW) suit highways, public stations and fleets that need a quick top-up. The [charger finder](/tools/charger-finder/) suggests a type and power in a minute.' },
+  { q: 'Can I sell chargers under my own brand?', a: 'Yes. We arrange [white-label chargers](/chargers/white-label-chargers/) with your name and colours from makers we work with, and install them for your customers.' },
+];
+---
+<HubPage
+  title="Buy EV Chargers in India: AC, DC, 2W and 3W | Proline"
+  description="AC home chargers, 30–240 kW DC fast chargers, 2W/3W and bus chargers and white-label chargers, with free brand-neutral advice and installation."
+  h1="EV chargers for every vehicle and site"
+  eyebrow="Chargers and products"
+  intro="Proline helps you buy the right EV charger from the brands we work with, then installs and commissions it. Advice on choosing is free, and we compare options on power, connectors, software, warranty and service, not one brand’s catalogue."
+  crumb="Chargers" items={items} itemsTitle="Choose a category" image="ac-pedestal-charger" faqs={faqs} need="Help choosing a charger (any brand)">
+  <section class="section section-soft" aria-labelledby="neutral-title">
+    <div class="wrap split">
+      <SectionHead eyebrow="Brand-neutral" title="Advice about your site, not a catalogue" lead="Most charger sellers sell one brand. We work with many, so we can say which charger fits, which one doesn’t, and why. Tell us your vehicles, where they park, your supply and how fast they need to charge." id="neutral-title" />
+      <ul class="ticks">
+        <li><strong>Right power for your supply.</strong> A 7.4 kW charger on single phase, 11 or 22 kW on three phase, DC when the load allows.</li>
+        <li><strong>Right connectors.</strong> Type 2 and CCS2 for cars, the right sockets and Type 6/7 chargers for 2W and 3W.</li>
+        <li><strong>Right software.</strong> An app for home use, or OCPP to run public chargers on a CMS such as Proline CMS.</li>
+        <li><strong>Service you can reach.</strong> Warranty terms and who fixes it, before you buy.</li>
+      </ul>
+    </div>
+  </section>
+</HubPage>

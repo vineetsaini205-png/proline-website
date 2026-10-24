@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import HubPage from '../../layouts/HubPage.astro';
+const items = (await getCollection('batteries', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ icon: e.data.icon, label: e.data.label, summary: e.data.summary, href: `/batteries/${e.id}/` }));
+const faqs = [
+  { q: 'Which batteries do you supply?', a: 'Batteries of different brands for electric two-wheelers, e-rickshaws and three-wheelers, inverters and solar systems, and battery energy storage systems (BESS) for charging stations.' },
+  { q: 'Lithium or lead-acid?', a: 'Lithium batteries cost more at the start but last more charge cycles, weigh less and charge faster, which usually suits EVs that run every day. Lead-acid still suits some low-use inverter backups. We help you compare for your use.' },
+  { q: 'Do you install batteries too?', a: 'Yes, for inverter, solar and BESS systems we install and wire the batteries with the right protection. For vehicle batteries we help you pick a pack that matches your vehicle and charger.' },
+];
+---
+<HubPage
+  title="EV and Solar Batteries: 2W, E-rickshaw, BESS | Proline"
+  description="Batteries of different brands for e-scooters, e-rickshaws and 3-wheelers, inverters and solar, and BESS for EV charging stations. Get the right pack."
+  h1="Batteries for EVs, inverters and charging stations"
+  eyebrow="Batteries"
+  intro="Proline supplies batteries of different brands for electric two-wheelers, e-rickshaws and three-wheelers, inverters and solar systems, and battery energy storage (BESS) for charging stations. Tell us the vehicle or the load and we suggest the right chemistry, capacity and brand."
+  crumb="Batteries" items={items} itemsTitle="Battery types" faqs={faqs} need="Batteries" cols={2} />

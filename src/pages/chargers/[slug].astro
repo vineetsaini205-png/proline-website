@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content';
+import LandingPage from '../../layouts/LandingPage.astro';
+export async function getStaticPaths() {
+  const entries = await getCollection('chargers', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<LandingPage entry={entry} crumbs={[{ label: 'Chargers', href: '/chargers/' }, { label: entry.data.label }]} />

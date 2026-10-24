@@ -1,0 +1,9 @@
+---
+// Placeholder mark until the owner's Charge-O logo file arrives (see PROGRESS.md).
+interface Props { href?: string; class?: string; size?: number }
+const { href = '/', class: cls = '', size = 40 } = Astro.props;
+---
+<a href={href} class:list={['logo', cls]} aria-label="Proline Electrical Works, home">
+  <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0B2545"></rect><path d="M22.5 7 L11 22.5 H19 L17.5 33 L29 17.5 H21 Z" fill="#13B26B"></path></svg>
+  <span class="logo-text"><span class="logo-name">Proline</span><span class="logo-sub">ELECTRICAL WORKS</span></span>
+</a>

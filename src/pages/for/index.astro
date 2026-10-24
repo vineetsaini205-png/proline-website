@@ -1,0 +1,18 @@
+---
+import { getCollection } from 'astro:content';
+import HubPage from '../../layouts/HubPage.astro';
+const items = [
+  ...(await getCollection('audiences', ({ data }) => !data.draft))
+    .sort((a, b) => a.data.order - b.data.order)
+    .map((e) => ({ icon: e.data.icon, label: e.data.label, summary: e.data.summary, href: `/for/${e.id}/` })),
+  { icon: 'home', label: 'Home owners', summary: 'A wall-box charger fitted safely at home, with proper earthing and protection.', href: '/services/home-ev-charger-installation/' },
+  { icon: 'trending', label: 'Investors and landowners', summary: 'What a charging station costs to plan, what it could earn and how to start.', href: '/start-an-ev-charging-station/' },
+];
+---
+<HubPage
+  title="EV Charging Partner for CPOs, Brands and Fleets | Proline"
+  description="Proline installs EV chargers for charge point operators, charger brands, EV makers, businesses, housing societies, fleets, government sites and homes."
+  h1="Who we work with"
+  eyebrow="Who we serve"
+  intro="Proline installs EV chargers for charge point operators, charger brands, EV makers and dealers, businesses, housing societies, fleets and government sites, as well as homes. Each page below shows how we work for that kind of site."
+  crumb="Who we serve" items={items} itemsTitle="Find your page" image="solar-canopy-aerial" form="b2b" ctaTitle="Tell us what you need installed" ctaLead="Sites a month, states and charger types: share what you can and we reply with how we would run it." />

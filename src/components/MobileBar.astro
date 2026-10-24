@@ -1,0 +1,11 @@
+---
+import site from '../data/site.json';
+import Icon from './Icon.astro';
+import { waLink } from '../lib/text';
+interface Props { waText?: string }
+const { waText } = Astro.props;
+---
+<nav class="mbar" aria-label="Contact Proline">
+  <a class="mbar-wa" href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={22} />WhatsApp</a>
+  <a class="mbar-call" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call 10 am–7 pm</a>
+</nav>
