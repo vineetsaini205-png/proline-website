@@ -16,7 +16,7 @@ const { title, description, h1, lead, eyebrow, crumb, cta = {}, faqs = [], noind
 const path = Astro.url.pathname;
 const allSchema = faqs.length ? [...schema, faqNode(path, faqs)] : schema;
 ---
-<Base title={title} description={description} crumbs={[{ label: crumb }]} schema={allSchema} noindex={noindex} waText={waText} headerCta={headerCta}>
+<Base title={title} description={description} crumbs={[{ label: crumb }]} schema={allSchema} noindex={noindex} waText={waText} headerCta={headerCta ?? (cta === false ? { label: 'Get a quote', href: '/contact/#quote' } : undefined)}>
   <section class="phero">
     <div class="wrap">
       <Breadcrumbs items={[{ label: crumb }]} />
