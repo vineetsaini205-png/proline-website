@@ -22,7 +22,7 @@ const items = links
   <section class="section section-line" aria-labelledby="related-title">
     <div class="wrap">
       <h2 id="related-title" class="rel-title">{title}</h2>
-      <div class="grid grid-3 rel-links">
+      <div class="grid grid-3 rel-links swipe">
         {items.map((l) => (
           <a class="rel" href={l.href}>
             <span><strong>{l.label}</strong>{l.note && <span>{l.note}</span>}</span>

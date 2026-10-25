@@ -40,7 +40,10 @@
   --header-h: 76px;
 }
 @media (max-width: 760px) {
-  :root { --gutter: 16px; --section: 44px; --header-h: 64px; }
+  :root { --gutter: 20px; --section: 52px; --header-h: 64px; }
+}
+@media (max-width: 359px) {
+  :root { --gutter: 16px; }
 }
 
 /* ---------- Base ---------- */
@@ -261,14 +264,18 @@ a.card:hover, .card.is-link:hover { border-color: var(--line-strong); box-shadow
 body.menu-open { overflow: hidden; }
 
 /* ---------- Mobile contact bar ---------- */
+/* Slim, and only after the first screen; it steps aside while the contact block is on screen
+   (that block has the same two buttons). Script: MobileBar.astro. Without JavaScript it simply shows. */
 .mbar { display: none; }
 @media (max-width: 900px) {
-  .mbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: 1fr 1fr; box-shadow: 0 -6px 20px rgba(11, 37, 69, .10); padding-bottom: env(safe-area-inset-bottom); background: var(--navy); }
-  .mbar a { min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 16px; text-decoration: none; }
+  .mbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: 1fr 1fr; box-shadow: 0 -6px 20px rgba(11, 37, 69, .10); padding-bottom: env(safe-area-inset-bottom); background: var(--navy); transition: transform .25s ease; }
+  .mbar a { min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; font-size: 15.5px; text-decoration: none; }
   .mbar .mbar-wa { background: var(--green); color: var(--navy); }
   .mbar .mbar-call { background: var(--navy); color: var(--white); }
-  body { padding-bottom: 60px; }
+  .mbar.js:not(.show) { transform: translateY(110%); box-shadow: none; }
+  body { padding-bottom: 52px; }
 }
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) { .mbar { transition: none; } }
 
 /* ---------- Hero ---------- */
 .hero { background: var(--soft); }
@@ -599,11 +606,6 @@ input[type="range"] { width: 100%; accent-color: var(--green-text); min-height: 
 .fold-sec .fold-body .steps { margin-top: 16px; }
 .fold-sec:hover { border-color: var(--line-strong); }
 
-/* Long page text: first part shown, the rest behind "Read the full page" */
-.prose.folded { max-height: 820px; overflow: hidden; position: relative; }
-.prose.folded::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 160px; background: linear-gradient(rgba(255,255,255,0), var(--white) 85%); pointer-events: none; }
-.fold-more { margin-top: 8px; }
-@media print { .prose.folded { max-height: none; } .prose.folded::after { display: none; } .fold-more { display: none; } }
 
 /* Compact footer */
 .footer-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
@@ -640,3 +642,141 @@ input[type="range"] { width: 100%; accent-color: var(--green-text); min-height: 
 /* Stacked layout (tablets, phones): the contact card and "On this page" repeat what the page
    already has (contact band, call/WhatsApp bar), so they are hidden there. */
 @media (max-width: 1000px) { .side-sticky .side-cta, .side-sticky .side-toc { display: none; } }
+
+/* ---------- Phone-first cleanup (owner, 25 Oct: "less congested", like Tata Power and Statiq) ----------
+   One idea per screen: bigger headings, more space, fewer bars and labels, detail one tap or swipe away.
+   Nothing is removed from the HTML: hidden labels, swipe rows and closed sections are all in the page. */
+@media (max-width: 760px) {
+  body { font-size: 16px; }
+  h1 { font-size: clamp(28px, 7.8vw, 34px); }
+  h2 { font-size: clamp(23px, 6.2vw, 27px); }
+  h3 { font-size: 18px; }
+  .phero h1 { font-size: clamp(27px, 7.3vw, 32px); }
+  .offer { display: none; }
+  .eyebrow, .shead .eyebrow-plain, .cta-band .eyebrow-plain { display: none; }
+  .hero-copy .checks, .phero .checks { display: none; }
+  .shead { margin-bottom: 22px; }
+  .card p { font-size: 15px; }
+  .rel-title { font-size: clamp(23px, 6.2vw, 27px); }
+  .side-sticky .pill { display: none; }
+}
+
+/* Swipe rows: a grid on wide screens, one row you swipe on phones (the next card peeks in) */
+@media (max-width: 760px) {
+  .swipe { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 2px var(--gutter) 14px;
+    scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+  .swipe::-webkit-scrollbar { display: none; }
+  .swipe > * { flex: 0 0 82%; max-width: 330px; scroll-snap-align: start; }
+  .steps.swipe li { padding: 20px; }
+  .steps.swipe li::before { position: static; margin: 0 0 12px; }
+}
+
+/* Photo cards (home services) */
+.pcard { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--white); color: var(--body); text-decoration: none; transition: box-shadow .15s, transform .15s, border-color .15s; }
+.pcard:hover { border-color: var(--line-strong); box-shadow: var(--shadow); transform: translateY(-2px); color: var(--body); }
+.pcard img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--navy-50); }
+.pcard .pc-body { display: block; padding: 14px 16px 18px; }
+.pcard strong { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--ink); font-family: var(--font-head); font-size: 17px; line-height: 1.3; }
+.pcard strong svg { flex: none; color: var(--green-text); }
+.pcard .pc-body > span { display: block; margin-top: 5px; font-size: 14.5px; line-height: 1.5; color: var(--muted); }
+
+/* Home hero: navy, photo on the right; on phones the photo sits behind the text */
+.hero-dark { position: relative; background: var(--navy); color: #DCE6F2; overflow: hidden; }
+.hero-dark .wrap { position: relative; }
+.hero-dark h1 { color: var(--white); }
+.hero-dark .hero-copy .lead { color: #DCE6F2; }
+.hero-dark .hero-media { background: var(--navy-700); }
+.hero-dark .eyebrow { background: rgba(19, 178, 107, .16); color: var(--green); }
+.hero-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 28px; margin: 30px 0 0; max-width: 470px; }
+.hero-stats div { border-left: 2px solid var(--green); padding-left: 12px; }
+.hero-stats dt { font-family: var(--font-head); font-weight: 800; font-size: 26px; line-height: 1.1; color: var(--white); }
+.hero-stats dd { margin: 3px 0 0; font-size: 13.5px; line-height: 1.35; color: #A9BBD3; }
+.hero-clients { margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.14); font-size: 14px; line-height: 1.6; color: #A9BBD3; max-width: 470px; }
+.hero-clients b { color: var(--white); font-weight: 700; }
+@media (max-width: 900px) {
+  .hero-dark .hero-media { position: absolute; inset: 0; border-radius: 0; z-index: 0; }
+  .hero-dark .hero-media img { height: 100%; object-position: 50% 40%; }
+  .hero-dark .hero-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,37,69,.42) 0%, rgba(11,37,69,.70) 34%, rgba(11,37,69,.92) 62%, var(--navy) 100%); }
+  .hero-dark .hero-copy { position: relative; z-index: 1; }
+  .hero-dark .wrap { padding-top: 36px; padding-bottom: 32px; }
+  .hero-dark .hero-copy .btn-row { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}
+
+/* One card with a short list of links (home calculators) */
+.tool-list { display: grid; max-width: 820px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); overflow: hidden; }
+.tool-list a { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px 18px; color: var(--body); text-decoration: none; }
+.tool-list a + a { border-top: 1px solid var(--line); }
+.tool-list a:hover { background: var(--soft); color: var(--body); }
+.tool-list strong { display: block; color: var(--ink); font-size: 16px; line-height: 1.35; }
+.tool-list a > span > span { display: block; margin-top: 2px; font-size: 14px; line-height: 1.45; color: var(--muted); }
+.tool-list svg { flex: none; color: var(--green-text); }
+
+/* Page text in tap-to-open sections (built by src/lib/rehype-sections.mjs; first one open) */
+.prose > details.sec { margin-top: 0; border-top: 1px solid var(--line); }
+.prose > :not(details) + details.sec { margin-top: 28px; }
+.prose > details.sec:last-of-type { border-bottom: 1px solid var(--line); }
+.prose details.sec > summary { list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 0; cursor: pointer; }
+.prose details.sec > summary::-webkit-details-marker { display: none; }
+.prose details.sec > summary h2 { margin: 0; font-size: clamp(19px, 2vw, 23px); }
+.prose details.sec > summary::after { content: ""; flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230B2545' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px no-repeat; transition: transform .2s; }
+.prose details.sec[open] > summary::after { transform: rotate(180deg); background-color: var(--green-50); }
+.prose details.sec > summary:hover h2 { color: var(--green-text); }
+.sec-body { padding: 0 0 26px; }
+.sec-body > * + * { margin-top: 14px; }
+.intro-rest { font-size: 17px; line-height: 1.6; color: var(--ink); }
+@media print { .prose details.sec > summary::after { display: none; } }
+
+/* Tables: one card per row on phones (cells carry data-label from the column heading) */
+@media (max-width: 620px) {
+  .prose table { display: block; border: 0; border-radius: 0; overflow: visible; font-size: 15px; }
+  .prose thead { display: none; }
+  .prose tbody, .prose tr, .prose td { display: block; }
+  .prose tr { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; background: var(--white); }
+  .prose tr + tr { margin-top: 10px; }
+  .prose td, .prose tr:last-child td { min-width: 0; padding: 4px 0; border: 0; }
+  .prose td[data-label]:not([data-label=""])::before { content: attr(data-label); display: block; font-size: 12.5px; font-weight: 700; letter-spacing: .02em; color: var(--muted); }
+  .prose td:first-child { font-weight: 700; color: var(--ink); font-size: 16px; padding-bottom: 6px; }
+  .prose td:first-child::before { display: none !important; }
+}
+
+/* Contact block: two buttons and the form (owner, 25 Oct) */
+.cta-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 22px; max-width: 440px; }
+.cta-actions .btn { padding-left: 12px; padding-right: 12px; font-size: 15.5px; white-space: nowrap; }
+.cta-note { margin-top: 14px; max-width: 460px; font-size: 14px; line-height: 1.55; color: #A9BBD3; }
+.cta-note a { color: var(--white); font-weight: 600; overflow-wrap: anywhere; }
+.section-soft .cta-note { color: var(--muted); }
+.section-soft .cta-note a { color: var(--ink); }
+
+/* Footer link groups: open on wide screens, tap to open on phones (all links stay in the page) */
+.footer-col > summary { list-style: none; }
+.footer-col > summary::-webkit-details-marker { display: none; }
+@media (min-width: 761px) { .footer-col > summary { pointer-events: none; } }
+@media (max-width: 760px) {
+  .footer-top { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 36px; padding-bottom: 20px; }
+  .footer-brand { padding-bottom: 22px; }
+  .footer-col { border-top: 1px solid rgba(255,255,255,.12); }
+  .footer-col > summary { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; cursor: pointer; }
+  .footer-col > summary h2 { margin: 0; }
+  .footer-col > summary::after { content: ""; width: 9px; height: 9px; margin-right: 6px; border-right: 2px solid #A9BBD3; border-bottom: 2px solid #A9BBD3; transform: rotate(45deg); transition: transform .2s; }
+  .footer-col[open] > summary::after { transform: rotate(225deg); }
+  .footer-col ul { padding-bottom: 18px; }
+}
+
+/* Tabs (CMS questions operators ask): all panels are in the page; without JavaScript they show one after another */
+.tab-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.tab-list button { font: inherit; font-size: 14.5px; font-weight: 600; color: var(--ink); background: var(--white); border: 1px solid var(--line-strong); border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+.tab-list button:hover { border-color: var(--navy); }
+.tab-list button[aria-selected="true"] { background: var(--navy); border-color: var(--navy); color: var(--white); }
+.tab-panel { display: flex; gap: 18px; align-items: flex-start; max-width: 820px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 24px; }
+.tab-panel[hidden] { display: none; }
+.tab-panel + .tab-panel { margin-top: 12px; }
+.tab-panel h3 { font-size: 19px; }
+.tab-panel p { margin-top: 8px; font-size: 15.5px; line-height: 1.6; }
+.tab-panel .link-arrow { margin-top: 12px; }
+@media (max-width: 760px) {
+  .tab-list { flex-wrap: nowrap; overflow-x: auto; margin: 0 calc(-1 * var(--gutter)) 16px; padding: 2px var(--gutter) 6px; scrollbar-width: none; }
+  .tab-list::-webkit-scrollbar { display: none; }
+  .tab-list button { flex: none; }
+  .tab-panel { flex-direction: column; gap: 12px; padding: 20px; }
+}
