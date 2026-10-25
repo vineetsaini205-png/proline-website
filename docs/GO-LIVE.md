@@ -106,7 +106,7 @@ Open **www.prolineelectricalworks.com/admin/billing/** while signed in to Google
 
 First time, in **Settings**:
 
-1. Firm details: GSTIN, address and PAN. Bank details and UPI ID. Upload your signature (and a logo, if you want one instead of the standard mark).
+1. Firm details: GSTIN, address and PAN. Bank details and UPI ID. Upload your signature. Your Charge-O logo is already on every PDF; upload a logo only if you want a different one.
 2. **Numbering:** if you already issued invoices this financial year in another system, set "Continue after" to the last number, so the series carries on.
 3. Check the HSN/SAC codes and GST rates in **Items** with your CA.
 
@@ -141,7 +141,6 @@ Use exactly the same name, phone and "Delhi" on IndiaMART, JustDial and LinkedIn
 
 These go in when they arrive. Until then the site works without them.
 
-- **Logo:** your Charge-O logo file (SVG or PNG), to replace the placeholder bolt.
 - **Photos:** of your own installs, to replace the stock photos over time.
 - **CMS screenshots:** real ones from the demo console (5 desktop, 6 phone), and a public PDF of the CMS deck without the commercial slide.
 - **Brands:** which charger brands you sell or work with. Only then do brand names appear on charger pages.

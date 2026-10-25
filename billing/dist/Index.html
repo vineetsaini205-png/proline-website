@@ -139,7 +139,7 @@
     ul.checks { padding-left: 18px; }
     .imgbox { height: 90px; border: 1px dashed var(--line-strong); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; margin: 6px 0; background: var(--soft); }
     .imgbox img { max-height: 80px; max-width: 90%; }
-    .imgbox svg.std { width: 50px; height: 50px; }
+    .imgbox svg.std { width: 150px; height: 38px; }
     .sticky-actions { position: sticky; bottom: 0; background: rgba(243,247,251,.95); backdrop-filter: blur(6px); padding: 12px 0; display: flex; justify-content: flex-end; border-top: 1px solid var(--line); margin-top: 8px; z-index: 5; }
 
     .modal { position: fixed; inset: 0; background: rgba(11,37,69,.45); z-index: 50; display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; overflow-y: auto; }
@@ -193,7 +193,7 @@
 </head>
 <body>
   <header class="bar">
-    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#13B26B"/><path d="M22.5 7 L11 22.5 H19 L17.5 33 L29 17.5 H21 Z" fill="#0B2545"/></svg>Proline Billing</div>
+    <div class="brand"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="2.48 2.48 95.04 95.04"><path d="M94 50C94 74.3 74.3 94 50 94C25.7 94 6 74.3 6 50C6 25.7 25.7 6 50 6C74.3 6 94 25.7 94 50ZM82 50C82 32.33 67.67 18 50 18C32.33 18 18 32.33 18 50C18 67.67 32.33 82 50 82C67.67 82 82 67.67 82 50Z" fill="#3DDC84"/><path d="M52.81 30.48 39.69 53.12H48.59L45.32 69.52L60.31 46.1H51.41L55.62 30.48Z" fill="#FFFFFF"/></svg>Proline Billing</div>
     <nav class="tabs" aria-label="Sections">
       <button data-view="docs" class="on">Documents</button>
       <button data-view="parties">Customers &amp; vendors</button>
@@ -631,7 +631,9 @@ var PBPDF = (function () {
     navy: '#0B2545', green: '#13B26B', greenText: '#0B7D4A', ink: '#0B2545', body: '#33435A', muted: '#5A6B82',
     line: '#D5DFEA', soft: '#F3F7FB', navy50: '#E4EDF7', green50: '#E3F4EB', red: '#B42318', white: '#FFFFFF'
   };
-  var LOGO_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#0B2545"/><path d="M22.5 7 L11 22.5 H19 L17.5 33 L29 17.5 H21 Z" fill="#13B26B"/></svg>';
+  // The owner's Charge-O logo (horizontal, colour version; master copy in src/assets/logo/). Used when no logo is uploaded.
+  var LOGO_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="251.23" height="63.76" viewBox="0 0 251.23 63.76"><path d="M37.59 40.68V0.35H54.19Q59.4 0.35 63.18 1.91Q66.96 3.47 68.99 6.51Q71.01 9.55 71.01 14.05V14.92Q71.01 19.42 68.99 22.38Q67.01 25.17 63.62 26.7L73.42 40.68H61.7L53.59 28.4H47.78V40.68ZM0 40.68V0.35H15.4Q20.55 0.35 24.3 2.07Q28.05 3.8 30.08 7.03Q32.11 10.27 32.11 14.76V15.64Q32.11 20.07 30.08 23.31Q28.05 26.54 24.3 28.29Q20.55 30.05 15.4 30.05H10.19V40.68ZM47.78 8.9V20.57H54.79Q56.6 20.57 57.92 19.85Q59.23 19.14 59.97 17.83Q60.71 16.51 60.71 14.76Q60.71 12.95 59.97 11.64Q59.23 10.32 57.92 9.61Q56.6 8.9 54.79 8.9ZM10.19 9.12V21.28H15.67Q17.53 21.28 18.9 20.54Q20.27 19.8 21.04 18.43Q21.81 17.06 21.81 15.2Q21.81 13.28 21.04 11.91Q20.27 10.54 18.9 9.83Q17.53 9.12 15.67 9.12Z" fill="#0B2545"/><path d="M176.55 40.68V0.68H193.26L206.58 32.57H207.4V0.68H216.93V40.68H200.11L186.79 8.79H185.97V40.68ZM225.59 40.68V0.68H250.9V9.01H235.45V16.18H250.08V24.51H235.45V32.35H251.23V40.68ZM126.14 40.68V0.68H136.33V31.8H151.45V40.68ZM157.59 40.68V0.68H167.78V40.68Z" fill="#0B2545"/><path d="M118.48 20.62C118.48 32.01 109.25 41.24 97.86 41.24C86.47 41.24 77.24 32.01 77.24 20.62C77.24 9.23 86.47 0 97.86 0C109.25 0 118.48 9.23 118.48 20.62ZM109.72 20.62C109.72 14.07 104.41 8.76 97.86 8.76C91.31 8.76 86.01 14.07 86.01 20.62C86.01 27.17 91.31 32.48 97.86 32.48C104.41 32.48 109.72 27.17 109.72 20.62Z" fill="#13B26B"/><path d="M99.33 10.42 92.48 22.25H97.13L95.42 30.82L103.25 18.58H98.6L100.8 10.42Z" fill="#0B2545"/><path d="M195.01 63.76Q193.55 63.76 192.48 63.24Q191.4 62.72 190.7 61.89Q190 61.05 189.65 60.08Q189.3 59.11 189.3 58.21V57.88Q189.3 56.89 189.66 55.91Q190.01 54.93 190.73 54.13Q191.45 53.33 192.51 52.85Q193.58 52.37 195.01 52.37Q196.43 52.37 197.5 52.85Q198.56 53.33 199.28 54.13Q200 54.93 200.35 55.91Q200.71 56.89 200.71 57.88V58.21Q200.71 59.11 200.36 60.08Q200.01 61.05 199.31 61.89Q198.61 62.72 197.53 63.24Q196.46 63.76 195.01 63.76ZM169.7 63.48 166.95 52.68H169.12L171.28 61.73H171.68L173.37 53.09H175.65L177.6 61.73H178L179.89 52.68H181.95L179.49 63.48H176.15L174.49 56.29L172.98 63.48ZM78.95 63.48V52.6H82.96Q84.26 52.6 85.21 52.99Q86.17 53.37 86.68 54.16Q87.2 54.94 87.2 56.12V56.36Q87.2 57.56 86.68 58.33Q86.15 59.1 85.2 59.48L85.12 59.51L88 63.48H85.54L83 59.87H81.05V63.48ZM209.23 63.48V52.6H213.24Q214.54 52.6 215.5 52.99Q216.45 53.37 216.97 54.16Q217.49 54.94 217.49 56.12V56.36Q217.49 57.56 216.96 58.33Q216.44 59.1 215.49 59.48L215.4 59.51L218.28 63.48H215.83L213.28 59.87H211.33V63.48ZM124.56 63.48 128.24 52.68H131.68L135.46 63.48H133.3L132.31 60.61H127.61L126.66 63.48ZM50.07 63.76Q48.6 63.76 47.55 63.24Q46.5 62.72 45.84 61.89Q45.18 61.07 44.87 60.09Q44.56 59.11 44.56 58.21V57.88Q44.56 56.88 44.88 55.9Q45.2 54.93 45.86 54.13Q46.53 53.33 47.56 52.85Q48.59 52.37 49.99 52.37Q51.46 52.37 52.54 52.89Q53.63 53.42 54.28 54.37Q54.93 55.32 55.07 56.6H52.95Q52.83 55.86 52.43 55.35Q52.02 54.84 51.4 54.58Q50.78 54.32 49.99 54.32Q49.19 54.32 48.57 54.59Q47.95 54.87 47.54 55.37Q47.12 55.87 46.91 56.55Q46.69 57.23 46.69 58.06Q46.69 58.86 46.91 59.54Q47.12 60.22 47.55 60.73Q47.98 61.24 48.61 61.52Q49.24 61.8 50.07 61.8Q51.28 61.8 52.12 61.21Q52.95 60.61 53.13 59.53H55.24Q55.1 60.68 54.46 61.64Q53.82 62.6 52.71 63.18Q51.6 63.76 50.07 63.76ZM112.28 63.76Q110.81 63.76 109.76 63.24Q108.71 62.72 108.06 61.89Q107.4 61.07 107.09 60.09Q106.78 59.11 106.78 58.21V57.88Q106.78 56.88 107.09 55.9Q107.41 54.93 108.08 54.13Q108.74 53.33 109.77 52.85Q110.8 52.37 112.2 52.37Q113.67 52.37 114.76 52.89Q115.84 53.42 116.5 54.37Q117.15 55.32 117.28 56.6H115.16Q115.05 55.86 114.64 55.35Q114.23 54.84 113.61 54.58Q112.99 54.32 112.2 54.32Q111.41 54.32 110.78 54.59Q110.16 54.87 109.75 55.37Q109.33 55.87 109.12 56.55Q108.91 57.23 108.91 58.06Q108.91 58.86 109.12 59.54Q109.33 60.22 109.76 60.73Q110.19 61.24 110.82 61.52Q111.45 61.8 112.28 61.8Q113.49 61.8 114.33 61.21Q115.16 60.61 115.34 59.53H117.46Q117.31 60.68 116.67 61.64Q116.04 62.6 114.93 63.18Q113.82 63.76 112.28 63.76ZM246.87 63.76Q245.43 63.76 244.45 63.3Q243.47 62.84 242.95 62.03Q242.43 61.23 242.43 60.21H244.49Q244.49 60.64 244.72 61.04Q244.96 61.45 245.49 61.7Q246.01 61.95 246.87 61.95Q247.64 61.95 248.16 61.73Q248.67 61.51 248.92 61.15Q249.18 60.78 249.18 60.33Q249.18 59.75 248.69 59.4Q248.2 59.05 247.18 58.96L246.23 58.89Q244.68 58.76 243.75 57.92Q242.83 57.09 242.83 55.71Q242.83 54.67 243.32 53.93Q243.81 53.18 244.69 52.77Q245.57 52.37 246.75 52.37Q247.98 52.37 248.87 52.8Q249.75 53.22 250.24 54Q250.73 54.78 250.73 55.83H248.67Q248.67 55.38 248.46 55.01Q248.24 54.63 247.82 54.4Q247.4 54.17 246.75 54.17Q246.13 54.17 245.71 54.38Q245.3 54.59 245.09 54.94Q244.89 55.3 244.89 55.71Q244.89 56.21 245.26 56.59Q245.63 56.97 246.42 57.03L247.37 57.12Q248.53 57.2 249.4 57.6Q250.27 58 250.75 58.68Q251.23 59.36 251.23 60.33Q251.23 61.35 250.7 62.12Q250.17 62.9 249.18 63.33Q248.2 63.76 246.87 63.76ZM233.38 63.48 229.43 58.43H228.48V63.48H226.38V52.68H228.48V57.72L232.59 52.68H235L231.16 57.38L235.93 63.48ZM29.99 63.48V52.68H36.53V54.45H32.05V57.1H36.26V58.88H32.05V61.7H36.65V63.48ZM0 63.48V52.68H6.54V54.45H2.06V57.1H6.27V58.88H2.06V61.7H6.66V63.48ZM195.01 61.8Q195.84 61.8 196.5 61.51Q197.16 61.21 197.62 60.69Q198.09 60.16 198.33 59.49Q198.58 58.82 198.58 58.06Q198.58 57.25 198.33 56.57Q198.09 55.89 197.62 55.38Q197.16 54.88 196.49 54.6Q195.83 54.32 195.01 54.32Q194.18 54.32 193.52 54.6Q192.85 54.88 192.39 55.38Q191.92 55.89 191.68 56.57Q191.43 57.25 191.43 58.06Q191.43 58.82 191.68 59.49Q191.92 60.16 192.39 60.69Q192.85 61.21 193.52 61.51Q194.18 61.8 195.01 61.8ZM65.56 63.48V54.53H62.43V52.68H70.78V54.53H67.66V63.48ZM15.31 63.48V52.68H17.41V61.63H21.78V63.48ZM143.56 63.48V52.68H145.66V61.63H150.02V63.48ZM96.12 63.48V52.68H98.22V63.48ZM211.33 54.39V58.17H213.46Q214.04 58.17 214.46 57.93Q214.88 57.69 215.12 57.26Q215.36 56.83 215.36 56.29Q215.36 55.72 215.12 55.3Q214.88 54.87 214.46 54.63Q214.04 54.39 213.46 54.39ZM81.05 54.39V58.17H83.18Q83.75 58.17 84.18 57.93Q84.6 57.69 84.83 57.26Q85.07 56.83 85.07 56.29Q85.07 55.72 84.83 55.3Q84.6 54.87 84.18 54.63Q83.75 54.39 83.18 54.39ZM131.7 58.83 130.21 54.44H129.66L128.2 58.83Z" fill="#0A8A50"/></svg>';
+  var LOGO_W = 128;
   var PAGE_W = 595.28, M = 34, W = PAGE_W - 2 * M;
 
   var LABELS = {
@@ -676,7 +678,6 @@ var PBPDF = (function () {
 
   function header(doc, firm, images, copyLabel) {
     var L = LABELS[doc.type];
-    var logo = images && images.logo ? { image: images.logo, fit: [52, 52] } : { svg: LOGO_SVG, width: 44 };
     var firmLines = lines([
       firm.legalName && firm.tradeName && firm.legalName !== firm.tradeName ? { text: firm.legalName, fontSize: 8, color: C.muted } : null,
       firm.address1 ? { text: firm.address1 } : null,
@@ -692,10 +693,15 @@ var PBPDF = (function () {
     if (doc.type === 'INV' && r.dueDate) meta.push([{ text: 'Due date', color: C.muted }, { text: PB.prettyDate(r.dueDate), alignment: 'right', color: C.ink }]);
     if (doc.type === 'PI' && r.validTill) meta.push([{ text: 'Valid till', color: C.muted }, { text: PB.prettyDate(r.validTill), alignment: 'right', color: C.ink }]);
     if (doc.type === 'PO' && r.deliveryDate) meta.push([{ text: 'Deliver by', color: C.muted }, { text: PB.prettyDate(r.deliveryDate), alignment: 'right', color: C.ink }]);
+    // Standard logo: the full Charge-O logo (it carries the name), firm details below it.
+    // An uploaded logo keeps the small square slot with the trade name beside it.
+    var brand = images && images.logo
+      ? { width: '*', columnGap: 10, columns: [
+          { width: 56, stack: [{ image: images.logo, fit: [52, 52] }] },
+          { width: '*', stack: [{ text: firm.tradeName || firm.legalName || '', fontSize: 15.5, bold: true, color: C.navy, margin: [0, 1, 0, 3] }].concat(firmLines), fontSize: 7.8, lineHeight: 1.25 }] }
+      : { width: '*', stack: [{ svg: LOGO_SVG, width: LOGO_W, margin: [0, 1, 0, 8] }].concat(firmLines), fontSize: 7.8, lineHeight: 1.25 };
     return {
-      columns: [
-        { width: 56, stack: [logo] },
-        { width: '*', stack: [{ text: firm.tradeName || firm.legalName || '', fontSize: 15.5, bold: true, color: C.navy, margin: [0, 1, 0, 3] }].concat(firmLines), fontSize: 7.8, lineHeight: 1.25 },
+      columns: [brand,
         { width: 178, stack: lines([
           { text: L.title, fontSize: 15.5, bold: true, color: C.navy, alignment: 'right', characterSpacing: 1.2 },
           copyLabel ? { text: copyLabel.toUpperCase(), fontSize: 6.8, bold: true, color: C.greenText, alignment: 'right', characterSpacing: 0.8, margin: [0, 2, 0, 0] } : null,
@@ -1208,7 +1214,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
       sField('bank.ifsc', 'IFSC') + sField('bank.branch', 'Branch') + sField('bank.upi', 'UPI ID', { placeholder: 'name@bank' }) +
       '</div></section>' +
       '<section class="card"><h2>Logo and signature</h2><div class="grid2">' +
-      '<div><b>Logo</b><div class="imgbox" id="img-logo">' + imgPreview('logo') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="logo"><button class="link" data-action="img-remove" data-kind="logo">Use the standard mark</button></div>' +
+      '<div><b>Logo</b><div class="imgbox" id="img-logo">' + imgPreview('logo') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="logo"><button class="link" data-action="img-remove" data-kind="logo">Use the standard logo</button></div>' +
       '<div><b>Signature</b><div class="imgbox" id="img-signature">' + imgPreview('signature') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="signature"><button class="link" data-action="img-remove" data-kind="signature">Remove</button></div>' +
       sField('sign.name', 'Signatory name') + sField('sign.designation', 'Designation') +
       '</div><p class="muted small">PNG or JPG, under 1.5 MB. A signature on a white or clear background looks best.</p></section>' +
@@ -1236,7 +1242,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
   function imgPreview(kind) {
     var src = S.images && S.images[kind];
     if (src) return '<img src="' + src + '" alt="">';
-    return kind === 'logo' ? '<span class="muted small">Standard Proline mark</span>' + PBPDF.LOGO_SVG.replace('<svg ', '<svg class="std" ') : '<span class="muted small">No signature</span>';
+    return kind === 'logo' ? '<span class="muted small">Standard Proline logo</span>' + PBPDF.LOGO_SVG.replace('<svg ', '<svg class="std" ') : '<span class="muted small">No signature</span>';
   }
   async function loadImages() {
     if (S.images) return S.images;

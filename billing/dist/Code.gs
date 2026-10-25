@@ -1,4 +1,4 @@
-// Proline Billing 2026-10-24 23:16 — built from billing/src (shared.js + server.js). Edit the source, not this file.
+// Proline Billing 2026-10-25 05:50 — built from billing/src (shared.js + server.js). Edit the source, not this file.
 
 /*
  * Proline Billing — shared rules, used by the server (Code.gs) and the browser (Index.html).
@@ -419,6 +419,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PB;
  */
 
 var APP_NAME = 'Proline Billing';
+// Browser-tab icon: the Charge-O icon from the website (public file, no private data).
+var FAVICON_URL = 'https://www.prolineelectricalworks.com/favicon-32.png';
 var TZ = 'Asia/Kolkata';
 var JSON_CHUNK = 45000;
 
@@ -478,9 +480,11 @@ var STARTER_PRODUCTS = [
 
 // ---------------------------------------------------------------- web app
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
+  var out = HtmlService.createHtmlOutputFromFile('Index')
     .setTitle(APP_NAME)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  try { out.setFaviconUrl(FAVICON_URL); } catch (e) { /* keep Google's default tab icon */ }
+  return out;
 }
 
 /** Run once from the Apps Script editor: creates the tabs, default settings and the Drive folder. */

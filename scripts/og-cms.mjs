@@ -8,6 +8,7 @@ const b64 = (p) => readFileSync(root + p).toString('base64');
 const inter = b64('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2');
 const jak = b64('node_modules/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-800-normal.woff2');
 const shot = b64('public/images/cms/d1-dashboard.webp');
+const logo = b64('src/assets/logo/proline-horizontal-white.svg');
 const html = `<!doctype html><html><head><style>
 @font-face{font-family:Inter;src:url(data:font/woff2;base64,${inter}) format('woff2');font-weight:100 900}
 @font-face{font-family:Jak;src:url(data:font/woff2;base64,${jak}) format('woff2');font-weight:800}
@@ -18,12 +19,11 @@ h1{font-family:Jak;font-size:54px;line-height:1.08;letter-spacing:-.02em;margin:
 p{font-size:22px;color:#C9D6E8;line-height:1.45;margin:22px 0 0}
 .lap{position:absolute;right:-60px;top:110px;width:640px;background:#1B2B45;border-radius:16px 16px 6px 6px;padding:12px;box-shadow:0 24px 60px rgba(0,0,0,.45);transform:perspective(1400px) rotateY(-10deg)}
 .lap img{width:100%;display:block;border-radius:6px}
-.foot{position:absolute;left:64px;bottom:44px;display:flex;align-items:center;gap:12px;font-size:20px;color:#A9BBD3}
-.foot b{color:#fff;font-family:Jak;font-size:24px}
+.foot{position:absolute;left:64px;bottom:48px;width:190px;height:auto;display:block}
 </style></head><body>
 <div class="l"><span class="tag">● Proline CMS</span><h1>EV charging software you own</h1><p>Any charger brand · UPI payments with automatic refunds · GST documents · your brand, your server</p></div>
 <div class="lap"><img src="data:image/webp;base64,${shot}"></div>
-<div class="foot"><svg width="40" height="40" viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#13B26B"/><path d="M22.5 7 L11 22.5 H19 L17.5 33 L29 17.5 H21 Z" fill="#0B2545"/></svg><b>Proline</b> Electrical Works</div>
+<img class="foot" src="data:image/svg+xml;base64,${logo}" alt="">
 </body></html>`;
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });

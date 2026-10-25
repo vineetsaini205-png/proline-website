@@ -10,7 +10,7 @@ load('../src/shared.js');
 load('../src/server.js');
 /* global setup, apiBootstrap, apiSaveSettings, apiAddStarterProducts, apiSaveParty, apiDeleteParty, apiSaveDraft, apiFinalise, apiStorePdf,
    apiSetSeries, apiCheckSeries, apiCancel, apiDeleteDraft, apiGetDocument, apiEmailDocument, apiAmend, apiImportDocuments,
-   apiImportParties, apiImportProducts, seriesRow_, reusable_, settings_, FAKE, PB */
+   apiImportParties, apiImportProducts, seriesRow_, reusable_, settings_, doGet, FAKE, PB */
 
 let n = 0;
 const t = (name, fn) => { try { fn(); n++; } catch (e) { console.error('FAIL', name); throw e; } };
@@ -305,6 +305,11 @@ t('import items: new ones added, same name updated', () => {
   assert.equal(res.added, 1);
   assert.equal(res.products.find((p) => p.name === 'Armoured copper cable').rate, 310);
   assert.throws(() => apiImportProducts([{ row: 9, name: 'Odd', type: 'Goods', hsn: '12', gstRate: 18 }]), /Row 9 \(Odd\)/);
+});
+
+t('web app page: title and the Proline tab icon', () => {
+  const out = doGet();
+  assert.equal(out.favicon, 'https://www.prolineelectricalworks.com/favicon-32.png');
 });
 
 console.log(`${n} server checks passed`);

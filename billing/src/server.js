@@ -14,6 +14,8 @@
  */
 
 var APP_NAME = 'Proline Billing';
+// Browser-tab icon: the Charge-O icon from the website (public file, no private data).
+var FAVICON_URL = 'https://www.prolineelectricalworks.com/favicon-32.png';
 var TZ = 'Asia/Kolkata';
 var JSON_CHUNK = 45000;
 
@@ -73,9 +75,11 @@ var STARTER_PRODUCTS = [
 
 // ---------------------------------------------------------------- web app
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
+  var out = HtmlService.createHtmlOutputFromFile('Index')
     .setTitle(APP_NAME)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  try { out.setFaviconUrl(FAVICON_URL); } catch (e) { /* keep Google's default tab icon */ }
+  return out;
 }
 
 /** Run once from the Apps Script editor: creates the tabs, default settings and the Drive folder. */

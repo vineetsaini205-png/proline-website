@@ -1,9 +1,11 @@
 ---
-// Placeholder mark until the owner's Charge-O logo file arrives (see PROGRESS.md).
-interface Props { href?: string; class?: string; size?: number }
-const { href = '/', class: cls = '', size = 40 } = Astro.props;
+// The owner's Charge-O logo (logo pack, Oct 2026; master files in src/assets/logo/).
+// Colour version on light backgrounds; white version on navy (footer). Do not stretch or recolour it.
+import colour from '../assets/logo/proline-horizontal.svg?url';
+import white from '../assets/logo/proline-horizontal-white.svg?url';
+interface Props { href?: string; class?: string; variant?: 'colour' | 'white'; lazy?: boolean }
+const { href = '/', class: cls = '', variant = 'colour', lazy = false } = Astro.props;
 ---
-<a href={href} class:list={['logo', cls]} aria-label="Proline Electrical Works, home">
-  <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="10" fill="#0B2545"></rect><path d="M22.5 7 L11 22.5 H19 L17.5 33 L29 17.5 H21 Z" fill="#13B26B"></path></svg>
-  <span class="logo-text"><span class="logo-name">Proline</span><span class="logo-sub">ELECTRICAL WORKS</span></span>
+<a href={href} class:list={['logo', cls]}>
+  <img src={variant === 'white' ? white : colour} width="158" height="40" alt="Proline Electrical Works, home" loading={lazy ? 'lazy' : undefined} decoding="async" />
 </a>

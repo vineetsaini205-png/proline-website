@@ -293,7 +293,7 @@
       sField('bank.ifsc', 'IFSC') + sField('bank.branch', 'Branch') + sField('bank.upi', 'UPI ID', { placeholder: 'name@bank' }) +
       '</div></section>' +
       '<section class="card"><h2>Logo and signature</h2><div class="grid2">' +
-      '<div><b>Logo</b><div class="imgbox" id="img-logo">' + imgPreview('logo') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="logo"><button class="link" data-action="img-remove" data-kind="logo">Use the standard mark</button></div>' +
+      '<div><b>Logo</b><div class="imgbox" id="img-logo">' + imgPreview('logo') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="logo"><button class="link" data-action="img-remove" data-kind="logo">Use the standard logo</button></div>' +
       '<div><b>Signature</b><div class="imgbox" id="img-signature">' + imgPreview('signature') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="signature"><button class="link" data-action="img-remove" data-kind="signature">Remove</button></div>' +
       sField('sign.name', 'Signatory name') + sField('sign.designation', 'Designation') +
       '</div><p class="muted small">PNG or JPG, under 1.5 MB. A signature on a white or clear background looks best.</p></section>' +
@@ -321,7 +321,7 @@
   function imgPreview(kind) {
     var src = S.images && S.images[kind];
     if (src) return '<img src="' + src + '" alt="">';
-    return kind === 'logo' ? '<span class="muted small">Standard Proline mark</span>' + PBPDF.LOGO_SVG.replace('<svg ', '<svg class="std" ') : '<span class="muted small">No signature</span>';
+    return kind === 'logo' ? '<span class="muted small">Standard Proline logo</span>' + PBPDF.LOGO_SVG.replace('<svg ', '<svg class="std" ') : '<span class="muted small">No signature</span>';
   }
   async function loadImages() {
     if (S.images) return S.images;

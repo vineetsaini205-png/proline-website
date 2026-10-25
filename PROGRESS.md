@@ -33,6 +33,7 @@ Build: `npm run build` (output in `dist/`). Content rules check: `node scripts/c
 | Look and feel | `src/styles/global.css` (design tokens at the top) |
 | Calculator maths | `src/lib/calc.ts` (shared by pages and browser scripts) |
 | Schema.org data | `src/lib/schema.ts` |
+| Logo | `src/assets/logo/` (Charge-O master SVGs; used by `Logo.astro`, the share-image scripts and, copied in, the billing PDFs and app). Favicons in `public/`. Share images: `node scripts/og-default.mjs`, `node scripts/og-cms.mjs`. Logo guide: don't stretch or recolour; at least 120 px wide on screen, smaller than that use the icon |
 | How to write pages | `docs/content-brief.md` · approved plan copy: `docs/plan.md` |
 
 ## Owner's rules — never break these
@@ -68,7 +69,7 @@ Legend: [x] done · [~] in progress · [ ] not started
 - [x] Site data: `src/data/site.json`, `rates.json` (fuel 20 Oct 2026, CNG 29 Aug 2026), `tariffs.json` (BEE list), `cms-screens.json`
 - [x] Content collections schema (`src/content.config.ts`), templates `LandingPage.astro`, `HubPage.astro`
 - [x] CMS screens extracted from the deck → `public/images/cms/` (stand-ins, labelled "Concept design · sample data")
-- [x] Placeholder logo (mark in `Logo.astro`, `public/favicon.svg`, `public/images/logo-512.png`); real Charge-O logo file still needed
+- [x] Charge-O logo (owner's logo pack, 25 Oct: "choose a best logo … replace it everywhere"; Charge-O chosen over Plug-P and Volt-Leaf): header and phone menu (colour), footer (white version), favicons (SVG that turns light in dark browser tabs, 32 px PNG, `favicon.ico`, Apple icon), schema logo `public/images/logo-512.png`, both share images
 - [x] Open Graph images: `public/images/og-default.jpg` (`scripts/og-default.mjs`), per-photo crops in `public/images/og/`
 - [x] Content checker `scripts/check-content.mjs` and writing guide `docs/content-brief.md`
 
@@ -172,7 +173,6 @@ Company
 - [x] Packaging: not needed. The site deploys from GitHub to Cloudflare Pages on every push (a `dist/` zip was only for the manual-upload fallback)
 
 ## Waiting on the owner (site works without these; add when they arrive)
-- Charge-O logo file (SVG or PNG) — placeholder bolt logo used until then
 - Which charger brands Proline sells/works with (for /brands/ and charger pages; no brand names shown until then)
 - Real CMS screenshots (5 desktop, 6 phone) and a public PDF of the CMS deck without slide 22
 - Which CMS features are live at launch (copy section 10)

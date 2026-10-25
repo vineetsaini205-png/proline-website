@@ -107,5 +107,5 @@ var FAKE = { sheets: [], folders: {}, files: {}, mails: [], seq: 1, log: [] };
   G.MailApp = { sendEmail: function (m) { FAKE.mails.push(m); }, getRemainingDailyQuota: function () { return 100; } };
   G.LockService = { getScriptLock: function () { return { waitLock: function () {}, releaseLock: function () {} }; } };
   G.Session = { getActiveUser: function () { return { getEmail: function () { return 'owner@example.com'; } }; } };
-  G.HtmlService = { createHtmlOutputFromFile: function () { return { setTitle: function () { return this; }, addMetaTag: function () { return this; } }; } };
+  G.HtmlService = { createHtmlOutputFromFile: function () { return { setTitle: function () { return this; }, addMetaTag: function () { return this; }, setFaviconUrl: function (u) { this.favicon = u; return this; } }; } };
 })(typeof window !== 'undefined' ? window : globalThis);
