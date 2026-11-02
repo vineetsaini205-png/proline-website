@@ -1,4 +1,4 @@
-// Proline Billing 2026-11-02 04:42 — built from billing/src (shared.js + server.js). Edit the source, not this file.
+// Proline Billing 2026-11-02 08:26 — built from billing/src (shared.js + server.js). Edit the source, not this file.
 
 /*
  * Proline Billing — shared rules, used by the server (Code.gs) and the browser (Index.html).
@@ -23,7 +23,8 @@ var PB = (function () {
   // Union territories without a legislature: intra-UT supplies carry UTGST instead of SGST.
   var UT_CODES = ['04', '25', '26', '31', '35', '38'];
   var GST_RATES = [0, 0.25, 3, 5, 12, 18, 28, 40];
-  var UNITS = ['Nos', 'Set', 'Pcs', 'Mtr', 'Kg', 'Ltr', 'Sq m', 'Job', 'Lot', 'Visit', 'Month', 'Year', 'Hrs', 'Days', 'kWh', 'kWp'];
+  // Rmt (running metre), LS (lump sum), Cu m and Sq ft added for civil-work quotes (owner, 2 Nov).
+  var UNITS = ['Nos', 'Set', 'Pcs', 'Mtr', 'Rmt', 'Kg', 'Ltr', 'Sq m', 'Sq ft', 'Cu m', 'Job', 'LS', 'Lot', 'Visit', 'Month', 'Year', 'Hrs', 'Days', 'kWh', 'kWp'];
   var TYPES = {
     INV: { code: 'INV', title: 'Tax Invoice', short: 'Invoice', folder: 'Tax Invoices', defaultPrefix: 'PEW' },
     PI: { code: 'PI', title: 'Proforma Invoice', short: 'Proforma', folder: 'Proforma Invoices', defaultPrefix: 'PEW-PI' },
