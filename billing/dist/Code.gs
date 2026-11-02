@@ -1,4 +1,4 @@
-// Proline Billing 2026-11-02 08:26 — built from billing/src (shared.js + server.js). Edit the source, not this file.
+// Proline Billing 2026-11-02 09:41 — built from billing/src (shared.js + server.js). Edit the source, not this file.
 
 /*
  * Proline Billing — shared rules, used by the server (Code.gs) and the browser (Index.html).
@@ -777,12 +777,11 @@ function apiAmend(doc, reason) {
       deleteWhere_('Register', function (g) { return g.docId === doc.id; });
       writeRegister_(doc);
     }
-    // Keep the old PDF, renamed; the browser saves the new one next.
+    // The new PDF replaces the old one (owner, 2 Nov: "previous one will be overwritten"). The old file stays
+    // linked until the browser saves the new PDF; apiStorePdf then moves it to Drive's bin (kept 30 days).
+    // The reason and the before/after totals stay in the amendment history and the Log.
     var row = findRow_('Documents', doc.id);
-    if (row.pdfFileId) {
-      try { var old = DriveApp.getFileById(row.pdfFileId); old.setName(old.getName().replace(/\.pdf$/i, '') + ' (before amendment ' + history.length + ').pdf'); } catch (e) { /* gone */ }
-    }
-    row.pdfFileId = ''; row.pdfUrl = ''; row.emailedAt = '';
+    row.pdfUrl = ''; row.emailedAt = '';
     writeRow_('Documents', row._row, row);
     log_('amend', doc.id, before.number + (number !== before.number ? ' → ' + number : '') + ': ' + reason + ' (₹' + PB.money((before.calc || {}).payable) + ' → ₹' + PB.money(calc.payable) + ')');
   } finally {
@@ -802,12 +801,16 @@ function apiStorePdf(id, base64, opts) {
   var name = fileName_(doc) + (r.status === 'CANCELLED' ? ' (CANCELLED)' : '') + '.pdf';
   var folder = docFolder_(doc);
   var file = folder.createFile(Utilities.newBlob(bytes, 'application/pdf', name));
-  // A re-made final PDF replaces the old one (moved to Drive's bin). A cancelled copy is kept next to the original.
-  if (r.status === 'FINAL' && r.pdfFileId && r.pdfFileId !== file.getId()) { try { DriveApp.getFileById(r.pdfFileId).setTrashed(true); } catch (e) { /* gone */ } }
+  // A re-made final PDF ("Generate PDF again", or after an amendment) replaces the old one, which goes to
+  // Drive's bin (kept 30 days). A cancelled copy is kept next to the original.
+  var replaced = false;
+  if (r.status === 'FINAL' && r.pdfFileId && r.pdfFileId !== file.getId()) {
+    try { DriveApp.getFileById(r.pdfFileId).setTrashed(true); replaced = true; } catch (e) { /* gone */ }
+  }
   r.pdfFileId = file.getId();
   r.pdfUrl = file.getUrl();
   writeRow_('Documents', r._row, r);
-  var result = { pdfUrl: r.pdfUrl, pdfFileId: r.pdfFileId, emailed: false };
+  var result = { pdfUrl: r.pdfUrl, pdfFileId: r.pdfFileId, emailed: false, replaced: replaced };
   var s = settings_();
   if (opts.email && s.email.onFinalise !== 'no' && s.email.to) {
     sendDocEmail_(doc, file, s.email.to, s.email.cc, '');
@@ -815,14 +818,14 @@ function apiStorePdf(id, base64, opts) {
     writeRow_('Documents', r._row, r);
     result.emailed = true;
   }
-  log_('pdf', id, name + (result.emailed ? ', emailed' : ''));
+  log_('pdf', id, name + (replaced ? ', replaced the old PDF' : '') + (result.emailed ? ', emailed' : ''));
   result.summary = docSummary_(findRow_('Documents', id));
   return result;
 }
 
 function apiEmailDocument(id, to, cc, message) {
   var r = findRow_('Documents', id);
-  if (!r || !r.pdfFileId) throw new Error('Save the PDF first.');
+  if (!r || !r.pdfFileId || !r.pdfUrl) throw new Error('Save the PDF first.');
   to = String(to || '').trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+(\s*,\s*[^@\s]+@[^@\s]+\.[^@\s]+)*$/.test(to)) throw new Error('Check the email address.');
   var doc = docFromRow_(r);

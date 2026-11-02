@@ -290,6 +290,17 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await idle();
   assert.match(await page.textContent('.doc-head'), /Amended once/);
   await shot('12-amended');
+  // Generate the PDF again: same number, the PDF in Drive is replaced (old one in the bin).
+  const pdfBefore = await page.evaluate(() => PBApp.S.doc.meta.pdfFileId);
+  await page.click('.doc-head [data-action="doc-regenerate"]');
+  await page.waitForSelector('#regen-form');
+  await page.click('#regen-form .btn.primary');
+  await page.waitForFunction(() => /old one replaced/.test(document.getElementById('toast').textContent), null, { timeout: 20000 });
+  await idle();
+  const regen = await page.evaluate((old) => ({ now: PBApp.S.doc.meta.pdfFileId, oldTrashed: FAKE.files[old].trashed, nowTrashed: FAKE.files[PBApp.S.doc.meta.pdfFileId].trashed }), pdfBefore);
+  assert.notEqual(regen.now, pdfBefore);
+  assert.equal(regen.oldTrashed, true);
+  assert.equal(regen.nowTrashed, false);
   await page.click('.tabs [data-view="docs"]');
   await page.waitForSelector('tr[data-open]');
   assert.match(await page.textContent(`tr[data-open="${inv05}"]`), /Amended/);
@@ -351,6 +362,6 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   assert.equal(overflow, false, 'no sideways scrolling on a phone');
 
   assert.deepEqual(errors, []);
-  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, templates, xlsx upload, series check, phone layout');
+  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, generate the PDF again, templates, xlsx upload, series check, phone layout');
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });

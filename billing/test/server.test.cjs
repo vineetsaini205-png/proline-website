@@ -250,23 +250,26 @@ t('finalise: next in series, a cancelled number given again, or a number typed b
   assert.deepEqual(chk.reissued, [2]);
 });
 
-t('amend: new contents and a history; the old PDF is kept, renamed; the register is rewritten', () => {
+t('amend: new contents and a history; the new PDF replaces the old one; the register is rewritten', () => {
   const id = ids['PEW/2526/07'];
   const pdf = apiStorePdf(id, b64('%PDF first'), { email: false });
   const doc = apiGetDocument(id);
   doc.items[0].qty = 10;
   assert.throws(() => apiAmend(doc, ' '), /reason/);
+  const oldName = FAKE.files[pdf.pdfFileId].getName();
   const res = apiAmend(doc, 'Quantity corrected');
   assert.equal(res.doc.number, 'PEW/2526/07');
   assert.equal(res.doc.calc.taxable, 3950);
   assert.equal(res.doc.meta.amendments.length, 1);
   assert.equal(res.doc.meta.amendments[0].payable, 3728.8);
-  assert.match(FAKE.files[pdf.pdfFileId].getName(), /\(before amendment 1\)\.pdf$/);
-  assert.equal(FAKE.files[pdf.pdfFileId].trashed, false);
+  assert.equal(FAKE.files[pdf.pdfFileId].getName(), oldName, 'the old PDF is not renamed');
+  assert.equal(FAKE.files[pdf.pdfFileId].trashed, false, 'the old PDF stays until the new one is saved');
   assert.equal(res.summary.pdfUrl, '');
   assert.ok(res.summary.amendedAt);
+  assert.throws(() => apiEmailDocument(id, 'a@b.in', '', ''), /Save the PDF first/, 'the outdated PDF is not emailed');
   const again = apiStorePdf(id, b64('%PDF amended'), { email: false });
-  assert.equal(FAKE.files[pdf.pdfFileId].trashed, false, 'saving the new PDF keeps the old one');
+  assert.equal(FAKE.files[pdf.pdfFileId].trashed, true, 'saving the new PDF moves the old one to the bin');
+  assert.equal(again.replaced, true);
   assert.notEqual(again.pdfFileId, pdf.pdfFileId);
   const reg = raw('Register').slice(1).filter((r) => r[13] === id);
   assert.equal(reg.length, 1);
@@ -305,6 +308,20 @@ t('import items: new ones added, same name updated', () => {
   assert.equal(res.added, 1);
   assert.equal(res.products.find((p) => p.name === 'Armoured copper cable').rate, 310);
   assert.throws(() => apiImportProducts([{ row: 9, name: 'Odd', type: 'Goods', hsn: '12', gstRate: 18 }]), /Row 9 \(Odd\)/);
+});
+
+t('generate the PDF again: same number, the old PDF goes to the bin, the new one is linked', () => {
+  const id = ids['PEW/2526/07'];
+  const before = apiGetDocument(id);
+  const first = before.meta.pdfFileId;
+  const res = apiStorePdf(id, b64('%PDF again'), { email: false });
+  assert.equal(res.replaced, true);
+  assert.notEqual(res.pdfFileId, first);
+  assert.equal(FAKE.files[first].trashed, true);
+  assert.equal(FAKE.files[res.pdfFileId].trashed, false);
+  const after = apiGetDocument(id);
+  assert.equal(after.number, before.number);
+  assert.equal(after.meta.pdfFileId, res.pdfFileId);
 });
 
 t('web app page: title and the Proline tab icon', () => {

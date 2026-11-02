@@ -1432,6 +1432,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
       var url = d.meta && d.meta.pdfUrl;
       if (url) b.push('<a class="btn primary" href="' + esc(url) + '" target="_blank" rel="noopener">Open PDF in Drive</a>');
       else if (d.status === 'FINAL') b.push('<button class="btn primary" data-action="doc-storepdf">Save the PDF to Drive</button>');
+      if (url && d.status === 'FINAL') b.push('<button class="btn" data-action="doc-regenerate">Generate PDF again</button>');
       b.push('<button class="btn" data-action="doc-download">Download PDF</button>');
       if (url) b.push('<button class="btn" data-action="doc-email">Email…</button>');
       b.push('<button class="btn" data-action="doc-duplicate">Duplicate</button>');
@@ -1949,7 +1950,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
       var newNo = d.numbering && d.numbering.mode === 'manual' && d.numbering.number && d.numbering.number !== d.number ? d.numbering.number : '';
       var to = S.settings.email.onFinalise !== 'no' && S.settings.email.to ? S.settings.email.to : '';
       var summary = 'Number: ' + d.number + (newNo ? ' → ' + newNo : ' (unchanged)') + '\nTotal: ' + (was != null && was !== c.payable ? rupees(was) + ' → ' : '') + rupees(c.payable) +
-        '\n\nA new PDF is saved to Drive. The old PDF is kept there, renamed.';
+        '\n\nThe new PDF replaces the old one in Drive (the old one goes to Drive’s bin for 30 days). The reason is kept in the history.';
       modal('<h2>Save the amendment?</h2><p class="pre">' + esc(summary) + '</p><form id="amend-form"><label>Reason (kept in the history)<input name="reason" required placeholder="e.g. Quantity corrected; customer GSTIN fixed"></label>' +
         (to ? '<label class="check"><input type="checkbox" name="email" checked> Email the amended PDF to ' + esc(to) + '</label>' : '') +
         '<div class="actions"><button type="button" class="btn" data-close>Back</button><button class="btn primary">Save amendment</button></div></form>', function (root) {
@@ -1964,6 +1965,25 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
             var r2 = await run('Saving the new PDF to Drive…', function () { return storePdf(S.doc, email); });
             toast(S.doc.number + ' amended. New PDF saved' + (r2.emailed ? ' and emailed.' : '.'));
           } catch (err) { toast('Amended, but the PDF was not saved. Use “Save the PDF to Drive”.', 'error'); }
+          render();
+        };
+      });
+    },
+    'doc-regenerate': function () {
+      // Owner, 2 Nov: make the PDF again (current layout, the details saved in the document) and replace the one in Drive.
+      var d = S.doc;
+      var to = S.settings.email.onFinalise !== 'no' && S.settings.email.to ? S.settings.email.to : '';
+      modal('<h2>Generate the PDF of ' + esc(d.number) + ' again?</h2>' +
+        '<p>A new PDF is made from the details saved in this document, in today’s layout, with the same number and date. It replaces the PDF in Drive; the old one goes to Drive’s bin, where it stays for 30 days.</p>' +
+        '<p class="muted small">To change the customer, GSTIN, items or anything else first, use <b>Amend…</b> instead: it saves your changes and makes the new PDF in one step.</p>' +
+        '<form id="regen-form">' + (to ? '<label class="check"><input type="checkbox" name="email"> Email the new PDF to ' + esc(to) + '</label>' : '') +
+        '<div class="actions"><button type="button" class="btn" data-close>Back</button><button class="btn primary">Generate PDF again</button></div></form>', function (root) {
+        $('#regen-form', root).onsubmit = async function (e) {
+          e.preventDefault();
+          var email = !!(e.target.elements.email && e.target.elements.email.checked);
+          closeModal();
+          var r = await run('Making the new PDF…', function () { return storePdf(S.doc, email); });
+          toast('New PDF saved' + (r.replaced ? ', old one replaced' : '') + (r.emailed ? ' and emailed.' : '.'));
           render();
         };
       });
