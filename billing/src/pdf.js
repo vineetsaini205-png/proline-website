@@ -43,6 +43,17 @@ var PBPDF = (function () {
     paddingLeft: function () { return 0; }, paddingRight: function () { return 0; },
     paddingTop: function () { return 1.5; }, paddingBottom: function () { return 1.5; }
   };
+  // Document number and dates, top right: "Invoice No. : PEW/2627/07", the block set against the right margin
+  // (owner, 2 Nov: the number and date sat too far from their labels). Columns: spacer, label, ":", value.
+  var metaLayout = {
+    hLineWidth: function () { return 0; }, vLineWidth: function () { return 0; },
+    paddingLeft: function (i) { return i < 2 ? 0 : 5; }, paddingRight: function () { return 0; },
+    paddingTop: function () { return 1.5; }, paddingBottom: function () { return 1.5; }
+  };
+  /** "GSTIN : … | PAN : … | Udyam : …" (owner, 2 Nov: label, " : ", value, and "|" between items). */
+  function regLine(pairs) {
+    return pairs.filter(function (x) { return x[1]; }).map(function (x) { return x[0] + ' : ' + x[1]; }).join('   |   ');
+  }
   function zebra(headerRows) {
     return {
       hLineWidth: function (i, node) { return i === headerRows || i === node.table.body.length ? 0.8 : 0.4; },
@@ -61,16 +72,18 @@ var PBPDF = (function () {
       firm.address1 ? { text: firm.address1 } : null,
       firm.address2 ? { text: firm.address2 } : null,
       (firm.city || firm.pin || firm.stateCode) ? { text: lines([t(firm.city), t(firm.pin)]).join(' – ') + (firm.stateCode ? (firm.city || firm.pin ? ', ' : '') + PB.stateName(firm.stateCode) + ' (' + firm.stateCode + ')' : '') } : null,
-      firm.gstin || firm.pan ? { text: lines([firm.gstin ? 'GSTIN ' + firm.gstin : '', firm.pan ? 'PAN ' + firm.pan : '', firm.udyam ? 'Udyam ' + firm.udyam : '']).join('   ·   '), bold: true, color: C.ink, margin: [0, 2, 0, 0] } : null,
-      (firm.phone || firm.email) ? { text: lines([t(firm.phone), t(firm.email)]).join('   ·   '), color: C.muted } : null,
+      firm.gstin || firm.pan ? { text: regLine([['GSTIN', firm.gstin], ['PAN', firm.pan], ['Udyam', firm.udyam]]), bold: true, color: C.ink, margin: [0, 2, 0, 0] } : null,
+      (firm.phone || firm.email) ? { text: lines([t(firm.phone), t(firm.email)]).join('   |   '), color: C.muted } : null,
       firm.website ? { text: t(firm.website), color: C.muted } : null
     ]);
-    var meta = [[{ text: L.no, color: C.muted }, { text: doc.number || 'DRAFT', bold: true, color: C.ink, alignment: 'right' }],
-      [{ text: 'Date', color: C.muted }, { text: PB.prettyDate(doc.date), alignment: 'right', color: C.ink }]];
     var r = doc.refs || {};
-    if (doc.type === 'INV' && r.dueDate) meta.push([{ text: 'Due date', color: C.muted }, { text: PB.prettyDate(r.dueDate), alignment: 'right', color: C.ink }]);
-    if (doc.type === 'PI' && r.validTill) meta.push([{ text: 'Valid till', color: C.muted }, { text: PB.prettyDate(r.validTill), alignment: 'right', color: C.ink }]);
-    if (doc.type === 'PO' && r.deliveryDate) meta.push([{ text: 'Deliver by', color: C.muted }, { text: PB.prettyDate(r.deliveryDate), alignment: 'right', color: C.ink }]);
+    var metaRows = [[L.no, doc.number || 'DRAFT', true], ['Date', PB.prettyDate(doc.date)]];
+    if (doc.type === 'INV' && r.dueDate) metaRows.push(['Due date', PB.prettyDate(r.dueDate)]);
+    if (doc.type === 'PI' && r.validTill) metaRows.push(['Valid till', PB.prettyDate(r.validTill)]);
+    if (doc.type === 'PO' && r.deliveryDate) metaRows.push(['Deliver by', PB.prettyDate(r.deliveryDate)]);
+    var meta = metaRows.map(function (m) {
+      return [{ text: '' }, { text: m[0], color: C.muted }, { text: ':', color: C.muted }, { text: m[1], bold: !!m[2], color: C.ink }];
+    });
     // Standard logo: the full Charge-O logo (it carries the name), firm details below it.
     // An uploaded logo keeps the small square slot with the trade name beside it.
     var brand = images && images.logo
@@ -84,7 +97,7 @@ var PBPDF = (function () {
           { text: L.title, fontSize: 15.5, bold: true, color: C.navy, alignment: 'right', characterSpacing: 1.2 },
           copyLabel ? { text: copyLabel.toUpperCase(), fontSize: 6.8, bold: true, color: C.greenText, alignment: 'right', characterSpacing: 0.8, margin: [0, 2, 0, 0] } : null,
           doc.type === 'PI' ? { text: 'Not a tax invoice', fontSize: 7, color: C.muted, alignment: 'right', margin: [0, 2, 0, 0] } : null,
-          { margin: [0, 7, 0, 0], table: { widths: [62, '*'], body: meta }, layout: noLines, fontSize: 8.3 }
+          { margin: [0, 7, 0, 0], table: { widths: ['*', 'auto', 'auto', 'auto'], body: meta }, layout: metaLayout, fontSize: 8.3 }
         ]) }
       ],
       columnGap: 10
@@ -100,7 +113,7 @@ var PBPDF = (function () {
     var party = [label(L.party), { text: t(p.legalName || p.name), bold: true, fontSize: 9.5, color: C.ink, margin: [0, 0, 0, 2] }]
       .concat(p.legalName && p.legalName !== p.name ? [{ text: p.name, color: C.muted }] : [])
       .concat(addr(p))
-      .concat(p.gstin ? [{ text: 'GSTIN ' + p.gstin, bold: true, color: C.ink, margin: [0, 2, 0, 0] }] : [{ text: doc.type === 'PO' ? 'Unregistered vendor' : 'Unregistered (no GSTIN)', color: C.muted, margin: [0, 2, 0, 0] }])
+      .concat(p.gstin ? [{ text: 'GSTIN : ' + p.gstin, bold: true, color: C.ink, margin: [0, 2, 0, 0] }] : [{ text: doc.type === 'PO' ? 'Unregistered vendor' : 'Unregistered (no GSTIN)', color: C.muted, margin: [0, 2, 0, 0] }])
       .concat(p.contact || p.phone ? [{ text: lines([t(p.contact), t(p.phone)]).join(', '), color: C.muted }] : []);
     var ship = [label(L.ship)];
     var st = doc.shipTo || { same: true };
@@ -108,7 +121,7 @@ var PBPDF = (function () {
       if (doc.type === 'PO') ship = ship.concat([{ text: firm.tradeName || firm.legalName, bold: true, color: C.ink }]).concat(addr({ address: lines([firm.address1, firm.address2]).join(', '), city: firm.city, pin: firm.pin, stateCode: firm.stateCode }));
       else ship.push({ text: 'Same as bill to', color: C.muted });
     } else {
-      ship = ship.concat([{ text: t(st.name), bold: true, color: C.ink }]).concat(addr(st)).concat(st.gstin ? [{ text: 'GSTIN ' + st.gstin, bold: true, color: C.ink }] : []);
+      ship = ship.concat([{ text: t(st.name), bold: true, color: C.ink }]).concat(addr(st)).concat(st.gstin ? [{ text: 'GSTIN : ' + st.gstin, bold: true, color: C.ink }] : []);
     }
     var d = [];
     var row = function (k, v) { if (v) d.push([{ text: k, color: C.muted }, { text: v, color: C.ink }]); };

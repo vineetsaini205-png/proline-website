@@ -13,7 +13,7 @@ const printer = new PdfPrinter({ Roboto: { normal: buf('Roboto-Regular.ttf'), bo
 const out = process.argv[2] || '.';
 const g = (s14) => s14 + PB.gstinCheckChar(s14);
 const settings = {
-  firm: { legalName: 'Proline Electrical Works', tradeName: 'Proline Electrical Works', address1: 'Sample address line 1', address2: '', city: 'New Delhi', stateCode: '07', pin: '110001', gstin: g('07ABCDE1234F1Z'), pan: 'ABCDE1234F', phone: '+91 00000 00000', email: 'Sales@prolineelectricalworks.com', website: 'www.prolineelectricalworks.com' },
+  firm: { legalName: 'Proline Electrical Works', tradeName: 'Proline Electrical Works', address1: 'Sample address line 1', address2: '', city: 'New Delhi', stateCode: '07', pin: '110001', gstin: g('07ABCDE1234F1Z'), pan: 'ABCDE1234F', udyam: 'UDYAM-DL-00-0000000', phone: '+91 00000 00000', email: 'Sales@prolineelectricalworks.com', website: 'www.prolineelectricalworks.com' },
   bank: { name: 'Sample Bank', accountName: 'Proline Electrical Works', accountNo: '000000000000', ifsc: 'SAMP0000001', branch: 'New Delhi', upi: 'proline@upi' },
   sign: { name: 'Vineet Saini', designation: 'Proprietor' },
   pdf: { copies: 'Original + Duplicate' }
