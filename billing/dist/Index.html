@@ -2142,7 +2142,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
   async function startAmend() {
     var d = S.doc;
     if (!d || d.status !== 'FINAL') return;
-    var ok = await confirmBox('Amend ' + d.number + '?', 'Use this to correct a document already issued. It keeps its number (you can change it), gets the new contents and a new PDF. The old PDF is kept in Drive, renamed, and the change is recorded with your reason.\n\nGST: change an invoice only if it is not yet reported in your GSTR-1. After filing, a change in value needs a credit or debit note, and other corrections go in a GSTR-1 amendment. Ask your CA if unsure.', 'Start amending');
+    var ok = await confirmBox('Amend ' + d.number + '?', 'Use this to correct a document already issued. It keeps its number (you can change it), gets the new contents and a new PDF. The new PDF replaces the old one, and the change is recorded with your reason.\n\nGST: change an invoice only if it is not yet reported in your GSTR-1. After filing, a change in value needs a credit or debit note, and other corrections go in a GSTR-1 amendment. Ask your CA if unsure.', 'Start amending');
     if (!ok) return;
     S.amendBase = clone(S.doc);
     S.amending = true;
