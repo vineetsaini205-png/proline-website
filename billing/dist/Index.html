@@ -717,7 +717,8 @@ var PBPDF = (function () {
     return {
       columns: [brand,
         { width: 165, stack: lines([
-          { text: L.title, fontSize: 17.5, bold: true, color: C.navy, alignment: 'right', characterSpacing: 1.2 },
+          // Long titles (PROFORMA INVOICE, PURCHASE ORDER) a little smaller so they stay on one line.
+          { text: L.title, fontSize: L.title.length > 12 ? 14.5 : 17.5, bold: true, color: C.navy, alignment: 'right', characterSpacing: L.title.length > 12 ? 0.5 : 1.2 },
           copyLabel ? { text: copyLabel.toUpperCase(), fontSize: 8.3, bold: true, color: C.greenText, alignment: 'right', characterSpacing: 0.8, margin: [0, 2, 0, 0] } : null,
           doc.type === 'PI' ? { text: 'Not a tax invoice', fontSize: 8.5, color: C.muted, alignment: 'right', margin: [0, 2, 0, 0] } : null,
           { margin: [0, 7, 0, 0], table: { widths: ['*', 'auto', 'auto', 'auto'], body: meta }, layout: metaLayout, fontSize: 10.1 }

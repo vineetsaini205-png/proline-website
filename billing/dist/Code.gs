@@ -1,4 +1,4 @@
-// Proline Billing 2026-11-05 10:36 — built from billing/src (shared.js + server.js). Edit the source, not this file.
+// Proline Billing 2026-11-06 11:23 — built from billing/src (shared.js + server.js). Edit the source, not this file.
 
 /*
  * Proline Billing — shared rules, used by the server (Code.gs) and the browser (Index.html).
