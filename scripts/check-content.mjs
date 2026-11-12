@@ -38,7 +38,7 @@ const FORBIDDEN = [
   // Owner (24 Oct): never tell customers that Proline earns a commission or margin, or how much it earns.
   [/\b((our|proline'?s|proline earns a) (commission|margin|cut|mark-?up)|we (earn|get|make|take) (a |our )?(commission|margin|cut|mark-?up))\b/i, 'Proline earnings or commission (owner: never say what Proline earns)'],
 ];
-// Owner (24 Oct): the phone number is never shown as text; WhatsApp and Call links may carry it.
+// Owner (13 Nov): the number shows as text only in the header and footer (components), never in content files; WhatsApp and Call links may carry it.
 const PHONE_TEXT = /(\+?91[\s-]?)?7303\s?8\s?87364/;
 const RUPEE_OK = /tariff|per unit|a unit|\/unit|kwh|petrol|diesel|cng|fuel|litre|example|e\.g\.|for instance|save|saving|earn|revenue|profit|charge drivers|drivers pay|public charging|electricity|bill|fee is adjusted/i;
 

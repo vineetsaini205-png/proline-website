@@ -45,7 +45,8 @@ The old project **proline** was deleted by you on 24 October.
 
 ## 4. Cloudflare settings to keep or check
 
-- **Security → Bots → Block AI bots**: keep ON (you chose to block AI assistants). `robots.txt` also asks them to stay away. Google and Bing are not affected.
+- **Security → AI bot controls** (Cloudflare replaced the old "Block AI bots" switch on 15 Sept 2026): **Search = Allow**, **Training = Disallow AI Training**, Agent = leave as is. Owner, 13 Nov: AI search tools (ChatGPT, Claude, Perplexity) may read and cite the site; AI training bots stay blocked, also in `robots.txt`. Google and Bing are not affected.
+- **Caching → Configuration → Crawler Hints: ON** (tells search engines through IndexNow when a page changes).
 - **SSL/TLS**: Full; **Always Use HTTPS**: ON.
 - **Web Analytics** (free, no cookies): Workers & Pages → your project → Metrics → enable Web Analytics.
 
