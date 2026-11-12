@@ -1,0 +1,30 @@
+---
+// Hub for the car-model charger pages (src/content/cars).
+import { getCollection } from 'astro:content';
+import HubPage from '../../../layouts/HubPage.astro';
+import SectionHead from '../../../components/SectionHead.astro';
+import ChargerTypes from '../../../components/ChargerTypes.astro';
+const items = (await getCollection('cars', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((e) => ({ icon: e.data.icon, label: e.data.label, summary: e.data.summary, href: `/chargers/for/${e.id}/` }));
+const faqs = [
+  { q: 'Which home charger does my electric car need?', a: 'It depends on the most AC power your car accepts and the supply at your home. Many cars charge fastest on a 7.2–7.4 kW wall box, which runs on a normal single-phase supply. Some cars accept 11 kW, which needs a three-phase supply. Tell us your car and send photos of your meter and parking, and we suggest the right charger.' },
+  { q: 'Is a bigger charger always faster?', a: 'No. An AC charger can only charge as fast as the car accepts. If your car takes 7.2 kW, an 11 kW or 22 kW wall box charges it no faster. A DC fast charger is different: the charger itself does the conversion, so it is far faster, but it is a public or business charger, not a home one.' },
+  { q: 'My car came with a charger. Do I still need you?', a: 'Often, yes. The charger needs its own circuit, the right protection, a good earth and a safe cable route to your parking spot. Some carmakers include a basic installation, and earthing and civil work are not always part of it. We install chargers of any brand, including the one that came with your car.' },
+  { q: 'My car is not listed. Can you still help?', a: 'Yes. We install home and business chargers for any electric car, scooter or 3-wheeler. Send your car model on WhatsApp or the form on this page, and we tell you which charger fits.' },
+];
+---
+<HubPage
+  title="EV Charger for Your Car: Nexon.ev, Windsor, BE 6 | Proline"
+  description="Which home charger suits your electric car: Tata Nexon.ev and Punch.ev, MG Windsor, Mahindra BE 6, Hyundai Creta Electric. Charging times and installation."
+  h1="The right home charger for your electric car"
+  eyebrow="Chargers for your car"
+  intro="Pick your car to see which home charger suits it, how long it takes to charge, using the carmaker's own figures, and what installing it involves. We install chargers of any brand, including the one that came with your car."
+  crumb="For your car" parent={{ label: 'Chargers', href: '/chargers/' }} items={items} itemsTitle="Pick your car" faqs={faqs} need="Home charger installation" cols={3}>
+  <section class="section" aria-labelledby="home-types-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Home chargers" title="What a home charger looks like" lead="Most cars charge at home on one of these. We suggest the exact brand and model after a call." id="home-types-title" />
+      <ChargerTypes only={['home-socket', 'portable', 'wallbox-7', 'wallbox-11']} />
+    </div>
+  </section>
+</HubPage>

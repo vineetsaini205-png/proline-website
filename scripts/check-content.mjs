@@ -13,8 +13,8 @@ const targets = args.length ? args : ['src/content'];
 // Every internal URL the site has (from the menus) plus pages built from content files.
 const nav = readFileSync(join(ROOT, 'src/data/nav.ts'), 'utf8');
 const known = new Set([...nav.matchAll(/href: '([^']+)'/g)].map((m) => m[1]));
-['/', '/cms/', '/tools/', '/blog/', '/faq/', '/ask/', '/coverage/', '/brands/', '/contact/', '/about/', '/privacy-policy/', '/terms/'].forEach((u) => known.add(u));
-const contentDirs = { services: '/services/', chargers: '/chargers/', batteries: '/batteries/', audiences: '/for/', pages: '/', blog: '/blog/' };
+['/', '/cms/', '/chargers/for/', '/tools/', '/blog/', '/faq/', '/ask/', '/coverage/', '/brands/', '/contact/', '/about/', '/privacy-policy/', '/terms/'].forEach((u) => known.add(u));
+const contentDirs = { services: '/services/', chargers: '/chargers/', cars: '/chargers/for/', batteries: '/batteries/', audiences: '/for/', pages: '/', blog: '/blog/' };
 for (const [dir, base] of Object.entries(contentDirs)) {
   const d = join(ROOT, 'src/content', dir);
   if (!existsSync(d)) continue;

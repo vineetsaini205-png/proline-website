@@ -5,6 +5,8 @@ import { render } from 'astro:content';
 import Base from './Base.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import Photo from '../components/Photo.astro';
+import ChargerArt from '../components/ChargerArt.astro';
+import { chargerTypes } from '../data/charger-types';
 import Icon from '../components/Icon.astro';
 import Faqs from '../components/Faqs.astro';
 import CostFactors from '../components/CostFactors.astro';
@@ -19,9 +21,10 @@ import { linkInfo } from '../data/nav';
 import { serviceNode, faqNode, articleNode } from '../lib/schema';
 import { inlineMd, plainText, waLink, formatDate, splitFirstSentence } from '../lib/text';
 
-type Entry = CollectionEntry<'services'> | CollectionEntry<'chargers'> | CollectionEntry<'batteries'> | CollectionEntry<'audiences'> | CollectionEntry<'pages'>;
+type Entry = CollectionEntry<'services'> | CollectionEntry<'chargers'> | CollectionEntry<'cars'> | CollectionEntry<'batteries'> | CollectionEntry<'audiences'> | CollectionEntry<'pages'>;
 interface Props { entry: Entry; crumbs: { label: string; href?: string }[]; headerCta?: { label: string; href: string } }
 const { entry, crumbs, headerCta } = Astro.props;
+const art = entry.data.art ? chargerTypes.find((t) => t.kind === entry.data.art) : undefined;
 const d = entry.data;
 const { Content, headings } = await render(entry);
 const path = Astro.url.pathname;
@@ -45,7 +48,7 @@ const [introFirst, introRest] = splitFirstSentence(d.intro);
   <section class="phero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
-      <div class:list={['phero-grid', { 'no-media': !d.image && !d.photo }]}>
+      <div class:list={['phero-grid', { 'no-media': !d.image && !d.photo && !art }]}>
         <div>
           {d.eyebrow && <p class="eyebrow">{d.eyebrow}</p>}
           <h1>{d.h1}</h1>
@@ -58,6 +61,12 @@ const [introFirst, introRest] = splitFirstSentence(d.intro);
           )}
           {d.guide && <p class="updated" style="margin-top:18px">By Vineet Saini, Proline Electrical Works · Updated {formatDate(d.updated)}</p>}
         </div>
+        {!d.photo && !d.image && art && (
+          <figure class="phero-art">
+            <ChargerArt kind={art.kind} label={`Drawing of a typical ${art.name.toLowerCase()}`} />
+            <figcaption><strong>{art.name}</strong><span>{art.size}. Drawing of a typical charger; we suggest the exact model.</span></figcaption>
+          </figure>
+        )}
         {(d.photo || d.image) && <div class="phero-media">{d.photo ? <Photo src={d.photo} alt={d.photoAlt ?? d.h1} eager /> : <Photo name={d.image} eager sizes="(max-width: 900px) 100vw, 480px" />}</div>}
       </div>
     </div>

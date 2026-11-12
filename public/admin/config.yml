@@ -138,11 +138,13 @@ collections:
       - { name: need, label: "Pre-selected need in the quote form", widget: select, required: false, options: ["EV charger installation", "Home charger installation", "DC fast charger or charging station", "Help choosing a charger (any brand)", "Site survey", "EV charger AMC (maintenance)", "Earthing, cabling or DB box", "Civil work or canopy", "Solar installation", "Batteries", "Proline CMS", "Something else"] }
       - { name: serviceType, label: "Service name for Google (service pages only)", widget: string, required: false }
       - { name: guide, label: "Long guide (shows author box)", widget: boolean, default: false }
+      - { name: art, label: "Charger drawing in the header (used when there is no photo)", widget: select, required: false, options: [home-socket, portable, wallbox-7, wallbox-11, ac-post-22, lev-ac, lev-dc, dc-30, dc-60, dc-120, dc-240] }
       - { name: widget, label: "Interactive block", widget: select, required: false, options: [dc-inside, white-label] }
       - { name: updated, label: "Last updated", widget: datetime, format: "YYYY-MM-DD", time_format: false }
       - { name: draft, label: "Draft (hidden from the site)", widget: boolean, default: false }
       - { name: body, label: "Page text", widget: markdown }
   - { name: chargers, label: Charger pages, label_singular: Charger page, folder: src/content/chargers, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
+  - { name: cars, label: "Car charger pages", label_singular: Car page, folder: src/content/cars, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
   - { name: batteries, label: Battery pages, label_singular: Battery page, folder: src/content/batteries, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
   - { name: audiences, label: "Who we serve pages", label_singular: Audience page, folder: src/content/audiences, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }
   - { name: pages, label: "Guides and other pages", label_singular: Page, folder: src/content/pages, create: true, slug: "{{slug}}", summary: "{{label}}", fields: *landing }

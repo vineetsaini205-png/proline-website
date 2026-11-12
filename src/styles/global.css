@@ -316,12 +316,19 @@ body.menu-open { overflow: hidden; }
 .phero .checks { margin-top: 18px; }
 .phero-media { border-radius: var(--radius-xl); overflow: hidden; background: var(--navy-50); aspect-ratio: 4 / 3.4; }
 .phero-media img { width: 100%; height: 100%; object-fit: cover; }
+.phero-art { margin: 0; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-xl); padding: 20px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.phero-art svg.charger-art { width: 250px; max-width: 100%; height: auto; }
+.phero-art figcaption { display: flex; flex-direction: column; gap: 2px; text-align: center; font-size: 14px; color: var(--muted); }
+.phero-art figcaption strong { color: var(--ink); font-size: 15px; }
 @media (max-width: 900px) {
   .phero .wrap { padding-top: 16px; padding-bottom: 36px; }
   .phero-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 12px; }
   .phero .lead { font-size: 16px; }
   .phero .btn-row { display: grid; grid-template-columns: 1fr; }
   .phero-media { aspect-ratio: 16 / 10; }
+  .phero-art { flex-direction: row; padding: 12px 16px; text-align: left; }
+  .phero-art svg.charger-art { width: 96px; flex: 0 0 auto; }
+  .phero-art figcaption { text-align: left; }
 }
 
 /* Breadcrumbs */

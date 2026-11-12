@@ -22,6 +22,7 @@ const landing = z.object({
   image: z.string().optional(),      // photo key from src/data/images.json
   photo: z.string().optional(),      // or an uploaded photo (/images/uploads/…), set in the admin; wins over `image`
   photoAlt: z.string().optional(),
+  art: z.enum(['home-socket', 'portable', 'wallbox-7', 'wallbox-11', 'ac-post-22', 'lev-ac', 'lev-dc', 'dc-30', 'dc-60', 'dc-120', 'dc-240']).optional(), // charger drawing in the header when there is no photo
   highlights: z.array(z.string()).max(4).default([]),
   costFactors: z.array(z.string()).default([]),
   steps: z.array(step).optional(),
@@ -76,6 +77,7 @@ const faqs = defineCollection({
 export const collections = {
   services: make('services'),
   chargers: make('chargers'),
+  cars: make('cars'),               // charger pages for one car model, at /chargers/for/<slug>/
   batteries: make('batteries'),
   audiences: make('audiences'),
   pages: make('pages'),

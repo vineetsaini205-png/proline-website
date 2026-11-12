@@ -16,14 +16,16 @@ interface Props {
   crumb: string; items: HubItem[]; itemsTitle?: string; image?: string;
   faqs?: { q: string; a: string }[]; form?: FormVariant; need?: string;
   ctaTitle?: string; ctaLead?: string; cols?: 2 | 3 | 4;
+  parent?: { label: string; href: string }; // optional parent crumb, e.g. Chargers above For your car
 }
-const { title, description, h1, intro, eyebrow, crumb, items, itemsTitle, image, faqs = [], form = 'quote', need, ctaTitle, ctaLead, cols = 3 } = Astro.props;
+const { title, description, h1, intro, eyebrow, crumb, items, itemsTitle, image, faqs = [], form = 'quote', need, ctaTitle, ctaLead, cols = 3, parent } = Astro.props;
+const crumbs = parent ? [parent, { label: crumb }] : [{ label: crumb }];
 const path = Astro.url.pathname;
 ---
-<Base title={title} description={description} crumbs={[{ label: crumb }]} schema={faqs.length ? [faqNode(path, faqs)] : []}>
+<Base title={title} description={description} crumbs={crumbs} schema={faqs.length ? [faqNode(path, faqs)] : []}>
   <section class="phero">
     <div class="wrap">
-      <Breadcrumbs items={[{ label: crumb }]} />
+      <Breadcrumbs items={crumbs} />
       <div class:list={['phero-grid', { 'no-media': !image }]}>
         <div>
           {eyebrow && <p class="eyebrow">{eyebrow}</p>}

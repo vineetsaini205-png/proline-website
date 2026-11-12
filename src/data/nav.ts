@@ -28,6 +28,7 @@ export const cms: NavLink[] = [
 ];
 
 export const products: NavLink[] = [
+  { label: 'Chargers for your car', href: '/chargers/for/', note: 'Nexon.ev, Punch.ev, Windsor, BE 6, Creta Electric' },
   { label: 'AC and home chargers', href: '/chargers/ac-chargers/', note: '3.3–22 kW' },
   { label: 'DC fast chargers', href: '/chargers/dc-fast-chargers/', note: '30–240 kW, CCS2' },
   { label: '2W and 3W chargers', href: '/chargers/2w-3w-chargers/', note: 'Scooters, e-rickshaws, autos' },
@@ -35,6 +36,15 @@ export const products: NavLink[] = [
   { label: 'White-label chargers', href: '/chargers/white-label-chargers/', note: 'Your brand on the charger' },
   { label: 'Batteries', href: '/batteries/', note: '2W, e-rickshaw, inverter, BESS' },
   { label: 'Solar + EV charging', href: '/solar-ev-charging/', note: 'Charge from the sun' },
+];
+
+// One page per popular car model (owner, 13 Nov): which home charger suits it and how we install it.
+export const cars: NavLink[] = [
+  { label: 'Tata Nexon.ev charger', href: '/chargers/for/tata-nexon-ev/', note: '7.2–7.4 kW wall box' },
+  { label: 'Tata Punch.ev charger', href: '/chargers/for/tata-punch-ev/', note: '3.3 or 7.2 kW at home' },
+  { label: 'MG Windsor charger', href: '/chargers/for/mg-windsor-ev/', note: '7.4 kW wall box' },
+  { label: 'Mahindra BE 6 charger', href: '/chargers/for/mahindra-be-6/', note: '7.2 or 11.2 kW wall box' },
+  { label: 'Hyundai Creta Electric charger', href: '/chargers/for/hyundai-creta-electric/', note: '7.4 or 11 kW wall box' },
 ];
 
 export const audiences: NavLink[] = [
@@ -98,7 +108,7 @@ export const mainNav: NavGroup[] = [
   { label: 'Resources', items: resources },
 ];
 
-export const allLinks: NavLink[] = [...services, ...cms, ...products, ...batteries, ...audiences, ...tools, ...resources, ...company, ...hubs];
+export const allLinks: NavLink[] = [...services, ...cms, ...products, ...cars, ...batteries, ...audiences, ...tools, ...resources, ...company, ...hubs];
 
 /** Title + note for any internal page, used by "Related" cards. */
 export function linkInfo(href: string): NavLink | undefined {
