@@ -17,16 +17,18 @@ const cols = [
   ] },
   { title: 'Products', links: [
     { label: 'Chargers, any brand', href: '/chargers/' },
+    { label: 'Chargers for your car', href: '/chargers/for/' },
     { label: 'Batteries', href: '/batteries/' },
     { label: 'Solar + EV charging', href: '/solar-ev-charging/' },
     { label: 'Proline CMS', href: '/cms/' },
-    { label: 'Who we serve', href: '/for/' },
   ] },
-  { title: 'Tools and guides', links: [...tools.map((t) => ({ label: t.label, href: t.href })), { label: 'Blog and FAQ', href: '/blog/' }] },
+  { title: 'Tools and guides', links: [...tools.map((t) => ({ label: t.label, href: t.href })), { label: 'Blog', href: '/blog/' }, { label: 'FAQ', href: '/faq/' }, { label: 'Ask an expert', href: '/ask/' }] },
   { title: 'Company', links: [
     { label: 'About Proline', href: '/about/' },
     { label: 'Contact', href: '/contact/' },
     { label: 'Coverage', href: '/coverage/' },
+    { label: 'Who we serve', href: '/for/' },
+    { label: 'Brands we work with', href: '/brands/' },
     { label: 'Partner with us', href: '/partner-with-us/' },
     { label: 'Join as a technician', href: '/join-as-technician/' },
   ] },
@@ -37,6 +39,7 @@ const cols = [
     <div class="footer-brand">
       <Logo variant="white" lazy />
       <p>EV chargers of any brand, installed and commissioned across India. Based in {site.city}, working in 10 states.</p>
+      <p class="footer-phone"><a href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a><span>{site.callHours} · {site.whatsappHours}</span></p>
       <div class="footer-actions">
         <a class="fbtn" href={waLink(site.whatsapp)} rel="noopener" target="_blank"><Icon name="whatsapp" size={16} />WhatsApp us</a>
         <a class="fbtn" href={`tel:${site.phoneE164}`}><Icon name="phone" size={16} />Call 10 am–7 pm</a>

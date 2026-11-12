@@ -1,114 +1,130 @@
 ---
-// Home page. Kept short on purpose (owner, 24 Oct: "too much information on one page"; 25 Oct: one idea
-// per screen on phones, like Tata Power and Statiq): photo hero with the numbers, six services as photo
-// cards (a swipe row on phones), Proline CMS, calculators in one card, five FAQs, contact form.
-// Everything else has its own page, linked from the menu and the footer.
+// Home page, release 1 (owner, 13 Nov: "focus on charger selling"; rule 17: 7 short sections, chargers first).
+//  1 hero: buy and install, three ways in   2 pick your car   3 charger cards (drawings, size, Get a quote)
+//  4 proof: numbers, cleared clients, real job photos   5 how it works   6 FAQ   7 contact
+// Proline CMS and the calculators live in the menu and the footer. Google reviews go in as a section
+// here only once the Business Profile has real reviews (never invented, rule 6).
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
+import ChargerTypes from '../components/ChargerTypes.astro';
 import site from '../data/site.json';
-import { waLink } from '../lib/text';
-import screens from '../data/cms-screens.json';
+import images from '../data/images.json';
+import { cars } from '../data/nav';
 import { faqNode } from '../lib/schema';
 
-const title = 'Proline Electrical Works | EV Charger Installation in India';
-const description = 'Proline installs and commissions EV chargers of any brand across India: AC and DC chargers, earthing, cabling and civil work. Free advice on choosing a charger.';
+const title = 'Buy EV Charger with Installation | Proline Electrical Works';
+const description = 'Buy the right EV charger for your car, home or business, installed with cabling, earthing and tests by Proline. Any brand, brand-neutral advice, 10 states.';
 
-const services = [
-  { photo: 'ac-pedestal-charger', title: 'EV charger installation', text: 'AC and DC chargers of any brand, installed and tested.', href: '/services/ev-charger-installation/' },
-  { photo: 'ac-charger-plug', title: 'Home charger installation', text: 'Wall-box chargers fitted safely at home.', href: '/services/home-ev-charger-installation/' },
-  { photo: 'dc-hub-bays', title: 'Charging stations', text: 'DC fast chargers and turnkey stations, survey to go-live.', href: '/services/ev-charging-station-setup/' },
-  { photo: 'solar-canopy-aerial', title: 'Site survey', text: 'Know what your site needs before you buy.', href: '/services/site-survey/' },
-  { photo: 'dc-cabinet-charging', title: 'AMC and maintenance', text: 'Planned visits, safety tests and a report each time.', href: '/services/ev-charger-amc/' },
-  { photo: 'solar-canopy-tall', title: 'Earthing, cabling, civil', text: 'Tested earth pits, sized cable, foundations, canopies.', href: '/services/ev-charger-earthing/' },
+const ways = [
+  { label: 'Charger for my car', href: '/chargers/for/', primary: true },
+  { label: 'Charger for my business', href: '/chargers/#types' },
+  { label: 'Installation partner', href: '/partner-with-us/' },
 ];
 
-const tools = [
-  { title: 'Charging station earnings', text: 'Monthly profit for your state, charger and prices, from quiet to busy.', href: '/tools/ev-charging-station-earnings-calculator/' },
-  { title: 'EV vs petrol savings', text: 'What you save each month by driving electric, and the CO₂ avoided.', href: '/tools/ev-vs-petrol-savings-calculator/' },
-  { title: 'Charger finder', text: 'Which charger fits your need.', href: '/tools/charger-finder/' },
-  { title: 'Installation checklist', text: 'What your installation needs.', href: '/tools/installation-checklist/' },
+const carChips = cars.map((c) => ({ label: c.label.replace(/ charger$/, ''), href: c.href }));
+
+const meta = images as Record<string, { alt: string; caption?: string }>;
+const jobs = ['job-basement-row', 'job-home-db-box', 'job-earth-pit', 'job-socket-test'].map((k) => ({ key: k, caption: meta[k].caption ?? meta[k].alt }));
+
+const how = [
+  { icon: 'clipboard', title: 'Survey', text: 'Photos on WhatsApp for most homes; a paid site visit for bigger sites, adjusted against your order.' },
+  { icon: 'cable', title: 'Civil and cabling', text: 'Cable sized for the load and the distance, with trenches, trays and foundations where the site needs them.' },
+  { icon: 'earth', title: 'Earthing', text: 'A dedicated earth for the charger, tested, with the reading written down for you.' },
+  { icon: 'gauge', title: 'Testing', text: 'Insulation, earth and RCD tests before the charger is switched on.' },
+  { icon: 'bolt', title: 'Commissioning', text: 'The charger set up in its app or on OCPP, and a test charge with your vehicle.' },
+  { icon: 'wrench', title: 'AMC', text: 'Planned visits and safety tests afterwards, if you want them.' },
 ];
 
 const faqs = [
-  { q: 'Do you install EV chargers of any brand?', a: 'Yes. Proline is brand-neutral: we survey, install and commission AC and DC chargers from any maker, and the free consultation helps you choose the right one for your site. We have installed chargers for TATA, ThunderPlus, Bolt.Earth and KIA.' },
+  { q: 'Do you sell and install chargers of any brand?', a: `Yes. Proline is brand-neutral: we help you choose a charger from the brands we work with, supply it, and install and commission it. We also install chargers you buy elsewhere, including the one that came with your car. We have installed chargers for ${site.clients.join(', ').replace(/, ([^,]*)$/, ' and $1')}.` },
+  { q: 'Which charger do I need for my car?', a: 'Many cars charge fastest at home on a 7.2–7.4 kW wall box, which runs on a normal single-phase supply; some accept 11 kW on a three-phase supply. Pick your car on our [chargers for your car](/chargers/for/) page to see the carmaker\'s own charging times.' },
+  { q: 'How much does an EV charger with installation cost?', a: 'It depends on the charger, the cable run from your meter or panel, the earthing and DB box, any civil work, and whether your connection needs more load. We don\'t publish prices because no two sites are the same; send us a few details or photos and we reply with one clear quote.' },
   { q: 'Which states do you work in?', a: `We are based in Delhi and work across ${site.regions.flatMap((r) => r.states).join(', ')}. See the [coverage page](/coverage/).` },
-  { q: 'How much does EV charger installation cost?', a: 'It depends on the charger, the cable run from your meter or panel, the earthing and DB box, any civil work, and whether your connection needs more load. We don’t publish prices because no two sites are the same; send us a few details or photos and we reply with one clear quote.' },
-  { q: 'Is the site survey free?', a: 'The site survey is paid. If you go ahead with Proline, the survey fee is adjusted against your order. For a simple home installation, photos on WhatsApp are often enough to quote.' },
-  { q: 'What is Proline CMS?', a: 'Our own charge management software for charge point operators: chargers of any brand on one console, QR and UPI payments with automatic refunds, GST documents, in your brand and on your own server. [See Proline CMS](/cms/).' },
+  { q: 'Can you run the chargers for my charging station too?', a: 'Yes. Proline CMS is our own software for charge point operators: chargers of any brand on one console, QR and UPI payments with automatic refunds, GST documents, in your brand and on your own server. [See Proline CMS](/cms/).' },
 ];
-const desk = screens.desktop[0];
 ---
 <Base title={title} description={description} schema={[faqNode('/', faqs)]}>
-  <section class="hero hero-dark">
+  <section class="hero hero-dark" aria-labelledby="hero-title">
     <div class="wrap">
       <div class="hero-copy">
-        <p class="eyebrow">Pan-India EV charging partner</p>
-        <h1>EV charger installation and commissioning <span class="underline-green">across India</span></h1>
-        <p class="lead">Chargers of any brand, installed, tested and handed over by one team. Free consultation: we help you pick the right charger.</p>
-        <div class="btn-row">
-          <a class="btn btn-primary btn-lg" href="#quote">Get a quote</a>
-          <a class="btn btn-ghost-light btn-lg" href={waLink(site.whatsapp)} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />WhatsApp us</a>
+        <p class="eyebrow">EV chargers, any brand</p>
+        <h1 id="hero-title">Buy and install your <span class="underline-green">EV charger</span></h1>
+        <p class="lead">Tell us your vehicle and your site. We suggest the right charger, supply it, and install it with proper cabling, earthing and tests.</p>
+        <div class="btn-row hero-ways">
+          {ways.map((w) => (
+            <a class:list={['btn', 'btn-lg', w.primary ? 'btn-primary' : 'btn-ghost-light']} href={w.href}>{w.label}<Icon name="arrowRight" size={18} /></a>
+          ))}
         </div>
-        <dl class="hero-stats" aria-label="Proline in numbers">
-          {site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
-        </dl>
-        <p class="hero-clients">Installed for <b>{site.clients.join(' · ')}</b></p>
+        <p class="hero-clients">{site.stats[0].value} {site.stats[0].label} in {site.stats[2].value}, for <b>{site.clients.join(' · ')}</b></p>
       </div>
-      <div class="hero-media">
-        <Photo name="dc-hub-canopy" eager sizes="(max-width: 900px) 100vw, 560px" />
-      </div>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="services-title">
-    <div class="wrap">
-      <div class="shead-row">
-        <SectionHead eyebrow="Services" title="Everything from site survey to handover" lead="For charge point operators, charger brands, businesses and homes." id="services-title" />
-        <a class="link-arrow" href="/services/">All services<Icon name="arrowRight" size={16} /></a>
-      </div>
-      <div class="grid grid-3 swipe">
-        {services.map((sv) => (
-          <a class="pcard" href={sv.href}>
-            <Photo name={sv.photo} alt="" sizes="(max-width: 760px) 82vw, 380px" />
-            <span class="pc-body"><strong>{sv.title}<Icon name="arrowRight" size={18} /></strong><span>{sv.text}</span></span>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <section class="section section-navy" id="cms" aria-labelledby="cms-title">
-    <div class="wrap split">
-      <div>
-        <h2 id="cms-title">Proline CMS: your own charging software, in your brand</h2>
-        <p class="lead" style="margin-top:14px">Run every charger you own, whatever the brand. Drivers scan a QR code and pay by UPI, and unused money goes back to them automatically. No commission and no per-charger fees.</p>
-        <div class="btn-row" style="margin-top:24px">
-          <a class="btn btn-primary" href="/cms/">See Proline CMS<Icon name="arrowRight" size={18} /></a>
-        </div>
-      </div>
-      <figure style="margin:0">
-        <div class="laptop"><div class="screen"><img src={desk.image} width="1600" height="1000" alt={`Proline CMS ${desk.title.toLowerCase()}: ${desk.caption}`} loading="lazy" decoding="async" /></div></div>
-        {desk.concept && <figcaption class="frame-caption" style="color:#A9BBD3;margin-top:24px"><span class="concept-tag">Concept design · sample data</span></figcaption>}
+      <figure class="hero-media">
+        <Photo name="job-canopy-install" eager sizes="(max-width: 900px) 100vw, 560px" />
+        <figcaption class="hero-photo-note">Our work · {meta['job-canopy-install'].caption}</figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="tools-title">
+  <section class="section home-cars" aria-labelledby="cars-title">
     <div class="wrap">
-      <SectionHead eyebrow="Free calculators" title="See the numbers before you call us" id="tools-title" />
-      <div class="tool-list">
-        {tools.map((t) => (
-          <a href={t.href}><span><strong>{t.title}</strong><span>{t.text}</span></span><Icon name="arrowRight" size={18} /></a>
+      <SectionHead eyebrow="Charger for your car" title="Pick your car" lead="See which home charger suits it, with the carmaker's own charging times, and what installing it involves." id="cars-title" />
+      <ul class="car-chips" role="list">
+        {carChips.map((c) => <li><a class="car-chip" href={c.href}><Icon name="car" size={20} />{c.label}</a></li>)}
+        <li><a class="car-chip car-chip-all" href="/chargers/for/">All cars<Icon name="arrowRight" size={16} /></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-soft" id="chargers" aria-labelledby="chargers-title">
+    <div class="wrap">
+      <div class="shead-row">
+        <SectionHead eyebrow="Chargers" title="Chargers we supply and install" lead="What each one looks like and how big it is. Tap Get a quote: we suggest the exact brand and model for your vehicle, supply and budget." id="chargers-title" />
+        <a class="link-arrow" href="/chargers/#types">All 11 types and sizes<Icon name="arrowRight" size={16} /></a>
+      </div>
+      <ChargerTypes only={['home-socket', 'wallbox-7', 'wallbox-11', 'dc-60']} />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="proof-title">
+    <div class="wrap">
+      <SectionHead eyebrow="Our work" title="Chargers installed for networks, brands, businesses and homes" id="proof-title" />
+      <dl class="proof-stats" aria-label="Proline in numbers">
+        {site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
+      </dl>
+      <p class="proof-clients">Installed for <b>{site.clients.join(' · ')}</b></p>
+      <div class="job-strip swipe">
+        {jobs.map((j) => (
+          <figure class="job">
+            <Photo name={j.key} sizes="(max-width: 760px) 82vw, 290px" />
+            <figcaption>{j.caption}</figcaption>
+          </figure>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="section section-soft" aria-labelledby="faq-title">
+  <section class="section section-soft" aria-labelledby="how-title">
+    <div class="wrap">
+      <div class="shead-row">
+        <SectionHead eyebrow="How it works" title="From survey to a charger you can trust" id="how-title" />
+        <a class="link-arrow" href="/services/ev-charger-installation/">How installation works<Icon name="arrowRight" size={16} /></a>
+      </div>
+      <ol class="how" role="list">
+        {how.map((h, i) => (
+          <li>
+            <span class="how-icon"><Icon name={h.icon} size={22} /></span>
+            <h3><span class="how-n">{i + 1}</span>{h.title}</h3>
+            <p>{h.text}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="faq-title">
     <div class="wrap-narrow">
       <SectionHead eyebrow="FAQ" title="Questions we are often asked" center id="faq-title" />
       <Faqs items={faqs} />
@@ -118,3 +134,54 @@ const desk = screens.desktop[0];
 
   <CtaBand />
 </Base>
+
+<style>
+  .hero-ways { flex-wrap: wrap; }
+  .hero-ways .btn { gap: 8px; }
+  .hero-media { margin: 0; }
+  .hero-photo-note { position: absolute; left: 12px; bottom: 12px; max-width: calc(100% - 24px); padding: 6px 12px; border-radius: 999px; background: rgba(11, 37, 69, .82); color: #fff; font-size: 13px; line-height: 1.35; }
+
+  .home-cars { padding-bottom: 8px; }
+  .car-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .car-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--white); color: var(--ink); font-weight: 600; text-decoration: none; white-space: nowrap; transition: border-color .15s, background .15s; }
+  .car-chip :global(svg) { color: var(--green-text); }
+  .car-chip:hover { border-color: var(--green); background: var(--green-50); color: var(--ink); }
+  .car-chip-all { background: var(--navy); border-color: var(--navy); color: var(--white); }
+  .car-chip-all :global(svg) { color: var(--green); }
+  .car-chip-all:hover { background: var(--navy-700); border-color: var(--navy-700); color: var(--white); }
+
+  .proof-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 28px; margin: 0; }
+  .proof-stats div { border-left: 3px solid var(--green); padding-left: 14px; }
+  .proof-stats dt { font-family: var(--font-head); font-weight: 800; font-size: clamp(24px, 2.6vw, 32px); line-height: 1.1; color: var(--ink); }
+  .proof-stats dd { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
+  .proof-clients { margin: 18px 0 0; font-size: 15px; color: var(--muted); }
+  .proof-clients b { color: var(--ink); }
+  .job-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+  .job { margin: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--white); }
+  .job :global(img) { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--navy-50); }
+  .job figcaption { padding: 10px 14px 14px; font-size: 14px; line-height: 1.45; color: var(--body); }
+
+  .how { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .how li { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px 20px 22px; }
+  .how-icon { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 12px; background: var(--green-50); color: var(--green-text); }
+  .how h3 { display: flex; align-items: baseline; gap: 6px; margin: 12px 0 0; font-size: 16.5px; }
+  .how-n { color: var(--green-text); font-size: 14px; }
+  .how-n::after { content: "."; }
+  .how p { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    .hero-photo-note { display: none; }
+    .hero-copy .hero-ways { grid-template-columns: 1fr; }
+    .hero-ways .btn { justify-content: space-between; }
+  }
+  @media (max-width: 760px) {
+    .car-chips { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; scroll-snap-type: x proximity; }
+    .car-chips::-webkit-scrollbar { display: none; }
+    .car-chips li { flex: none; scroll-snap-align: start; }
+    .proof-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .job-strip { display: flex; margin-top: 22px; }
+    .how { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .how li { padding: 14px 12px; }
+    .how p { font-size: 13.5px; }
+  }
+</style>

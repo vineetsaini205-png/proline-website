@@ -1,6 +1,6 @@
 // Main menu, footer and "related" link titles all come from here.
 export type NavLink = { label: string; href: string; note?: string };
-export type NavGroup = { label: string; href?: string; highlight?: boolean; items?: NavLink[] };
+export type NavGroup = { label: string; href?: string; allLabel?: string; highlight?: boolean; items?: NavLink[] };
 
 export const services: NavLink[] = [
   { label: 'EV charger installation', href: '/services/ev-charger-installation/', note: 'Any charger, any brand, across India' },
@@ -99,13 +99,38 @@ export const company: NavLink[] = [
   { label: 'Terms', href: '/terms/' },
 ];
 
+// Charging-station menu (owner, 13 Nov: menu = Chargers · Installation · Stations · Partners · CMS).
+export const stations: NavLink[] = [
+  { label: 'Start a charging station', href: '/start-an-ev-charging-station/', note: 'The investor’s guide' },
+  { label: 'Charging station setup', href: '/services/ev-charging-station-setup/', note: 'Survey to go-live, turnkey' },
+  { label: 'DC fast chargers', href: '/chargers/dc-fast-chargers/', note: '30–240 kW, CCS2' },
+  { label: 'DC fast charger installation', href: '/services/dc-fast-charger-installation/', note: 'Power to plug' },
+  { label: 'Earnings calculator', href: '/tools/ev-charging-station-earnings-calculator/', note: 'What a station could earn' },
+  { label: 'Batteries for stations (BESS)', href: '/batteries/bess-for-ev-charging/', note: 'Storage when the supply is short' },
+  { label: 'Solar + EV charging', href: '/solar-ev-charging/', note: 'Charge from the sun' },
+  { label: 'Proline CMS', href: '/cms/', note: 'Software to run your chargers' },
+];
+
+// Business buyers and partners: the audience pages plus the partner sign-up pages.
+export const partners: NavLink[] = [
+  { label: 'Charge point operators', href: '/for/charge-point-operators/', note: 'Crews for many cities' },
+  { label: 'Charger brands', href: '/for/charger-brands/', note: 'Installers for every unit you sell' },
+  { label: 'EV makers and dealers', href: '/for/ev-makers-and-dealers/', note: 'Showrooms and home deliveries' },
+  { label: 'Businesses', href: '/for/businesses/', note: 'Hotels, malls, offices, fuel stations' },
+  { label: 'Housing societies', href: '/for/housing-societies/', note: 'Shared chargers, fair billing' },
+  { label: 'Fleets', href: '/for/fleets/', note: 'Depots, e-buses, e-rickshaw hubs' },
+  { label: 'Government and PSUs', href: '/for/government-and-psu/', note: 'SITC tenders' },
+  { label: 'Partner with us', href: '/partner-with-us/', note: 'Hand us your installations' },
+  { label: 'Sell your chargers through Proline', href: '/brand-partners/', note: 'For charger makers' },
+  { label: 'Join as a technician', href: '/join-as-technician/', note: 'Work with our crews' },
+];
+
 export const mainNav: NavGroup[] = [
-  { label: 'Services', href: '/services/', items: services },
-  { label: 'Proline CMS', href: '/cms/', highlight: true },
   { label: 'Chargers', href: '/chargers/', items: products },
-  { label: 'Who we serve', href: '/for/', items: audiences },
-  { label: 'Tools', href: '/tools/' },
-  { label: 'Resources', items: resources },
+  { label: 'Installation', href: '/services/', allLabel: 'All installation services', items: services },
+  { label: 'Stations', href: '/start-an-ev-charging-station/', allLabel: 'Start a charging station', items: stations },
+  { label: 'Partners', href: '/for/', allLabel: 'Everyone we work with', items: partners },
+  { label: 'Proline CMS', href: '/cms/', highlight: true },
 ];
 
 export const allLinks: NavLink[] = [...services, ...cms, ...products, ...cars, ...batteries, ...audiences, ...tools, ...resources, ...company, ...hubs];

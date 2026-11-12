@@ -49,7 +49,7 @@ Build: `npm run build` (output in `dist/`). Content rules check: `node scripts/c
 9. **AMC is offered** (owner, 24 Oct: "we can also work on AMCs") → `/services/ev-charger-amc/`. Still held until the owner answers: power approvals (`/services/ev-charging-power-approval/`).
 13. Proline CMS business model (owner, 24 Oct): software the operator owns, built in their brand and handed over (not a charging network they join). **No commission on charging payments, no fee per charger per month.** Two ways to run it: CPO Edition on the customer's own server/cloud, or **hosted by Proline on Proline's servers at a low running cost with 24/7 support**. "24/7" is allowed for CMS support only (not installation). Hosted servers are in India (owner confirmed 24 Oct).
 10. Hindi blogs/FAQs are phase 2 (at /hi/, written or checked by a Hindi speaker).
-11. Photos: Pexels downloads from the owner. Owner (24 Oct): "do not blur if it is not required". We blur **only readable charger / charging-network brand marks** (Pexels licence: don't imply endorsement by brands in the image). Car badges and number plates stay. Tesla Supercharger photos are **not used** (the charger design itself is Tesla's, and Proline doesn't install them).
+11. Photos: Pexels downloads from the owner. Owner (24 Oct): "do not blur if it is not required". We blur **only readable charger / charging-network brand marks** (Pexels licence: don't imply endorsement by brands in the image). Car badges and number plates stay. Tesla Supercharger photos are **not used** (the charger design itself is Tesla's, and Proline doesn't install them). **Own job photos** (owner's zip, 13 Nov; `scripts/photos/process-jobs.py`, originals never in git): GPS stamps cropped off, or map, plus code and coordinates blurred; customers' number plates and handwritten labels blurred; uncleared client brands blurred until the owner allows them (cleared: TATA, ThunderPlus, Bolt.Earth, KIA).
 12. Commits end with the attribution lines in the session's instructions.
 14. **Never say what Proline earns** (owner, 24 Oct: "we do not tell customer that we earn commission and how much we earn"): no commission, margin or mark-up that Proline earns on chargers, batteries or anything else, and no amounts. The CMS line "no commission on your charging payments" (Proline takes none) stays (owner, 24 Oct: "Keep it"). The checker flags "our commission/margin", "we earn a commission".
 15. Batteries (owner confirmed 24 Oct): for scooter and e-rickshaw packs Proline supplies and matches the pack but does not fit it; it installs inverter, solar and station (BESS) batteries.
@@ -75,7 +75,7 @@ Legend: [x] done · [~] in progress · [ ] not started
 
 ### Pages (launch set, ~60)
 Home
-- [x] `/` (draft screenshots sent to owner 24 Oct)
+- [x] `/` (draft screenshots sent to owner 24 Oct) · rebuilt for release 1 on branch `release-1`, 13 Nov: 7 sections, chargers first (hero with 3 ways in, pick your car, 4 charger cards, proof with real job photos, how it works, FAQ, contact)
 
 Services
 - [x] `/services/` hub
@@ -103,7 +103,8 @@ Proline CMS (copy from owner's `proline-cms-website-copy.md`, sections 1–9; se
 - [x] `/blog/how-to-choose-ev-charging-cms/` (buyer's guide: "best / feature-rich / customisable CMS")
 
 Chargers and products
-- [x] `/chargers/` hub (cards fill from content)
+- [x] `/chargers/` hub (cards fill from content) · 13 Nov: 11 charger types drawn as SVG (`ChargerArt.astro`, data in `src/data/charger-types.ts`) with typical size and a WhatsApp "Get a quote" each, plus a to-scale size lineup (`ChargerSizes.astro`)
+- [x] `/chargers/for/` hub + 5 car pages (13 Nov, `src/content/cars/`): Tata Nexon.ev, Tata Punch.ev, MG Windsor, Mahindra BE 6, Hyundai Creta Electric. Figures only from the carmakers' own pages, with the source linked on each page. Landing pages can show a charger drawing in the header (`art:` field) when there is no photo
 - [x] `/chargers/ac-chargers/`
 - [x] `/chargers/dc-fast-chargers/` (+ "Inside a DC charger" widget: done, `src/components/widgets/DcInside.astro`, shown via `widget: dc-inside`)
 - [x] `/chargers/2w-3w-chargers/`
@@ -161,9 +162,19 @@ Company
 - [x] Website link https://www.prolineelectricalworks.com/admin/billing/ (`public/admin/billing/index.html`, noindex) → the web app's /exec address
 - [~] Settings, 25 Oct: legal name, address, PIN, bank name, IFSC and branch filled from the owner's GST certificate and cancelled cheque (values kept only in the Sheet, rule 18). Owner still types the GSTIN (PAN fills itself) and the account number, and uploads a signature if wanted. Then: "Continue after" if invoices were already issued this financial year; HSN codes and GST rates checked with the CA. No real documents made yet (test documents were not finalised, so no numbers are used and nothing was emailed)
 
+### Release 1: sell chargers (branch `release-1`, preview first, merge to `main` only after the owner's OK)
+- [x] Owner rules 2, 4 and 17 updated; robots.txt lets AI search bots in, keeps training bots out
+- [x] Charger types guide with drawings and sizes (`/chargers/`)
+- [x] 5 car-model pages and their hub (`/chargers/for/`)
+- [x] 10 job photos processed (WebP, under 120 KB each) and used on the home page and the DB box, earthing, civil work and housing society pages
+- [x] Menu: Chargers · Installation · Stations · Partners · Proline CMS (Tools and guides moved to the footer and the phone menu)
+- [x] Phone number as text in the header (desktop and tablet) and the footer; the phone menu's call button shows it too
+- [x] New home page (rule 17)
+- [~] Owner review of the preview, then merge to `main`
+
 ### Site-wide
 - [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → **live** Google Apps Script web app (owner's Sheet "Website Inquiry", tab "Enquiries"; Apps Script project "Proline website enquiries", deployed 24 Oct as the owner, access Anyone). URL in `site.json` → `formEndpoint`. Test row sent 24 Oct and arrived. If the script changes: Deploy → Manage deployments → Edit → New version (same URL)
-- [x] SEO: titles ≤ 60, descriptions, canonical, Open Graph, sitemap, robots.txt (AI bots blocked), breadcrumbs (`npm run check:seo`)
+- [x] SEO: titles ≤ 60, descriptions, canonical, Open Graph, sitemap, robots.txt (AI training bots blocked; AI search bots allowed since 13 Nov), breadcrumbs (`npm run check:seo`)
 - [x] Schema: Organization/Electrician (Delhi, no street; hours left out until days are confirmed), Service, BreadcrumbList, BlogPosting, FAQPage, SoftwareApplication (/cms/), WebApplication (tools)
 - [x] Brand search: "Proline Electrical Works" in home title, `alternateName` Proline / Proline EV / Proline Electrical / Proline CMS
 - [x] `/admin` (Sveltia CMS 0.230.1, `public/admin/config.yml`): blog, FAQs, all page collections, site settings, rates, tariffs, CMS screenshots. Sign-in setup is owner's step (GO-LIVE 6)
@@ -174,6 +185,10 @@ Company
 - [x] Packaging: not needed. The site deploys from GitHub to Cloudflare Pages on every push (a `dist/` zip was only for the manual-upload fallback)
 
 ## Waiting on the owner (site works without these; add when they arrive)
+- Release 1 preview: OK to merge `release-1` into `main`?
+- UV Supercharge photo (30 Oct, 3.07.10 PM): is it a real job photo? Its sign has garbled lettering ("Tomoorok") and made-up icons, which AI images have, so it is not used yet
+- Reliable Charge DC station photo: processed with the brand blurred (`job-dc-station`) but not placed; may the brand show?
+- Coverage list (deck: North + West India; site: 10 states incl. TN, Telangana, Chhattisgarh, MP) · workmanship warranty (deck says both "1 months" and "12-month") · EV Infura deck material under Proline's name
 - Which charger brands Proline sells/works with (for /brands/ and charger pages; no brand names shown until then)
 - Real CMS screenshots (5 desktop, 6 phone) and a public PDF of the CMS deck without slide 22
 - Which CMS features are live at launch (copy section 10)
@@ -216,3 +231,4 @@ Company
 - 6 Nov 2026: "PROFORMA INVOICE" / "PURCHASE ORDER" titles were wrapping after the larger text: long titles now 14.5 pt (web app **version 10**). Proforma **draft** for Ujoy: civil work (5 charger foundations, 1 panel foundation, 50 m trench, cable laying, restoration), 1 Lot × ₹37,000, SAC 995454, IGST 18- 6 Nov 2026: "PROFORMA INVOICE" / "PURCHASE ORDER" titles were wrapping after the larger text: long titles now 14.5 pt (web app **version 10**). Proforma **draft** for Ujoy: civil work (5 charger foundations, 1 panel foundation, 50 m trench, cable laying, restoration), 1 Lot × ₹37,000, SAC 995454, IGST 18%, total ₹43,660.
 - 11 Nov 2026: PEW-PI/2627/02 (Ujoy) amended as per owner's revised BOQ: panel foundation 1 × 3,000; charger stand foundations 5 × 2,200; trench excavation 90 Rmt × 220; earthing pit with RCC chamber 1 × 4,000 (SAC 995461); four new terms. ₹37,800 + IGST 6,804 = ₹44,604. PDF replaced, no email.
 - 12–13 Nov 2026: SEO and leads plan written as a Claude doc ("Proline SEO and Leads Plan": Final plan, Strategy, Build plan, Profiles and AI search). Rebuild planned in 4 releases (sell chargers, show the work, vendor work, CMS and growth). AI-generated charger images dropped; charger pages will use real job photos and simple drawings. Waiting on owner decisions: prices (rule 1), phone as text (rule 4), AI search bots (rule 2), 7-section home page (rule 17), coverage list, warranty, client brands in photos, EV Infura material.
+- 13 Nov 2026: release 1 built on branch `release-1` (preview, not live): 5 car-model charger pages from the carmakers' own figures, `/chargers/for/` hub, 10 job photos (GPS stamps cropped or blurred, plates blurred), new 7-section home page (chargers first), new menu, phone number as text in header and footer. Content, links and SEO checks 0 problems; no sideways scrolling at 360–1440 px; home page about 126 KB. Owner decisions still open: merge, UV Supercharge photo, Reliable Charge brand, coverage, warranty, EV Infura.

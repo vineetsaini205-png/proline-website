@@ -230,8 +230,15 @@ a.card:hover, .card.is-link:hover { border-color: var(--line-strong); box-shadow
 .icon-btn { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line-strong); display: inline-flex; align-items: center; justify-content: center; color: var(--ink); background: var(--white); text-decoration: none; padding: 0; }
 .icon-btn:hover { border-color: var(--navy); color: var(--ink); }
 .menu-toggle { display: none; }
+/* Phone number as text (owner, 13 Nov); phones use the mobile menu and the call bar instead */
+.hdr-phone { display: inline-flex; align-items: center; gap: 7px; padding: 8px 4px; font-weight: 700; font-size: 15px; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.hdr-phone svg { color: var(--green-text); }
+.hdr-phone:hover { color: var(--green-text); }
+@media (max-width: 760px) { .hdr-phone { display: none; } }
+/* The last menu (Partners) opens to the left, so it stays on screen */
+.nav > ul > li.has-menu:nth-last-child(-n+2) > .menu { left: auto; right: -12px; }
 @media (max-width: 1140px) {
-  .nav, .header-actions .icon-call { display: none; }
+  .nav { display: none; }
   .menu-toggle { display: inline-flex; }
 }
 @media (max-width: 760px) { .header-actions .btn { min-height: 44px; padding: 0 14px; font-size: 14px; border-radius: 10px; } }
@@ -480,6 +487,10 @@ form.is-done .form-done { display: block; }
 .footer-col li { line-height: 1.4; }
 .footer-contact span { color: #8FA3BF; }
 .footer-brand p { margin-top: 16px; line-height: 1.6; max-width: 340px; }
+.footer-brand .footer-phone { display: flex; flex-direction: column; gap: 2px; margin-top: 14px; }
+.footer-phone a { color: var(--white); font-family: var(--font-head); font-weight: 700; font-size: 19px; text-decoration: none; }
+.footer-phone a:hover { color: var(--green); }
+.footer-phone span { font-size: 13.5px; color: #A9BBD3; }
 .footer-contact { list-style: none; display: grid; gap: 8px; margin-top: 18px; }
 .footer-contact li { display: flex; gap: 10px; align-items: flex-start; line-height: 1.45; }
 .footer-contact li > span { display: block; min-width: 0; }
