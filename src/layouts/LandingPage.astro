@@ -17,7 +17,7 @@ import WhiteLabel from '../components/widgets/WhiteLabel.astro';
 import site from '../data/site.json';
 import { linkInfo } from '../data/nav';
 import { serviceNode, faqNode, articleNode } from '../lib/schema';
-import { inlineMd, plainText, waLink, formatDate } from '../lib/text';
+import { inlineMd, plainText, waLink, formatDate, splitFirstSentence } from '../lib/text';
 
 type Entry = CollectionEntry<'services'> | CollectionEntry<'chargers'> | CollectionEntry<'batteries'> | CollectionEntry<'audiences'> | CollectionEntry<'pages'>;
 interface Props { entry: Entry; crumbs: { label: string; href?: string }[]; headerCta?: { label: string; href: string } }
@@ -38,6 +38,8 @@ const toc = headings.filter((h) => h.depth === 2);
 const tool = d.related.find((r) => r.startsWith('/tools/'));
 const toolInfo = tool ? linkInfo(tool) : undefined;
 const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you help?`;
+// Hero shows the first sentence of the intro; the rest opens the page text, word for word (owner, 25 Oct).
+const [introFirst, introRest] = splitFirstSentence(d.intro);
 ---
 <Base title={d.title} description={d.description} crumbs={crumbs} schema={schema} image={ogImage} imageAlt={d.photo ? (d.photoAlt ?? d.h1) : d.h1} waText={wa} headerCta={headerCta ?? { label: headerLabel, href: '#quote' }} ogType={d.guide ? 'article' : 'website'}>
   <section class="phero">
@@ -47,10 +49,9 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
         <div>
           {d.eyebrow && <p class="eyebrow">{d.eyebrow}</p>}
           <h1>{d.h1}</h1>
-          <p class="lead" set:html={inlineMd(d.intro)} />
+          <p class="lead" set:html={inlineMd(introFirst)} />
           <div class="btn-row">
             <a class="btn btn-primary btn-lg" href="#quote">{ctaLabel}</a>
-            <a class="btn btn-outline btn-lg" href={waLink(site.whatsapp, wa)} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />WhatsApp us</a>
           </div>
           {d.highlights.length > 0 && (
             <ul class="checks">{d.highlights.map((h) => <li><Icon name="check" size={18} stroke={2.5} />{h}</li>)}</ul>
@@ -66,6 +67,7 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
     <div class="wrap layout-side">
       <div>
       <article class="prose" id="page-body">
+        {introRest && <p class="intro-rest" set:html={inlineMd(introRest)} />}
         <Content />
         {d.guide && (
           <div class="author" style="margin-top:40px">
@@ -74,7 +76,10 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
           </div>
         )}
       </article>
-      <button class="btn btn-outline fold-more" type="button" hidden>Read the full page<Icon name="chevronDown" size={18} /></button>
+      <script is:inline>
+        // Wide screens open the first section; phones keep them all closed (owner, 25 Oct: less on screen).
+        (function () { var f = document.querySelector('#page-body details.sec-first'); if (f && window.matchMedia('(min-width: 1001px)').matches) f.open = true; })();
+      </script>
       </div>
       <aside class="side-sticky" aria-label="Contact and contents">
         <div class="side-card side-cta">
@@ -109,21 +114,22 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
     </section>
   )}
 
-  {(d.costFactors.length > 0 || d.showProcess) && (
-    <section class="section section-soft fold-zone" aria-label="Cost and steps">
+  {d.costFactors.length > 0 && (
+    <section class="section section-soft fold-zone" aria-label="What decides the cost">
       <div class="wrap folds">
-        {d.costFactors.length > 0 && (
-          <details class="fold-sec">
-            <summary><span class="card-icon"><Icon name="tag" size={20} /></span><span class="fs-text"><strong>What decides the cost</strong><span>{d.costFactors.length} things that decide your quote</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
-            <div class="fold-body"><CostFactors items={d.costFactors} bare /></div>
-          </details>
-        )}
-        {d.showProcess && (
-          <details class="fold-sec">
-            <summary><span class="card-icon"><Icon name="list" size={20} /></span><span class="fs-text"><strong>{d.steps ? 'How the job runs' : 'Six steps from survey to handover'}</strong><span>{(d.steps ?? []).length || 6} steps, from first message to handover</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
-            <div class="fold-body"><ProcessSteps steps={d.steps} /></div>
-          </details>
-        )}
+        <details class="fold-sec">
+          <summary><span class="card-icon"><Icon name="tag" size={20} /></span><span class="fs-text"><strong>What decides the cost</strong><span>{d.costFactors.length} things that decide your quote</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+          <div class="fold-body"><CostFactors items={d.costFactors} bare /></div>
+        </details>
+      </div>
+    </section>
+  )}
+
+  {d.showProcess && (
+    <section class="section section-soft" aria-labelledby="steps-title">
+      <div class="wrap">
+        <h2 id="steps-title" class="rel-title">{d.steps ? 'How the job runs' : 'Six steps from survey to handover'}</h2>
+        <ProcessSteps steps={d.steps} swipe />
       </div>
     </section>
   )}
@@ -140,25 +146,23 @@ const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you h
   <RelatedLinks links={d.related} />
   <CtaBand variant={d.form} need={d.need} waText={wa} />
   <script is:inline>
-    // Long page text starts folded (the full text stays in the page for Google); "Read the full page" opens it.
-    // A link to a heading inside the text (from this page or another) opens it too.
+    // Page text sits in tap-to-open sections. A link to a heading inside a closed
+    // section, from this page or another, opens it; printing opens all of them.
     (function () {
-      var body = document.getElementById('page-body');
-      var more = body && body.nextElementSibling;
-      function target(hash) { var el = hash && hash.length > 1 && document.getElementById(decodeURIComponent(hash.slice(1))); return el && body.contains(el) ? el : null; }
-      if (!body || !more || body.scrollHeight < 1100 || target(location.hash)) return;
-      body.classList.add('folded');
-      more.hidden = false;
-      function open() { body.classList.remove('folded'); more.hidden = true; }
-      more.addEventListener('click', open);
+      function openFor(hash) {
+        var el = hash && hash.length > 1 && document.getElementById(decodeURIComponent(hash.slice(1)));
+        if (!el) return null;
+        for (var d = el.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+        return el;
+      }
+      var first = openFor(location.hash);
+      if (first) setTimeout(function () { first.scrollIntoView(); }, 0);
+      window.addEventListener('hashchange', function () { var el = openFor(location.hash); if (el) el.scrollIntoView(); });
       document.addEventListener('click', function (e) {
         var a = e.target.closest && e.target.closest('a[href*="#"]');
-        if (a && a.pathname === location.pathname && target(a.hash)) open();
+        if (a && a.pathname === location.pathname) openFor(a.hash);
       });
-      window.addEventListener('hashchange', function () {
-        var el = target(location.hash);
-        if (el && body.classList.contains('folded')) { open(); el.scrollIntoView(); }
-      });
+      window.addEventListener('beforeprint', function () { document.querySelectorAll('#page-body details').forEach(function (d) { d.open = true; }); });
     })();
   </script>
 </Base>

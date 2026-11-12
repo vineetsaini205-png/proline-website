@@ -9,3 +9,21 @@ const { waText } = Astro.props;
   <a class="mbar-wa" href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={22} />WhatsApp</a>
   <a class="mbar-call" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call 10 am–7 pm</a>
 </nav>
+<script is:inline>
+  // Phones (owner, 25 Oct): the bar slides in after the first screen and steps aside while the
+  // contact block (#quote), which has the same buttons, is on screen.
+  (function () {
+    var bar = document.querySelector('.mbar');
+    if (!bar) return;
+    bar.classList.add('js');
+    var quote = document.getElementById('quote');
+    var inQuote = false;
+    function update() { bar.classList.toggle('show', window.scrollY > window.innerHeight * 0.55 && !inQuote); }
+    if (quote && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { inQuote = e[0].isIntersecting; update(); }, { rootMargin: '0px 0px -35% 0px' }).observe(quote);
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>

@@ -44,10 +44,10 @@ const cols = [
       </div>
     </div>
     {cols.map((c) => (
-      <div class="footer-col">
-        <h2>{c.title}</h2>
+      <details class="footer-col" open>
+        <summary><h2>{c.title}</h2></summary>
         <ul>{c.links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
-      </div>
+      </details>
     ))}
   </div>
   <div class="footer-bottom">
@@ -61,3 +61,14 @@ const cols = [
     </div>
   </div>
 </footer>
+<script is:inline>
+  // Phones: the four link groups start closed (tap to open); wider screens keep them open.
+  (function () {
+    var mq = window.matchMedia('(max-width: 760px)');
+    var cols = document.querySelectorAll('.site-footer details.footer-col');
+    function sync() { cols.forEach(function (d) { d.open = !mq.matches; }); }
+    sync();
+    if (mq.addEventListener) mq.addEventListener('change', sync);
+    cols.forEach(function (d) { d.addEventListener('toggle', function () { if (!mq.matches && !d.open) d.open = true; }); });
+  })();
+</script>

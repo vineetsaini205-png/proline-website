@@ -14,6 +14,24 @@ export function inlineMd(s: string): string {
   return out;
 }
 
+/** Splits a short Markdown text into its first sentence and the rest (heroes show only the first;
+ *  the rest goes into the page body, word for word). A sentence ends at . ! or ? followed by a space
+ *  and a capital, quote or bracket, outside [link](url) and (brackets). */
+export function splitFirstSentence(s: string): [string, string] {
+  const t = s.trim();
+  let depth = 0;
+  for (let i = 0; i < t.length - 2; i++) {
+    const c = t[i];
+    if (c === '[' || c === '(') depth++;
+    else if (c === ']' || c === ')') depth = Math.max(0, depth - 1);
+    else if (depth === 0 && (c === '.' || c === '!' || c === '?') && /\s/.test(t[i + 1])) {
+      const rest = t.slice(i + 1).trimStart();
+      if (/^[A-Z“"(\[]/.test(rest)) return [t.slice(0, i + 1), rest];
+    }
+  }
+  return [t, ''];
+}
+
 /** Plain text (for meta tags and schema): drops the Markdown link and bold syntax. */
 export function plainText(s: string): string {
   return s.replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s+/g, ' ').trim();

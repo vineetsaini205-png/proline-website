@@ -39,6 +39,12 @@ const india = [
   ['Ministry of Power tariff ceiling', 'The service charge is checked against the ceiling, which is lower in solar hours.'],
   ['Unified Bharat eCharge (UBC)', 'Join the government’s national charging network whenever you are ready: we connect your chargers in a few simple steps, and drivers find them and pay by UPI in the BHIM app.'],
 ];
+const pillars = [
+  { tab: 'Affordable', icon: 'rupee', title: 'Affordable to run', text: 'No commission on your charging payments and no fee per charger every month: a one-time licence, or low-cost hosting by us in India.', href: '/cms/affordable-ev-charging-software/', cta: 'What a CMS really costs' },
+  { tab: 'Safe', icon: 'shield', title: 'Safe', text: 'Bills capped at what was paid, automatic refunds, fake-QR checks, two-person approvals and data in India.', href: '/cms/security/', cta: 'How it stays safe' },
+  { tab: 'Feature-rich', icon: 'layers', title: 'Feature-rich', text: 'Payments, refunds, alerts, tickets, GST, reports, fleets and a field app for technicians, for any charger brand.', href: '/cms/features/', cta: 'All features' },
+  { tab: 'Customisable', icon: 'palette', title: 'Customisable', text: 'Your brand and domain, prices, roles, alerts, reports and API, on your own server.', href: '/cms/white-label-self-hosted/', cta: 'Your server, your brand' },
+];
 const path = '/cms/';
 ---
 <Base image="/images/og-cms.jpg" imageAlt="Proline CMS: EV charging software you own" title={title} description={description} crumbs={[{ label: 'Proline CMS' }]} schema={[softwareNode(path), faqNode(path, cmsFaqs)]} headerCta={{ label: 'Book a demo', href: '#quote' }} waText="Hello Proline, I would like a demo of Proline CMS.">
@@ -51,9 +57,9 @@ const path = '/cms/';
           <p class="eyebrow"><span class="dot"></span>Proline CMS · charge management system</p>
           <h1>Your own EV charging management software. In your brand, on your server.</h1>
           <p class="lead">Proline CMS runs every charger you own, whatever the brand. Drivers scan a QR code and pay by UPI, unused money goes back to them automatically, and every rupee is matched to your bank the next morning.</p>
-          <div class="btn-row">
+          <div class="btn-row" style="align-items:center;gap:12px 22px">
             <a class="btn btn-primary btn-lg" href="#quote">Book a demo</a>
-            <a class="btn btn-outline btn-lg" href="#how">See how it works<Icon name="arrowRight" size={18} /></a>
+            <a class="link-arrow" href="#how">See how it works<Icon name="arrowRight" size={18} /></a>
           </div>
         </div>
         <div class="cms-hero-media" aria-hidden="false">
@@ -64,50 +70,66 @@ const path = '/cms/';
   </section>
 
   <section class="section" aria-label="Three reasons">
-    <div class="wrap grid grid-3">
+    <div class="wrap"><div class="grid grid-3 swipe">
       <div class="card"><span class="card-icon navy"><Icon name="layers" size={24} /></span><h2 style="font-size:19px">Any charger brand, one system</h2><p>AC, DC and light-EV chargers from different makers, all in one console.</p></div>
       <div class="card"><span class="card-icon navy"><Icon name="palette" size={24} /></span><h2 style="font-size:19px">Your brand, your domain</h2><p>Your name, logo and colours on every screen, receipt and QR sticker.</p></div>
       <div class="card"><span class="card-icon navy"><Icon name="server" size={24} /></span><h2 style="font-size:19px">Your server, or ours</h2><p>Installed on your servers in India or your own cloud account in an Indian region, or hosted by us in India at a low running cost with 24/7 support.</p></div>
-    </div>
+    </div></div>
   </section>
 
 
   <section class="section section-soft" aria-labelledby="pillars-title">
     <div class="wrap">
       <SectionHead eyebrow="Choosing a CMS" title="Affordable to run, safe, feature-rich and customisable" lead="The four things operators ask us about most, each with its own page." id="pillars-title" />
-      <div class="grid grid-4">
-        <a class="card" href="/cms/affordable-ev-charging-software/"><span class="card-icon navy"><Icon name="rupee" size={24} /></span><h3 style="font-size:17px">Affordable to run</h3><p>No commission on your charging payments and no fee per charger every month: a one-time licence, or low-cost hosting by us in India.</p><span class="card-cta">What a CMS really costs<Icon name="arrowRight" size={16} /></span></a>
-        <a class="card" href="/cms/security/"><span class="card-icon navy"><Icon name="shield" size={24} /></span><h3 style="font-size:17px">Safe</h3><p>Bills capped at what was paid, automatic refunds, fake-QR checks, two-person approvals and data in India.</p><span class="card-cta">How it stays safe<Icon name="arrowRight" size={16} /></span></a>
-        <a class="card" href="/cms/features/"><span class="card-icon navy"><Icon name="layers" size={24} /></span><h3 style="font-size:17px">Feature-rich</h3><p>Payments, refunds, alerts, tickets, GST, reports, fleets and a field app for technicians, for any charger brand.</p><span class="card-cta">All features<Icon name="arrowRight" size={16} /></span></a>
-        <a class="card" href="/cms/white-label-self-hosted/"><span class="card-icon navy"><Icon name="palette" size={24} /></span><h3 style="font-size:17px">Customisable</h3><p>Your brand and domain, prices, roles, alerts, reports and API, on your own server.</p><span class="card-cta">Your server, your brand<Icon name="arrowRight" size={16} /></span></a>
+      <div class="tabs" data-tabs>
+        <div class="tab-list" role="tablist" aria-label="What operators ask about">
+          {pillars.map((pl, i) => <button type="button" role="tab" id={`pl-tab-${i}`} aria-controls={`pl-panel-${i}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? '0' : '-1'}>{pl.tab}</button>)}
+        </div>
+        {pillars.map((pl, i) => (
+          <div class="tab-panel" role="tabpanel" id={`pl-panel-${i}`} aria-labelledby={`pl-tab-${i}`}>
+            <span class="card-icon navy"><Icon name={pl.icon} size={24} /></span>
+            <div>
+              <h3>{pl.title}</h3>
+              <p>{pl.text}</p>
+              <a class="link-arrow" href={pl.href}>{pl.cta}<Icon name="arrowRight" size={16} /></a>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <section class="section" aria-labelledby="about-title">
-    <div class="wrap split top">
-      <div>
-        <SectionHead eyebrow="About Proline CMS" title="A charge management system built in India for charge point operators" id="about-title" />
-        <div class="prose">
-          <p>Proline CMS connects chargers of any brand, sells charging by QR code and UPI with automatic refunds, issues GST documents, and checks every rupee against your payment company and bank each day.</p>
-          <p>Proline CMS is <strong>software you own, not a charging network you join</strong>. We build it in your brand and hand it over, so you can build your own charging network. There is no commission on your charging payments and no fee for every charger every month.</p>
-          <p>The <strong>CPO Edition</strong> is installed on your servers in India, or in your own cloud account in an Indian region, and carries your name, logo, colours and web address. You are the only company on it: your chargers, your drivers, your data. Prefer not to run servers? <strong>We host it for you</strong> on our servers in India, at a low running cost, with 24/7 support.</p>
-        </div>
+    <div class="wrap-narrow">
+      <SectionHead eyebrow="About Proline CMS" title="A charge management system built in India for charge point operators" id="about-title" />
+      <div class="prose">
+        <p>Proline CMS connects chargers of any brand, sells charging by QR code and UPI with automatic refunds, issues GST documents, and checks every rupee against your payment company and bank each day.</p>
       </div>
-      <div class="grid" style="gap:16px">
-        <div class="card">
-          <h3>Who it is for</h3>
-          <ul class="ticks" style="margin-top:6px">
-            <li>Operators of public charging: highways, city sites, malls, hotels and retail.</li>
-            <li>Operators serving closed groups: housing societies, offices and fleet depots, with members-only chargers or members’ prices.</li>
-            <li>Fleet operators of cabs, delivery bikes and buses, billed monthly on account.</li>
-            <li>Anyone buying chargers from several makers who wants one system for all of them.</li>
-          </ul>
-        </div>
-        <div class="card card-soft" style="background:#fff">
-          <h3>Who we are</h3>
-          <p>Proline CMS is made by Proline Electrical Works. We install and commission EV chargers across India, from site survey to handover, and we built our own CMS for the chargers we fit. The crews that install your chargers also bring them onto your CMS, so chargers, installation, software and support come from one accountable team.</p>
-        </div>
+      <div class="folds" style="margin-top:22px">
+        <details class="fold-sec">
+          <summary><span class="card-icon"><Icon name="server" size={20} /></span><span class="fs-text"><strong>Software you own, on your server or ours</strong><span>No commission on your charging payments</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+          <div class="fold-body prose">
+            <p style="margin-top:14px">Proline CMS is <strong>software you own, not a charging network you join</strong>. We build it in your brand and hand it over, so you can build your own charging network. There is no commission on your charging payments and no fee for every charger every month.</p>
+            <p>The <strong>CPO Edition</strong> is installed on your servers in India, or in your own cloud account in an Indian region, and carries your name, logo, colours and web address. You are the only company on it: your chargers, your drivers, your data. Prefer not to run servers? <strong>We host it for you</strong> on our servers in India, at a low running cost, with 24/7 support.</p>
+          </div>
+        </details>
+        <details class="fold-sec">
+          <summary><span class="card-icon"><Icon name="layers" size={20} /></span><span class="fs-text"><strong>Who it is for</strong><span>Public, closed-group and fleet charging</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+          <div class="fold-body">
+            <ul class="ticks" style="margin-top:14px">
+              <li>Operators of public charging: highways, city sites, malls, hotels and retail.</li>
+              <li>Operators serving closed groups: housing societies, offices and fleet depots, with members-only chargers or members’ prices.</li>
+              <li>Fleet operators of cabs, delivery bikes and buses, billed monthly on account.</li>
+              <li>Anyone buying chargers from several makers who wants one system for all of them.</li>
+            </ul>
+          </div>
+        </details>
+        <details class="fold-sec">
+          <summary><span class="card-icon"><Icon name="wrench" size={20} /></span><span class="fs-text"><strong>Who we are</strong><span>The team that installs your chargers</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+          <div class="fold-body">
+            <p style="margin-top:14px">Proline CMS is made by Proline Electrical Works. We install and commission EV chargers across India, from site survey to handover, and we built our own CMS for the chargers we fit. The crews that install your chargers also bring them onto your CMS, so chargers, installation, software and support come from one accountable team.</p>
+          </div>
+        </details>
       </div>
     </div>
   </section>
@@ -115,7 +137,7 @@ const path = '/cms/';
   <section class="section section-soft" id="how" aria-labelledby="how-title">
     <div class="wrap">
       <SectionHead eyebrow="How it works" title="Pay in advance by UPI, charge, get every unused rupee back" lead="No app, no sign-up, no cash." id="how-title" />
-      <ol class="steps">{steps.map((s) => <li><h3>{s.title}</h3><p>{s.text}</p></li>)}</ol>
+      <ol class="steps swipe">{steps.map((s) => <li><h3>{s.title}</h3><p>{s.text}</p></li>)}</ol>
       <p class="note" style="margin-top:24px"><strong>Example:</strong> a driver pays ₹200, uses 3.12 kWh at ₹20 per kWh, and is charged ₹62.40. The other ₹137.60 goes back on its own.</p>
     </div>
   </section>
@@ -123,7 +145,7 @@ const path = '/cms/';
   <section class="section section-navy" aria-labelledby="why-title">
     <div class="wrap">
       <SectionHead eyebrow="Why operators choose Proline CMS" title="Built for the way Indian charging networks run" id="why-title" />
-      <div class="grid grid-4">
+      <div class="grid grid-4 swipe">
         {reasons.map((r) => (
           <div class="card card-navy">
             <span class="card-icon" style="background:rgba(19,178,107,.16);color:var(--green)"><Icon name={r.icon} size={22} /></span>
@@ -148,11 +170,13 @@ const path = '/cms/';
       <SectionHead eyebrow="Built for India" title="UPI, GST, DPDP and Ministry of Power rules, handled" lead="Indian payments, tax documents and data rules are built into the product, not added later." id="india-title">
         <p style="margin-top:20px"><a class="btn btn-outline" href="/cms/built-for-india/">How Proline CMS handles Indian rules<Icon name="arrowRight" size={18} /></a></p>
       </SectionHead>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead><tr><th scope="col">What India requires</th><th scope="col">How Proline CMS handles it</th></tr></thead>
-          <tbody>{india.map(([a, b]) => <tr><td><strong>{a}</strong></td><td>{b}</td></tr>)}</tbody>
-        </table>
+      <div class="faqs" aria-label="What India requires, and how Proline CMS handles it">
+        {india.map(([a, b]) => (
+          <details class="faq">
+            <summary><span>{a}</span><span class="plus" aria-hidden="true"><Icon name="plus" size={16} stroke={2.5} /></span></summary>
+            <div class="faq-a"><p>{b}</p></div>
+          </details>
+        ))}
       </div>
     </div>
   </section>
@@ -162,12 +186,17 @@ const path = '/cms/';
       <SectionHead eyebrow="Your server, your brand" title="Runs on infrastructure you control" lead="One virtual machine runs a small network; larger networks add nodes. Chargers connect securely over OCPP 1.6J, and the console, the charger connection and the driver pages each get a web address on your own domain." id="deploy-title">
         <p style="margin-top:20px"><a class="btn btn-outline" href="/cms/white-label-self-hosted/">Deployment and white-label<Icon name="arrowRight" size={18} /></a></p>
       </SectionHead>
-      <ul class="ticks">
+      <details class="fold-sec">
+        <summary><span class="card-icon"><Icon name="server" size={20} /></span><span class="fs-text"><strong>Technical details</strong><span>Installer checks, database, amounts, licence</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>
+        <div class="fold-body">
+      <ul class="ticks" style="margin-top:14px">
         <li>Installed with Docker Compose after the installer checks the server: location, memory, disk, clock and ports.</li>
         <li>PostgreSQL with row-level security, so each person sees only the sites they work on.</li>
         <li>Amounts kept in paise and energy in watt-hours, so nothing is lost to rounding.</li>
         <li>Licence checked on your own server, with no internet connection needed.</li>
       </ul>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -179,6 +208,33 @@ const path = '/cms/';
   </section>
 
   <CtaBand variant="demo" title="See Proline CMS working" lead="Book a live demo and we walk you through a charge from QR scan to refund, then the console, the reports and the technician app." waText="Hello Proline, I would like a demo of Proline CMS." />
+  <script is:inline>
+    // Tabs (all panels are in the page; without JavaScript they simply show one after another)
+    (function () {
+      document.querySelectorAll('[data-tabs]').forEach(function (box) {
+        var tabs = Array.prototype.slice.call(box.querySelectorAll('[role="tab"]'));
+        function pick(t, focus) {
+          tabs.forEach(function (x) {
+            var on = x === t;
+            x.setAttribute('aria-selected', on ? 'true' : 'false');
+            x.tabIndex = on ? 0 : -1;
+            document.getElementById(x.getAttribute('aria-controls')).hidden = !on;
+          });
+          if (focus) t.focus();
+        }
+        tabs.forEach(function (t, i) {
+          t.addEventListener('click', function () { pick(t); });
+          t.addEventListener('keydown', function (e) {
+            var j = e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : null;
+            if (j === null) return;
+            e.preventDefault();
+            pick(tabs[(j + tabs.length) % tabs.length], true);
+          });
+        });
+        pick(tabs[0]);
+      });
+    })();
+  </script>
 </Base>
 <style>
   .cms-hero-media :global(.laptop) { transform: perspective(1400px) rotateY(-4deg); }
