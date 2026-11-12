@@ -76,8 +76,10 @@ def main(only=None):
             sizes[str(w)] = [ww, hh]
         manifest[name] = {"alt": alt, "sizes": sizes, "blurred": len(boxes)}
         print(name, im.size, len(boxes), "boxes")
-    if not only:
-        json.dump(manifest, open("src/data/images.json", "w"), indent=1)
+    # Merge, so the job photos from process-jobs.py stay in the manifest.
+    merged = json.load(open("src/data/images.json"))
+    merged.update(manifest)
+    json.dump(merged, open("src/data/images.json", "w"), indent=1)
 
 if __name__ == "__main__":
     main()

@@ -166,5 +166,165 @@
    ]
   },
   "blurred": 0
+ },
+ "job-canopy-install": {
+  "alt": "Charging canopy and power panel during installation, with the DC charger still in its wrapping",
+  "caption": "A DC charging canopy going up, with the power panel in place",
+  "job": true,
+  "sizes": {
+   "1600": [
+    1280,
+    584
+   ],
+   "800": [
+    800,
+    365
+   ]
+  },
+  "blurred": 0
+ },
+ "job-dc-station": {
+  "alt": "DC fast charger at a public charging station at dusk",
+  "caption": "A public DC charging station at dusk",
+  "job": true,
+  "sizes": {
+   "1600": [
+    784,
+    587
+   ],
+   "800": [
+    784,
+    587
+   ]
+  },
+  "blurred": 7
+ },
+ "job-basement-row": {
+  "alt": "Row of shielded charging points along a stack-parking basement",
+  "caption": "Charging points along a stack-parking basement",
+  "job": true,
+  "sizes": {
+   "1600": [
+    576,
+    1280
+   ],
+   "800": [
+    576,
+    1280
+   ]
+  },
+  "blurred": 0
+ },
+ "job-basement-points": {
+  "alt": "Shielded charging points with user instructions in a basement car park",
+  "caption": "Charging points with user instructions, in a basement car park",
+  "job": true,
+  "sizes": {
+   "1600": [
+    554,
+    720
+   ],
+   "800": [
+    554,
+    720
+   ]
+  },
+  "blurred": 1
+ },
+ "job-wallbox-stand": {
+  "alt": "AC charger on a steel stand with a clear shield, next to a cable tray",
+  "caption": "An AC charger on a steel stand, fed from a cable tray",
+  "job": true,
+  "sizes": {
+   "1600": [
+    960,
+    1280
+   ],
+   "800": [
+    800,
+    1067
+   ]
+  },
+  "blurred": 0
+ },
+ "job-wallbox-closeup": {
+  "alt": "Close-up of a shielded AC charger on a stand in a basement car park",
+  "caption": "A shielded AC charger in a basement car park",
+  "job": true,
+  "sizes": {
+   "1600": [
+    960,
+    1280
+   ],
+   "800": [
+    800,
+    1067
+   ]
+  },
+  "blurred": 2
+ },
+ "job-home-db-box": {
+  "alt": "DB box with MCB, RCD and a charging socket on a house wall, with the car's portable charger plugged in",
+  "caption": "3.3 kW home charging point with its DB box, Maharashtra village, May 2026",
+  "job": true,
+  "sizes": {
+   "1600": [
+    780,
+    785
+   ],
+   "800": [
+    780,
+    785
+   ]
+  },
+  "blurred": 0
+ },
+ "job-earth-pit": {
+  "alt": "Earth pit with a copper earth rod and conductor, before it is closed",
+  "caption": "Earth pit with a copper rod, before closing",
+  "job": true,
+  "sizes": {
+   "1600": [
+    780,
+    785
+   ],
+   "800": [
+    780,
+    785
+   ]
+  },
+  "blurred": 0
+ },
+ "job-earth-chamber": {
+  "alt": "Finished earth chamber with its cover and conduit, with a geotagged photo stamp",
+  "caption": "Finished earth chamber, photographed with a geotag stamp",
+  "job": true,
+  "sizes": {
+   "1600": [
+    780,
+    1040
+   ],
+   "800": [
+    780,
+    1040
+   ]
+  },
+  "blurred": 3
+ },
+ "job-socket-test": {
+  "alt": "Technician testing a charging socket with a multimeter after installation",
+  "caption": "Testing the socket with a multimeter before handover",
+  "job": true,
+  "sizes": {
+   "1600": [
+    780,
+    785
+   ],
+   "800": [
+    780,
+    785
+   ]
+  },
+  "blurred": 0
  }
 }

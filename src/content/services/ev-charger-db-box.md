@@ -8,6 +8,7 @@ intro: "An EV charger DB box is the small distribution board that feeds and prot
 keyword: EV charger DB box
 summary: Isolator, MCB, RCD or RCBO, surge protection and metering, in the right enclosure.
 icon: box
+image: job-home-db-box
 order: 9
 highlights:
   - RCD type matched to the charger's manual

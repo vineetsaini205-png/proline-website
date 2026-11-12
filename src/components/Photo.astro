@@ -23,7 +23,8 @@ if (upload) {
   [w, h] = meta.sizes['1600'];
   const [w8] = meta.sizes['800'];
   src = `/images/${name}.webp`;
-  srcset = `/images/${name}-800.webp ${w8}w, /images/${name}.webp ${w}w`;
+  // Small originals (the owner's WhatsApp job photos) have one real size, so no srcset.
+  srcset = w8 < w ? `/images/${name}-800.webp ${w8}w, /images/${name}.webp ${w}w` : undefined;
   altText = alt ?? meta.alt;
 }
 ---

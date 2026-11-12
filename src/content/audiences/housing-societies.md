@@ -8,6 +8,7 @@ intro: "An EV charger for society parking can be private, wired from a resident'
 keyword: EV charger for society
 summary: "Shared or private chargers in common parking, with load management and fair billing."
 icon: users
+image: job-basement-points
 order: 5
 highlights:
   - Private bays or shared chargers

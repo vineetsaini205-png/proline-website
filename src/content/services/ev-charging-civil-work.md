@@ -9,7 +9,7 @@ keyword: EV charging station civil work
 summary: Plinths, trenches, bollards, canopies and drainage, built with your installation.
 icon: hardhat
 order: 10
-image: solar-canopy-tall
+image: job-canopy-install
 highlights:
   - Plinths to the charger maker's drawing
   - Trenches, ducts and road crossings

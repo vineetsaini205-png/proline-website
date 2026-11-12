@@ -8,6 +8,7 @@ intro: "Earthing for an EV charger means a dedicated earth, built for your soil 
 keyword: earthing for EV charger
 summary: Dedicated pipe or chemical earth pits for chargers, tested and recorded.
 icon: earth
+image: job-earth-pit
 order: 7
 highlights:
   - Pipe or chemical earth pits
