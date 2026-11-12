@@ -1,0 +1,76 @@
+---
+// Typical charger sizes next to a 1.7 m person, drawn to scale (1 unit = 1 cm). Typical sizes only;
+// the exact size depends on the brand and model.
+const N = '#0B2545', N7 = '#12325A', G = '#13B26B', M = '#C9D3DE', D = '#2B3A4F', L = '#E4EDF7', W = '#FFFFFF';
+const floor = 250;
+const s = { stroke: N, 'stroke-width': 1.5, 'stroke-linejoin': 'round' } as const;
+---
+<figure class="charger-sizes">
+  <svg viewBox="0 0 920 292" role="img" aria-label="Typical EV charger sizes next to a 1.7 metre tall person: wall boxes about 30 to 40 cm, AC posts and 30 kW DC chargers about 1.5 m, 60 kW DC about 1.8 m, 120 kW DC about 2 m, depot chargers about 2.2 m" xmlns="http://www.w3.org/2000/svg">
+    <rect x="16" y="24" width="262" height={floor - 24} rx="6" fill="#E4EDF7" />
+    <path d={`M8 ${floor} H912`} stroke={M} stroke-width="2" />
+
+    <!-- wall: 3.3 kW socket box (25 x 30, bottom at 110 cm) -->
+    <rect x="44" y={floor - 140} width="25" height="30" rx="3" fill={W} {...s} />
+    <circle cx="56.5" cy={floor - 118} r="5" fill={L} stroke={N} stroke-width="1.2" />
+    <!-- wall: 7.4 kW wallbox (25 x 35, bottom at 100 cm) -->
+    <rect x="120" y={floor - 135} width="25" height="35" rx="5" fill={W} {...s} />
+    <rect x="123" y={floor - 132} width="19" height="26" rx="3" fill={N7} />
+    <path d={`M132.5 ${floor - 100} c0 18 -8 18 -8 30 s16 10 8 -6`} fill="none" stroke={D} stroke-width="2.5" />
+    <!-- wall: 11 kW wallbox (40 x 28, bottom at 100 cm) -->
+    <rect x="190" y={floor - 128} width="40" height="28" rx="4" fill={D} {...s} />
+    <rect x="193" y={floor - 125} width="34" height="22" rx="3" fill={N} />
+    <path d={`M200 ${floor - 100} c0 18 -8 18 -8 30 s16 10 8 -6`} fill="none" stroke={D} stroke-width="3" />
+
+    <!-- 22 kW AC post (30 x 150) -->
+    <rect x="300" y={floor - 150} width="30" height="150" rx="5" fill={N7} {...s} />
+    <rect x="326" y={floor - 146} width="2.5" height="142" fill={G} />
+    <!-- 30 kW DC (head 60 x 75 on a pedestal, 150 total) -->
+    <rect x="384" y={floor - 75} width="20" height="75" fill="#9FB3C8" {...s} />
+    <rect x="364" y={floor - 150} width="60" height="75" rx="5" fill={M} {...s} />
+    <rect x="369" y={floor - 145} width="50" height="64" rx="3" fill={N7} />
+    <!-- 60 kW DC (75 x 180) -->
+    <rect x="452" y={floor - 180} width="75" height="180" rx="6" fill={W} {...s} />
+    <rect x="453" y={floor - 172} width="5" height="164" fill={G} /><rect x="521" y={floor - 172} width="5" height="164" fill={G} />
+    <rect x="470" y={floor - 168} width="40" height="28" rx="3" fill={N7} />
+    <!-- 120 kW DC (90 x 205, with cable arms) -->
+    <path d={`M568 ${floor - 200} c-10 -14 -24 -10 -26 8`} fill="none" stroke={M} stroke-width="4" stroke-linecap="round" />
+    <path d={`M650 ${floor - 200} c10 -14 24 -10 26 8`} fill="none" stroke={M} stroke-width="4" stroke-linecap="round" />
+    <rect x="564" y={floor - 205} width="90" height="205" rx="6" fill={D} {...s} />
+    <rect x="578" y={floor - 192} width="62" height="44" rx="3" fill={N} stroke="#9FB3C8" stroke-width="1.5" />
+    <!-- 240 kW depot: cabinet (130 x 220) + dispenser (30 x 190) -->
+    <rect x="684" y={floor - 220} width="130" height="220" rx="4" fill={L} {...s} />
+    <path d={`M749 ${floor - 216} V${floor - 4}`} stroke={N} stroke-width="1.5" />
+    <rect x="824" y={floor - 190} width="30" height="190" rx="5" fill={W} {...s} />
+    <rect x="829" y={floor - 178} width="20" height="22" rx="2" fill={N7} />
+    <!-- person, 170 cm -->
+    <circle cx="890" cy={floor - 160} r="10" fill="#9FB3C8" />
+    <rect x="876" y={floor - 148} width="28" height="80" rx="12" fill="#9FB3C8" />
+    <rect x="879" y={floor - 74} width="9" height="74" rx="4" fill="#9FB3C8" />
+    <rect x="892" y={floor - 74} width="9" height="74" rx="4" fill="#9FB3C8" />
+
+    <g font-family="Inter, system-ui, sans-serif" font-size="12" fill={N} text-anchor="middle">
+      <text x="56" y={floor + 18} font-weight="600">3.3 kW</text><text x="56" y={floor + 33} fill="#5A6B82">30 cm</text>
+      <text x="132" y={floor + 18} font-weight="600">7.4 kW AC</text><text x="132" y={floor + 33} fill="#5A6B82">35 cm</text>
+      <text x="210" y={floor + 18} font-weight="600">11 kW AC</text><text x="210" y={floor + 33} fill="#5A6B82">28 × 40 cm</text>
+      <text x="315" y={floor + 18} font-weight="600">22 kW AC</text><text x="315" y={floor + 33} fill="#5A6B82">1.5 m</text>
+      <text x="394" y={floor + 18} font-weight="600">30 kW DC</text><text x="394" y={floor + 33} fill="#5A6B82">1.5 m</text>
+      <text x="489" y={floor + 18} font-weight="600">60 kW DC</text><text x="489" y={floor + 33} fill="#5A6B82">1.8 m</text>
+      <text x="609" y={floor + 18} font-weight="600">120 kW DC</text><text x="609" y={floor + 33} fill="#5A6B82">2 m</text>
+      <text x="769" y={floor + 18} font-weight="600">240 kW DC depot</text><text x="769" y={floor + 33} fill="#5A6B82">2.2 m cabinet + dispenser</text>
+      <text x="890" y={floor + 18} font-weight="600">Person</text><text x="890" y={floor + 33} fill="#5A6B82">1.7 m</text>
+      <text x="147" y="44" font-size="11" fill="#5A6B82">On the wall, about 1 m up</text>
+    </g>
+  </svg>
+  <figcaption>Typical sizes, drawn to scale next to a 1.7 m person. The exact size depends on the brand and model we suggest for your site.</figcaption>
+</figure>
+
+<style>
+  .charger-sizes { margin: 0; }
+  .charger-sizes svg { display: block; width: 100%; height: auto; }
+  .charger-sizes figcaption { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
+  @media (max-width: 700px) {
+    .charger-sizes { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .charger-sizes svg { width: 760px; max-width: none; }
+  }
+</style>

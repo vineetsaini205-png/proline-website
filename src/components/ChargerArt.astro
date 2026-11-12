@@ -1,0 +1,238 @@
+---
+// Simple drawings of the common charger types (owner, 13 Nov: no AI pictures; show customers what each
+// type looks like). Generic shapes based on typical chargers sold in India, not any one brand's design.
+// All drawings share one 200 x 240 frame, one line weight and the brand colours.
+import type { ChargerKind } from '../data/charger-types';
+interface Props { kind: ChargerKind; label: string; class?: string }
+const { kind, label, class: cls } = Astro.props;
+
+const N = '#0B2545';      // navy outline
+const N7 = '#12325A';     // dark panels
+const N6 = '#1C406E';     // screens
+const G = '#13B26B';      // green accents
+const W = '#FFFFFF';
+const L = '#E4EDF7';      // light body
+const M = '#C9D3DE';      // metal / conduit
+const D = '#3E4F66';      // dark grey body, cables
+const RED = '#D93B3B';
+const s = { stroke: N, 'stroke-width': 2, 'stroke-linejoin': 'round' } as const;
+---
+<svg class:list={['charger-art', cls]} viewBox="0 0 200 240" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
+  {(['home-socket', 'portable', 'wallbox-7', 'wallbox-11', 'lev-ac', 'lev-dc'] as string[]).includes(kind) && kind !== 'portable' && (
+    <rect x="18" y="14" width="164" height="206" rx="14" fill="#F3F7FB" />
+  )}
+  {kind !== 'home-socket' && kind !== 'wallbox-7' && kind !== 'wallbox-11' && kind !== 'lev-ac' && kind !== 'lev-dc' && (
+    <ellipse cx="100" cy="226" rx="78" ry="6" fill="#0B2545" opacity="0.08" />
+  )}
+
+  {kind === 'home-socket' && (
+    <g>
+      <rect x="92" y="150" width="16" height="70" fill={M} {...s} />
+      <rect x="56" y="48" width="88" height="110" rx="9" fill={W} {...s} />
+      <rect x="64" y="56" width="72" height="46" rx="5" fill="#9FB3C8" fill-opacity="0.35" {...s} />
+      <rect x="72" y="64" width="14" height="30" rx="2" fill={W} {...s} />
+      <rect x="93" y="64" width="14" height="30" rx="2" fill={W} {...s} />
+      <rect x="114" y="64" width="14" height="30" rx="2" fill={W} {...s} />
+      <rect x="76" y="72" width="6" height="10" rx="1" fill={G} />
+      <rect x="97" y="72" width="6" height="10" rx="1" fill={G} />
+      <rect x="118" y="72" width="6" height="10" rx="1" fill={N} />
+      <circle cx="100" cy="128" r="17" fill={W} {...s} />
+      <circle cx="100" cy="120" r="3.6" fill={N} />
+      <circle cx="93" cy="133" r="2.6" fill={N} />
+      <circle cx="107" cy="133" r="2.6" fill={N} />
+      <path d="M126 50 l8 14 h-16 z" fill="#F5C443" stroke={N} stroke-width="1.4" />
+    </g>
+  )}
+
+  {kind === 'portable' && (
+    <g>
+      <ellipse cx="100" cy="176" rx="74" ry="26" fill="none" stroke={D} stroke-width="5" />
+      <ellipse cx="100" cy="182" rx="62" ry="20" fill="none" stroke={D} stroke-width="5" />
+      <path d="M40 176 C30 150 40 128 60 122" fill="none" stroke={D} stroke-width="5" />
+      <path d="M160 178 C172 156 166 132 146 124" fill="none" stroke={D} stroke-width="5" />
+      <rect x="64" y="104" width="72" height="40" rx="12" fill={N7} {...s} />
+      <rect x="76" y="114" width="28" height="14" rx="3" fill={N6} />
+      <rect x="80" y="119" width="14" height="4" rx="2" fill={G} />
+      <circle cx="120" cy="121" r="4" fill={G} />
+      <g transform="translate(46 112) rotate(-35)">
+        <rect x="-12" y="-6" width="26" height="30" rx="8" fill={D} {...s} />
+        <circle cx="1" cy="-10" r="12" fill="#2B3A4F" {...s} />
+        <circle cx="1" cy="-10" r="6" fill={N} />
+      </g>
+      <g transform="translate(152 116) rotate(25)">
+        <rect x="-14" y="-12" width="28" height="22" rx="5" fill={W} {...s} />
+        <rect x="-8" y="-24" width="4" height="12" fill={M} stroke={N} stroke-width="1.2" />
+        <rect x="4" y="-24" width="4" height="12" fill={M} stroke={N} stroke-width="1.2" />
+        <rect x="-2" y="-28" width="4" height="16" fill={M} stroke={N} stroke-width="1.2" />
+      </g>
+    </g>
+  )}
+
+  {kind === 'wallbox-7' && (
+    <g>
+      <path d="M100 124 C100 150 82 150 82 166 C82 186 118 186 118 166 C118 150 100 150 100 172 C100 196 100 200 100 212" fill="none" stroke={D} stroke-width="5" stroke-linecap="round" />
+      <rect x="94" y="160" width="12" height="8" rx="2" fill={M} {...s} />
+      <rect x="66" y="34" width="68" height="94" rx="14" fill={W} {...s} />
+      <rect x="73" y="41" width="54" height="72" rx="9" fill={N7} />
+      <rect x="84" y="52" width="32" height="16" rx="3" fill={N6} />
+      <rect x="88" y="58" width="18" height="4" rx="2" fill={G} />
+      <rect x="86" y="102" width="28" height="3.5" rx="1.75" fill={G} />
+      <rect x="136" y="70" width="12" height="22" rx="4" fill={L} {...s} />
+      <path d="M142 92 v6" stroke={N} stroke-width="2" />
+      <circle cx="142" cy="66" r="7" fill={D} {...s} />
+    </g>
+  )}
+
+  {kind === 'wallbox-11' && (
+    <g>
+      <rect x="128" y="132" width="16" height="88" fill={M} {...s} />
+      <path d="M72 130 C72 168 52 172 52 192 C52 214 98 212 96 190 C94 174 82 172 82 210" fill="none" stroke={D} stroke-width="7" stroke-linecap="round" />
+      <rect x="34" y="56" width="132" height="80" rx="12" fill="#2B3A4F" {...s} />
+      <rect x="41" y="63" width="118" height="66" rx="8" fill={N} />
+      <rect x="72" y="72" width="56" height="34" rx="4" fill={N6} />
+      <rect x="78" y="80" width="30" height="5" rx="2.5" fill={G} />
+      <rect x="78" y="90" width="44" height="4" rx="2" fill="#9FB3C8" />
+      <rect x="78" y="98" width="20" height="4" rx="2" fill="#9FB3C8" />
+      <circle cx="140" cy="116" r="3.5" fill={G} />
+    </g>
+  )}
+
+  {kind === 'ac-post-22' && (
+    <g>
+      <rect x="66" y="212" width="68" height="10" rx="3" fill={M} {...s} />
+      <rect x="74" y="24" width="52" height="190" rx="10" fill={L} {...s} />
+      <rect x="81" y="30" width="38" height="180" rx="6" fill={N7} />
+      <rect x="87" y="40" width="26" height="18" rx="3" fill={N6} />
+      <rect x="90" y="46" width="14" height="4" rx="2" fill={G} />
+      <rect x="90" y="66" width="20" height="12" rx="3" fill={D} />
+      <circle cx="91" cy="104" r="7" fill={W} {...s} />
+      <circle cx="109" cy="104" r="7" fill={W} {...s} />
+      <circle cx="91" cy="104" r="2.5" fill={N} />
+      <circle cx="109" cy="104" r="2.5" fill={N} />
+      <rect x="121" y="32" width="3.5" height="176" rx="1.75" fill={G} />
+    </g>
+  )}
+
+  {kind === 'lev-ac' && (
+    <g>
+      <rect x="66" y="40" width="68" height="120" rx="11" fill={W} {...s} />
+      <path d="M66 52 a11 11 0 0 1 11 -12 h46 a11 11 0 0 1 11 12 v8 h-68 z" fill={G} />
+      <rect x="78" y="70" width="44" height="44" rx="3" fill={W} {...s} />
+      <g fill={N}>
+        <rect x="82" y="74" width="12" height="12" /><rect x="106" y="74" width="12" height="12" /><rect x="82" y="98" width="12" height="12" />
+        <rect x="98" y="90" width="5" height="5" /><rect x="108" y="100" width="5" height="5" /><rect x="100" y="104" width="4" height="4" />
+      </g>
+      <circle cx="100" cy="124" r="3.5" fill={G} />
+      <circle cx="100" cy="144" r="11" fill={L} {...s} />
+      <circle cx="100" cy="139" r="2.6" fill={N} />
+      <circle cx="95" cy="148" r="2" fill={N} />
+      <circle cx="105" cy="148" r="2" fill={N} />
+    </g>
+  )}
+
+  {kind === 'lev-dc' && (
+    <g>
+      <path d="M44 120 C40 160 56 176 70 196" fill="none" stroke={D} stroke-width="5" stroke-linecap="round" />
+      <path d="M156 120 C160 160 144 176 130 196" fill="none" stroke={D} stroke-width="5" stroke-linecap="round" />
+      <rect x="52" y="40" width="96" height="120" rx="11" fill={D} {...s} />
+      <rect x="59" y="47" width="82" height="106" rx="7" fill="#DDF3E7" />
+      <rect x="72" y="60" width="56" height="36" rx="4" fill={N7} />
+      <rect x="80" y="70" width="28" height="5" rx="2.5" fill={G} />
+      <rect x="80" y="80" width="38" height="4" rx="2" fill="#9FB3C8" />
+      <circle cx="100" cy="128" r="6" fill={RED} stroke={N} stroke-width="1.5" />
+      <g>
+        <rect x="32" y="84" width="22" height="34" rx="7" fill="#2B3A4F" {...s} />
+        <circle cx="43" cy="88" r="9" fill={N} stroke={N} />
+        <circle cx="40" cy="86" r="1.6" fill={W} /><circle cx="46" cy="86" r="1.6" fill={W} /><circle cx="43" cy="91" r="1.6" fill={W} />
+      </g>
+      <g>
+        <rect x="146" y="84" width="22" height="34" rx="7" fill="#2B3A4F" {...s} />
+        <rect x="148" y="80" width="18" height="12" rx="3" fill={N} />
+        <rect x="151" y="84" width="4" height="4" fill={W} /><rect x="159" y="84" width="4" height="4" fill={W} />
+      </g>
+    </g>
+  )}
+
+  {kind === 'dc-30' && (
+    <g>
+      <path d="M150 104 C176 140 160 200 120 218" fill="none" stroke={D} stroke-width="7" stroke-linecap="round" />
+      <rect x="64" y="214" width="72" height="8" rx="3" fill={M} {...s} />
+      <rect x="86" y="128" width="28" height="88" fill="#9FB3C8" {...s} />
+      <rect x="46" y="36" width="108" height="96" rx="10" fill={M} {...s} />
+      <rect x="53" y="43" width="94" height="82" rx="6" fill={N7} />
+      <rect x="66" y="52" width="58" height="38" rx="4" fill={N6} />
+      <rect x="72" y="60" width="32" height="5" rx="2.5" fill={G} />
+      <rect x="72" y="70" width="44" height="4" rx="2" fill="#9FB3C8" />
+      <circle cx="132" cy="108" r="7" fill={RED} stroke={N} stroke-width="1.5" />
+      <rect x="150" y="62" width="20" height="40" rx="7" fill="#2B3A4F" {...s} />
+      <circle cx="160" cy="62" r="9" fill={N} stroke={N} />
+    </g>
+  )}
+
+  {kind === 'dc-60' && (
+    <g>
+      <path d="M40 118 C24 160 40 206 64 220" fill="none" stroke={D} stroke-width="7" stroke-linecap="round" />
+      <path d="M160 118 C176 160 160 206 136 220" fill="none" stroke={D} stroke-width="7" stroke-linecap="round" />
+      <rect x="44" y="208" width="112" height="14" rx="3" fill={M} {...s} />
+      <rect x="56" y="24" width="88" height="186" rx="10" fill={W} {...s} />
+      <rect x="57" y="34" width="6" height="166" fill={G} />
+      <rect x="137" y="34" width="6" height="166" fill={G} />
+      <rect x="72" y="40" width="56" height="40" rx="4" fill={N7} />
+      <rect x="78" y="50" width="32" height="5" rx="2.5" fill={G} />
+      <rect x="78" y="60" width="42" height="4" rx="2" fill="#9FB3C8" />
+      <circle cx="100" cy="96" r="7" fill={RED} stroke={N} stroke-width="1.5" />
+      <g stroke={M} stroke-width="2.5" stroke-linecap="round"><path d="M78 176 h44" /><path d="M78 184 h44" /><path d="M78 192 h44" /></g>
+      <rect x="30" y="80" width="20" height="40" rx="7" fill="#2B3A4F" {...s} />
+      <circle cx="40" cy="80" r="9" fill={N} stroke={N} />
+      <rect x="150" y="80" width="20" height="40" rx="7" fill="#2B3A4F" {...s} />
+      <circle cx="160" cy="80" r="9" fill={N} stroke={N} />
+    </g>
+  )}
+
+  {kind === 'dc-120' && (
+    <g>
+      <path d="M52 30 C40 10 18 12 16 40 C14 80 24 110 34 128" fill="none" stroke={D} stroke-width="8" stroke-linecap="round" />
+      <path d="M148 30 C160 10 182 12 184 40 C186 80 176 110 166 128" fill="none" stroke={D} stroke-width="8" stroke-linecap="round" />
+      <path d="M50 34 C44 18 30 16 26 30" fill="none" stroke={M} stroke-width="5" stroke-linecap="round" />
+      <path d="M150 34 C156 18 170 16 174 30" fill="none" stroke={M} stroke-width="5" stroke-linecap="round" />
+      <rect x="38" y="208" width="124" height="14" rx="3" fill={M} {...s} />
+      <rect x="48" y="28" width="104" height="182" rx="10" fill="#2B3A4F" {...s} />
+      <rect x="64" y="42" width="72" height="54" rx="5" fill={N} stroke="#9FB3C8" stroke-width="2" />
+      <rect x="72" y="54" width="40" height="6" rx="3" fill={G} />
+      <rect x="72" y="66" width="54" height="4" rx="2" fill="#9FB3C8" />
+      <rect x="72" y="76" width="30" height="4" rx="2" fill="#9FB3C8" />
+      <circle cx="100" cy="114" r="8" fill={RED} stroke={N} stroke-width="1.5" />
+      <rect x="48" y="132" width="104" height="5" fill="#9FB3C8" />
+      <rect x="24" y="124" width="22" height="42" rx="7" fill="#2B3A4F" {...s} />
+      <circle cx="35" cy="124" r="10" fill={N} stroke={N} />
+      <rect x="154" y="124" width="22" height="42" rx="7" fill="#2B3A4F" {...s} />
+      <circle cx="165" cy="124" r="10" fill={N} stroke={N} />
+    </g>
+  )}
+
+  {kind === 'dc-240' && (
+    <g>
+      <rect x="10" y="216" width="180" height="6" rx="2" fill={M} {...s} />
+      <rect x="14" y="30" width="112" height="186" rx="6" fill={L} {...s} />
+      <path d="M70 34 v178" stroke={N} stroke-width="2" />
+      <g stroke="#9FB3C8" stroke-width="3" stroke-linecap="round">
+        <path d="M24 56 h36" /><path d="M24 66 h36" /><path d="M24 76 h36" /><path d="M24 86 h36" />
+        <path d="M80 56 h36" /><path d="M80 66 h36" /><path d="M80 76 h36" /><path d="M80 86 h36" />
+        <path d="M24 170 h36" /><path d="M24 180 h36" /><path d="M24 190 h36" />
+        <path d="M80 170 h36" /><path d="M80 180 h36" /><path d="M80 190 h36" />
+      </g>
+      <rect x="62" y="124" width="5" height="18" rx="2" fill={N} /><rect x="73" y="124" width="5" height="18" rx="2" fill={N} />
+      <path d="M186 120 C196 160 186 200 170 218" fill="none" stroke={D} stroke-width="8" stroke-linecap="round" />
+      <rect x="140" y="52" width="40" height="166" rx="8" fill={W} {...s} />
+      <rect x="146" y="64" width="28" height="30" rx="3" fill={N7} />
+      <rect x="150" y="72" width="16" height="4" rx="2" fill={G} />
+      <circle cx="160" cy="108" r="5" fill={RED} stroke={N} stroke-width="1.5" />
+      <rect x="176" y="82" width="18" height="40" rx="6" fill="#2B3A4F" {...s} />
+      <circle cx="185" cy="82" r="8" fill={N} stroke={N} />
+    </g>
+  )}
+</svg>
+
+<style>
+  .charger-art { display: block; width: 100%; height: auto; }
+</style>

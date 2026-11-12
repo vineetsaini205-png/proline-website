@@ -1,0 +1,55 @@
+---
+// Grid of charger types: drawing, typical size, who it suits, and a WhatsApp quote button.
+// Owner (13 Nov): no prices; the customer calls or messages and Proline suggests the right brand and model.
+import ChargerArt from './ChargerArt.astro';
+import Icon from './Icon.astro';
+import site from '../data/site.json';
+import { waLink } from '../lib/text';
+import { chargerTypes, type ChargerType } from '../data/charger-types';
+interface Props { only?: string[]; headingLevel?: 'h2' | 'h3'; compact?: boolean }
+const { only, headingLevel = 'h3', compact = false } = Astro.props;
+const list: ChargerType[] = only ? only.map((k) => chargerTypes.find((t) => t.kind === k)!).filter(Boolean) : chargerTypes;
+const H = headingLevel;
+const msg = (t: ChargerType) => `Hello Proline, I found you on your website. I would like a quote for: ${t.name} (${t.tag}).`;
+---
+<ul class:list={['ctypes', { 'ctypes-compact': compact }]} role="list">
+  {list.map((t) => (
+    <li class="ctype">
+      <div class="ctype-art"><ChargerArt kind={t.kind} label={`Drawing of a typical ${t.name.toLowerCase()}`} /></div>
+      <div class="ctype-body">
+        <span class="ctype-tag">{t.tag}</span>
+        <H class="ctype-name"><a href={t.href}>{t.name}</a></H>
+        <p class="ctype-size"><Icon name="ruler" size={16} />{t.size}</p>
+        {!compact && <p class="ctype-suits">{t.suits}</p>}
+        <a class="btn btn-primary btn-sm" href={waLink(site.whatsapp, msg(t))} rel="noopener" target="_blank"><Icon name="whatsapp" size={18} />Get a quote</a>
+      </div>
+    </li>
+  ))}
+</ul>
+<p class="ctypes-note">Drawings show a typical charger of each type. After a call we suggest the exact brand and model for your vehicle, supply and budget.</p>
+
+<style>
+  .ctypes { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .ctype { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
+  .ctype-art { background: var(--white); padding: 12px 24px 0; }
+  .ctype-art :global(svg) { max-height: 220px; margin: 0 auto; }
+  .ctype-body { display: flex; flex-direction: column; gap: 6px; padding: 12px 18px 18px; flex: 1; }
+  .ctype-tag { align-self: flex-start; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; color: var(--green-text); background: var(--green-50); border-radius: 999px; padding: 3px 10px; }
+  .ctype-name { font-size: 1.05rem; line-height: 1.3; margin: 2px 0 0; }
+  .ctype-name a { color: var(--ink); text-decoration: none; }
+  .ctype-name a:hover { text-decoration: underline; }
+  .ctype-size { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 0.875rem; color: var(--muted); }
+  .ctype-suits { margin: 0; font-size: 0.9rem; color: var(--body); }
+  .ctype .btn { margin-top: auto; align-self: flex-start; }
+  .ctype-body > .btn { margin-top: 10px; }
+  .ctypes-compact .ctype-art :global(svg) { max-height: 180px; }
+  .ctypes-note { margin: 14px 0 0; font-size: 0.875rem; color: var(--muted); }
+  @media (max-width: 560px) {
+    .ctypes { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ctype-art { padding: 8px 10px 0; }
+    .ctype-body { padding: 10px 12px 14px; }
+    .ctype-name { font-size: 0.95rem; }
+    .ctype-suits { display: none; }
+    .ctype .btn { width: 100%; justify-content: center; }
+  }
+</style>

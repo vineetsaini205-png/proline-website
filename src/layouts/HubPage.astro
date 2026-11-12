@@ -39,6 +39,8 @@ const path = Astro.url.pathname;
     </div>
   </section>
 
+  <slot name="before-list" />
+
   <section class="section" id="list" aria-label={itemsTitle ?? h1}>
     <div class="wrap">
       {itemsTitle && <h2 style="font-size:clamp(24px,2.6vw,30px);margin-bottom:24px">{itemsTitle}</h2>}
