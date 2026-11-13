@@ -1,6 +1,6 @@
 ---
-title: How to Start an EV Charging Station in India | Proline
-description: "How to start an EV charging station business in India: site, chargers, power connection, land, franchise, software and subsidy. Free, brand-neutral advice."
+title: "Plan an EV Charging Station in India | Proline"
+description: "Assess the site, charger mix, project costs and earnings assumptions before proceeding with installation. Survey to go-live, from a Delhi-based team."
 label: Start a charging station
 h1: How to start an EV charging station business in India
 eyebrow: Investor's guide

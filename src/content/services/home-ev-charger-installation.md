@@ -1,6 +1,6 @@
 ---
-title: Home EV Charger Installation, 7.4 to 22 kW | Proline
-description: Home EV charger installation for 7.4, 11 and 22 kW wall boxes of any brand, with a dedicated circuit, DB box and tested earth. Quote from WhatsApp photos.
+title: "Home EV Charger Installation | Proline"
+description: "Plan installation around your parking, cable route and electricity connection, including chargers already purchased or supplied with your car."
 label: Home EV charger installation
 h1: Home EV charger installation
 eyebrow: Home charging

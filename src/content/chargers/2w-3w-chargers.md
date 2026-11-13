@@ -1,6 +1,6 @@
 ---
-title: "E-Rickshaw Charger and 2W/3W Charging Points | Proline"
-description: E-rickshaw chargers for 48 V and 60 V packs, plus 16 A socket points, multi-point hub chargers and Type 6 and 7 chargers. Free advice; we install them.
+title: "Charging for Two- and Three-Wheelers | Proline"
+description: "Check compatible charging options for your scooter, e-rickshaw, auto or fleet before choosing equipment, then get our tie-up quote and installation."
 label: 2W and 3W chargers
 h1: E-rickshaw chargers and charging points for 2W and 3W
 eyebrow: Buying guide

@@ -8,7 +8,7 @@ import CtaBand from '../../components/CtaBand.astro';
 import { formatDate } from '../../lib/text';
 const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---
-<Base title="EV Charging Blog: Guides on Installation and Costs | Proline" description="Plain guides on EV charger installation, charging station earnings, EV running-cost savings, tariffs and rules in India, from the Proline team in Delhi." crumbs={[{ label: 'Blog' }]}>
+<Base title="EV Charger Buying & Installation Guides | Proline" description="Practical guides to choosing chargers, planning installations, assessing station earnings and comparing CMS requirements." crumbs={[{ label: 'Blog' }]}>
   <section class="phero">
     <div class="wrap">
       <Breadcrumbs items={[{ label: 'Blog' }]} />

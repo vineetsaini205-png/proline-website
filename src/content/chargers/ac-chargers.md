@@ -1,6 +1,6 @@
 ---
-title: "7.4 kW EV Charger for Home: Compare and Install | Proline"
-description: Choosing a 7.4 kW EV charger? Compare AC chargers from 3.3 to 22 kW on features, app and warranty, with free brand-neutral advice and installation by Proline.
+title: "AC EV Chargers: Choosing the Right kW | Proline"
+description: "Compare AC charging options around your vehicle, available electricity supply and time parked, then get our tie-up quote and installation."
 label: AC and home chargers
 h1: 7.4 kW EV chargers and other AC chargers, compared
 eyebrow: Buying guide

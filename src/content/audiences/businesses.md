@@ -1,6 +1,6 @@
 ---
-title: "EV Charging for Business: Hotels, Malls, Offices | Proline"
-description: "EV charging for business: AC or DC chargers for hotels, malls, offices and fuel stations, with an earnings estimate, a subsidy check and turnkey setup."
+title: "EV Charging for Hotels, Malls & Business Sites | Proline"
+description: "Assess charging for guests, customers or public use at hotels, malls, offices and fuel stations, with site advice, a tie-up quote and installation."
 label: Businesses
 h1: EV charging for businesses, from hotels to highway dhabas
 eyebrow: For businesses

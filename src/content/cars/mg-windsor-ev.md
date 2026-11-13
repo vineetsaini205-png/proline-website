@@ -1,6 +1,6 @@
 ---
-title: "MG Windsor EV Charger: 7.4 kW Wall Box Installation"
-description: The 7.4 kW charger MG includes with the Windsor Pro, how long it takes to charge, and how Proline installs it with its own circuit, earthing and cable route.
+title: "MG Windsor EV Home Charger Advice | Proline"
+description: "Check charging requirements for your MG Windsor, what is already supplied, and what your parking and electricity connection require."
 label: MG Windsor
 h1: MG Windsor EV charger, installed safely at home
 eyebrow: Charger for your car

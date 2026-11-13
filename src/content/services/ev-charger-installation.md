@@ -1,6 +1,6 @@
 ---
-title: EV Charger Installation Across India | Proline
-description: EV charger installation for any brand, AC or DC, with cabling, DB box, earthing and commissioning by 200+ technicians across 10 states of India.
+title: "EV Charger Installation Across India | Proline"
+description: "Site surveys, electrical and civil work, charger installation, testing and commissioning from a Delhi-based team, for chargers of any brand."
 label: EV charger installation
 h1: EV charger installation across India
 eyebrow: Installation service

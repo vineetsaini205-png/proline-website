@@ -1,6 +1,6 @@
 ---
-title: DC Fast Charger Installation, 30–240 kW | Proline
-description: DC fast charger installation from 30 to 240 kW, any brand, with LT panel, armoured cable, foundation, earthing and OCPP commissioning in 10 states of India.
+title: "DC Fast Charger Installation & Commissioning | Proline"
+description: "Discuss site readiness, civil and electrical scope, charger installation, testing and handover for DC charging up to 240 kW."
 label: DC fast charger installation
 h1: DC fast charger installation, 30 to 240 kW
 eyebrow: DC installation

@@ -1,6 +1,6 @@
 ---
-title: "60 kW DC Charger: Compare DC Fast Chargers | Proline"
-description: Choosing a 60 kW DC charger? Compare DC fast chargers from 30 to 240 kW on guns, power sharing, cooling and OCPP. Free advice, then installation by Proline.
+title: "DC Fast Charger Advice up to 240 kW | Proline"
+description: "Plan DC charging around your vehicles, site power and expected usage, with brand comparison, a tie-up quote and installation, from 30 kW to 240 kW."
 label: DC fast chargers
 h1: 60 kW DC chargers and other DC fast chargers, compared
 eyebrow: Buying guide

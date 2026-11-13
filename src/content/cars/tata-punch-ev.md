@@ -1,6 +1,6 @@
 ---
-title: "Tata Punch EV Charger: Home Charger and Installation"
-description: The home chargers Tata offers for the Punch.ev, 3.3 kW standard and 7.2 kW optional, what each needs, and how Proline installs it with earthing and civil work.
+title: "Tata Punch EV Home Charger Advice | Proline"
+description: "Check charging requirements for your Tata Punch.ev, what is already supplied, and what your parking and electricity connection require."
 label: Tata Punch.ev
 h1: Tata Punch EV charger at home, chosen and installed
 eyebrow: Charger for your car

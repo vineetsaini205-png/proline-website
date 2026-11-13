@@ -1,6 +1,6 @@
 ---
-title: "Fleet EV Charging: Depot Chargers and Batteries | Proline"
-description: "Fleet EV charging for delivery, cab, logistics, e-bus and e-rickshaw depots: chargers and power sized per shift, batteries and monthly billing on Proline CMS."
+title: "EV Fleet Charging Planning & Installation | Proline"
+description: "Plan chargers around vehicle energy needs, shift times, available power and depot expansion, from car fleets to bus and truck depots."
 label: Fleets
 h1: Fleet EV charging for depots, cabs, e-buses and e-rickshaw hubs
 eyebrow: For fleets

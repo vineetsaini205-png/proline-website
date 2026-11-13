@@ -1,6 +1,6 @@
 ---
-title: "EV Charger for Society Parking: Shared or Private | Proline"
-description: "EV charger for society parking: shared or private chargers, load management, fair billing by sub-meter, RFID or app, and the details your RWA needs for an NOC."
+title: "EV Charging for Housing Societies | Proline"
+description: "Plan individual or shared charging, electrical work, billing responsibilities and installation at your society, from the meter room to each parking slot."
 label: Housing societies
 h1: EV charger for society parking, shared or private
 eyebrow: For housing societies

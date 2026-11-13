@@ -1,6 +1,6 @@
 ---
-title: "EV Charger Site Survey (Recce): What We Check | Proline"
-description: "EV charger site survey (recce): we check supply, load, earth, cable route, parking and signal, then send a report and quote. Fee adjusted against your order."
+title: "EV Charger Site Survey | Proline"
+description: "Check parking, access, cable routes, power availability and installation scope before agreeing the work. The fee is adjusted against your order."
 label: Site survey
 h1: EV charger site survey (recce)
 eyebrow: Site survey

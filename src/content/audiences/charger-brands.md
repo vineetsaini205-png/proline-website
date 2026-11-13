@@ -1,6 +1,6 @@
 ---
-title: Pan-India EV Charger Installation for Brands | Proline
-description: "Pan-India EV charger installation service for charger brands: every unit your customers buy, installed to your manual, with a photo report, in 10 states."
+title: "EV Charger Installation Partner in India | Proline"
+description: "Discuss customer installations and commercial rollouts, with agreed checklists, site reporting and commissioning, by a Delhi-based team across India."
 label: Charger brands
 h1: Pan-India EV charger installation service for charger brands
 eyebrow: For charger brands

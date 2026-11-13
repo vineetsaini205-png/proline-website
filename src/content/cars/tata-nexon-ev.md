@@ -1,6 +1,6 @@
 ---
-title: "Tata Nexon EV Charger: Home Wall Box and Installation"
-description: Which home charger suits the Tata Nexon.ev, how long it takes to charge, and how Proline installs it with its own circuit, earthing and any civil work.
+title: "Tata Nexon EV Home Charger Advice | Proline"
+description: "Check charging requirements for your Tata Nexon.ev, what is already supplied, and what your parking and electricity connection require."
 label: Tata Nexon.ev
 h1: Tata Nexon EV charger at home, chosen and installed
 eyebrow: Charger for your car

@@ -1,6 +1,6 @@
 ---
-title: "Hyundai Creta Electric Charger: Home Wall Box Guide"
-description: Hyundai Creta Electric home charging on a 7.4 kW or 11 kW wall box, Hyundai's charging times for both batteries, and how Proline installs the charger.
+title: "Hyundai Creta Electric Home Charger Advice | Proline"
+description: "Check charging requirements for your Hyundai Creta Electric, what is already supplied, and what your parking and electricity connection require."
 label: Hyundai Creta Electric
 h1: Hyundai Creta Electric charger at home, 7.4 kW or 11 kW
 eyebrow: Charger for your car

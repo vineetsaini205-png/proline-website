@@ -1,6 +1,6 @@
 ---
-title: "Mahindra BE 6 Charger: 7.2 or 11.2 kW Home Wall Box"
-description: Mahindra BE 6 home charging, 7.2 kW or 11.2 kW wall charger, charging times for each battery, and how Proline installs it on single- or three-phase supply.
+title: "Mahindra BE 6 Home Charger Advice | Proline"
+description: "Check charging requirements for your Mahindra BE 6, what is already supplied, and what your parking and electricity connection require."
 label: Mahindra BE 6
 h1: Mahindra BE 6 charger at home, 7.2 kW or 11.2 kW
 eyebrow: Charger for your car

@@ -1,6 +1,6 @@
 ---
-title: Dealership EV Charging Stations for EV Makers | Proline
-description: "Dealership EV charging stations for EV makers and dealers, including Delhi's public station rule, plus home chargers fitted at each delivery, in 10 states."
+title: "Home Charging Installation for EV Makers & Dealers | Proline"
+description: "Coordinate customer site checks, charger installation and handover reporting with Proline, for showrooms and the home chargers your buyers need."
 label: EV makers and dealers
 h1: Dealership EV charging stations and home chargers at delivery
 eyebrow: For EV makers
