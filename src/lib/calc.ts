@@ -1,6 +1,6 @@
 // Calculator maths, shared by the pages (default results rendered in HTML for crawlers)
-// and by the browser scripts (live results). No Proline or brand prices anywhere:
-// costs come from public tariffs and charging rates, and payback only from the visitor's own quote.
+// and by the browser scripts (live results). No Proline or brand prices anywhere: costs come from public
+// tariffs and charging rates or from the visitor; payback only from the visitor's own project cost.
 
 export type Busy = 'quiet' | 'likely' | 'busy';
 
@@ -26,69 +26,117 @@ export const CHARGERS: ChargerPreset[] = [
 
 export const BUSY_LABEL: Record<Busy, string> = { quiet: 'Quiet', likely: 'Likely', busy: 'Busy' };
 
-export interface EarningsInput {
+// ---------------- Charging station earnings (strategy plan, 13 Nov 2026) ----------------
+// Revenue, operating surplus and cash after finance are separate numbers, never all called "profit".
+// A cost the visitor has not entered is null: it counts as zero in the sums but is listed in `missing`,
+// and the page says the surplus is before those costs. Nothing unknown silently becomes zero.
+
+export interface StationInput {
   chargerId: string;
   count: number;
-  hoursPerDay: number;     // per charger
-  pricePerKwh: number;     // what drivers pay
+  hoursPerDay: number;            // charging hours a day per charger, once usage has built up
+  days?: number;                  // operating days a month (30)
+  availability?: number;          // 0–1 share of time the charger works (0.95)
+  pricePerKwh: number;            // what drivers pay
   priceIncludesGst: boolean;
   gstPct: number;
-  tariff: number;          // EV tariff ₹/unit
-  fixedPerKw: number;      // ₹ per kW per month
-  fixedFlat?: number;      // ₹ per month
-  solarShare?: number | null; // 0–1 share of charging in solar hours, or null when time-of-day rule is off
-  rentMonthly: number;
-  revenueSharePct: number; // % of net revenue paid to landowner
-  appCommissionPct: number;// % of net revenue paid to an app/aggregator
-  otherMonthly: number;    // staff, internet, upkeep
-  quote?: number | null;   // the visitor's own all-in quote
-  days?: number;
+  tariff: number;                 // EV tariff ₹/unit
+  fixedPerKw: number;             // ₹ per kW of the chargers' rated power, a month
+  fixedFlat?: number;             // ₹ a month
+  solarShare?: number | null;     // 0–1 share of charging in solar hours, or null when the time-of-day rule is off
+  auxKwh?: number | null;         // auxiliary electricity a month: lights, cooling, standby
+  rentMonthly?: number | null;
+  revenueSharePct?: number | null;   // % of revenue (after GST) to the landowner
+  appCommissionPct?: number | null;  // % of revenue to an app or aggregator
+  paymentFeePct?: number | null;     // % of revenue to the payment gateway
+  staffMonthly?: number | null;
+  maintenanceMonthly?: number | null;
+  cmsMonthly?: number | null;        // charging software and hosting
+  otherMonthly?: number | null;      // internet, insurance, upkeep
+  projectCost?: number | null;       // from the visitor's own estimate or quote
+  workingCapital?: number | null;
+  loanAmount?: number | null;
+  loanRatePct?: number | null;       // % a year
+  loanYears?: number | null;
+  rampStartPct?: number;             // usage in the first month, % of the built-up level (30)
+  rampMonths?: number;               // months for usage to build up (12)
 }
 
-export interface EarningsResult {
+export const COST_LABELS: Record<string, string> = {
+  auxKwh: 'auxiliary electricity (lights, cooling)', rentMonthly: 'rent or land share', revenueSharePct: 'revenue share',
+  paymentFeePct: 'payment fees', staffMonthly: 'staff', maintenanceMonthly: 'maintenance', cmsMonthly: 'software and hosting', otherMonthly: 'other site costs',
+};
+
+export interface MonthResult {
   kwhSold: number;
-  revenue: number;      // net of GST
-  electricity: number;
-  fixed: number;
-  shares: number;       // rent + revenue share + app commission
-  other: number;
-  profit: number;       // per month
-  paybackMonths: number | null;
-  fiveYear: number | null;
+  revenue: number;      // after GST
+  electricity: number;  // energy bought for charging (with losses) and auxiliary use
+  fixed: number;        // fixed or demand charges
+  siteCosts: number;    // rent, shares, fees, staff, maintenance, software, other
+  surplus: number;      // operating surplus = revenue − electricity − fixed − site costs
 }
+
+export interface StationResult extends MonthResult {
+  emi: number;                 // finance payment a month while the loan runs
+  cashAfterFinance: number;    // surplus − finance payment
+  equity: number | null;       // project cost + working capital − loan
+  paybackMonths: number | null;  // from cumulative cash flow, with the ramp-up
+  neverPaysBack: boolean;        // true when a project cost is entered and cash never recovers it within 10 years
+  missing: string[];             // cost fields not entered
+}
+
+const n0 = (v: number | null | undefined) => (v == null || !Number.isFinite(v) ? 0 : v);
 
 export function charger(id: string): ChargerPreset {
   return CHARGERS.find((c) => c.id === id) ?? CHARGERS[4];
 }
 
-export function earnings(i: EarningsInput): EarningsResult {
+/** One month at a given usage (0–1 of the built-up level). */
+export function stationMonth(i: StationInput, usage = 1): MonthResult {
   const c = charger(i.chargerId);
   const days = i.days ?? 30;
+  const avail = i.availability ?? 0.95;
   const count = Math.max(1, Math.round(i.count || 1));
-  const kwhSold = c.avgKw * Math.max(0, i.hoursPerDay) * days * count;
+  const kwhSold = c.avgKw * Math.max(0, i.hoursPerDay) * days * count * avail * usage;
   const revenue = kwhSold * i.pricePerKwh / (i.priceIncludesGst ? 1 + i.gstPct / 100 : 1);
   const todFactor = i.solarShare == null ? 1 : 0.7 * i.solarShare + 1.3 * (1 - i.solarShare);
-  const electricity = (kwhSold / c.efficiency) * i.tariff * todFactor;
+  const electricity = ((kwhSold / c.efficiency) + n0(i.auxKwh)) * i.tariff * todFactor;
   const fixed = i.fixedPerKw * c.kw * count + (i.fixedFlat ?? 0);
-  const shares = i.rentMonthly + revenue * (i.revenueSharePct + i.appCommissionPct) / 100;
-  const other = i.otherMonthly;
-  const profit = revenue - electricity - fixed - shares - other;
-  const q = i.quote && i.quote > 0 ? i.quote : null;
-  return {
-    kwhSold, revenue, electricity, fixed, shares, other, profit,
-    paybackMonths: q && profit > 0 ? q / profit : null,
-    fiveYear: q ? profit * 60 - q : null,
-  };
+  const pct = n0(i.revenueSharePct) + n0(i.appCommissionPct) + n0(i.paymentFeePct);
+  const siteCosts = n0(i.rentMonthly) + revenue * pct / 100 + n0(i.staffMonthly) + n0(i.maintenanceMonthly) + n0(i.cmsMonthly) + n0(i.otherMonthly);
+  return { kwhSold, revenue, electricity, fixed, siteCosts, surplus: revenue - electricity - fixed - siteCosts };
 }
 
-/** Quiet / likely / busy profits for the same site. */
-export function earningsRange(i: Omit<EarningsInput, 'hoursPerDay'>): Record<Busy, number> {
-  const c = charger(i.chargerId);
-  return {
-    quiet: earnings({ ...i, hoursPerDay: c.hours.quiet }).profit,
-    likely: earnings({ ...i, hoursPerDay: c.hours.likely }).profit,
-    busy: earnings({ ...i, hoursPerDay: c.hours.busy }).profit,
-  };
+export function emi(principal: number, ratePct: number, years: number): number {
+  const n = Math.round(years * 12);
+  if (principal <= 0 || n <= 0) return 0;
+  const r = ratePct / 1200;
+  return r === 0 ? principal / n : principal * r * (1 + r) ** n / ((1 + r) ** n - 1);
+}
+
+export function station(i: StationInput): StationResult {
+  const full = stationMonth(i, 1);
+  const loan = Math.max(0, n0(i.loanAmount));
+  const term = n0(i.loanYears);
+  const pay = emi(loan, n0(i.loanRatePct), term);
+  const missing = (['auxKwh', 'rentMonthly', 'paymentFeePct', 'staffMonthly', 'maintenanceMonthly', 'cmsMonthly', 'otherMonthly'] as const)
+    .filter((k) => i[k] == null).map((k) => COST_LABELS[k]);
+  const hasCost = i.projectCost != null && i.projectCost > 0;
+  const equity = hasCost ? n0(i.projectCost) + n0(i.workingCapital) - loan : null;
+  let paybackMonths: number | null = null;
+  let neverPaysBack = false;
+  if (equity != null) {
+    const start = (i.rampStartPct ?? 30) / 100;
+    const ramp = Math.max(0, Math.round(i.rampMonths ?? 12));
+    let cum = -equity;
+    for (let m = 1; m <= 120; m++) {
+      const usage = ramp > 0 ? Math.min(1, start + (1 - start) * (m - 1) / ramp) : 1;
+      cum += stationMonth(i, usage).surplus - (m <= Math.round(term * 12) ? pay : 0);
+      if (cum >= 0) { paybackMonths = m; break; }
+    }
+    neverPaysBack = paybackMonths == null;
+  }
+  return { ...full, emi: pay, cashAfterFinance: full.surplus - pay, equity, paybackMonths, neverPaysBack, missing };
 }
 
 // ---------------- EV vs petrol / diesel / CNG ----------------

@@ -241,7 +241,7 @@ a.card:hover, .card.is-link:hover { border-color: var(--line-strong); box-shadow
 @media (max-width: 760px) { .hdr-phone { display: none; } }
 /* The last menu (Partners) opens to the left, so it stays on screen */
 .nav > ul > li.has-menu:nth-last-child(-n+2) > .menu { left: auto; right: -12px; }
-@media (max-width: 1260px) {
+@media (max-width: 1360px) {
   .nav { display: none; }
   .menu-toggle { display: inline-flex; }
 }
