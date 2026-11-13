@@ -17,12 +17,13 @@ interface Props {
   faqs?: { q: string; a: string }[]; form?: FormVariant; need?: string;
   ctaTitle?: string; ctaLead?: string; cols?: 2 | 3 | 4;
   parent?: { label: string; href: string }; // optional parent crumb, e.g. Chargers above For your car
+  waText?: string;
 }
-const { title, description, h1, intro, eyebrow, crumb, items, itemsTitle, image, faqs = [], form = 'quote', need, ctaTitle, ctaLead, cols = 3, parent } = Astro.props;
+const { title, description, h1, intro, eyebrow, crumb, items, itemsTitle, image, faqs = [], form = 'quote', need, ctaTitle, ctaLead, cols = 3, parent, waText } = Astro.props;
 const crumbs = parent ? [parent, { label: crumb }] : [{ label: crumb }];
 const path = Astro.url.pathname;
 ---
-<Base title={title} description={description} crumbs={crumbs} schema={faqs.length ? [faqNode(path, faqs)] : []}>
+<Base waText={waText} title={title} description={description} crumbs={crumbs} schema={faqs.length ? [faqNode(path, faqs)] : []}>
   <section class="phero">
     <div class="wrap">
       <Breadcrumbs items={crumbs} />
@@ -69,5 +70,5 @@ const path = Astro.url.pathname;
       </div>
     </section>
   )}
-  <CtaBand variant={form} need={need} title={ctaTitle} lead={ctaLead} />
+  <CtaBand variant={form} need={need} title={ctaTitle} lead={ctaLead} waText={waText} />
 </Base>

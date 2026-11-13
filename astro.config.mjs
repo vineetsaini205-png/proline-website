@@ -10,7 +10,7 @@ export default defineConfig({
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/admin/') && !page.includes('/404'),
+      filter: (page) => !page.includes('/admin/') && !page.includes('/404') && !page.includes('/thank-you/'),
     }),
   ],
   markdown: {

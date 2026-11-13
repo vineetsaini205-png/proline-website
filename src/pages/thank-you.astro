@@ -1,0 +1,51 @@
+---
+// Confirmation after an enquiry is saved (strategy plan, section 10). Not indexed, not in the sitemap.
+// The URL carries only the enquiry reference and type, never personal details.
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import site from '../data/site.json';
+import { waLink } from '../lib/text';
+---
+<Base title="Thank You | Proline Electrical Works" description="Your enquiry reached Proline Electrical Works. We reply on WhatsApp or by phone." noindex crumbs={[{ label: 'Thank you' }]}>
+  <section class="section">
+    <div class="wrap-narrow ty">
+      <div class="ty-icon"><Icon name="check" size={30} stroke={2.5} /></div>
+      <h1>Thank you. We have your enquiry.</h1>
+      <p class="ty-type" id="ty-type">Your enquiry is saved and has reached our team.</p>
+      <p class="ty-ref" id="ty-ref-wrap" hidden>Your reference: <strong id="ty-ref"></strong></p>
+      <p>We reply on WhatsApp or by phone. Calls are answered 10 am–7 pm; WhatsApp any time. If you want to carry on now, message or call us and mention your reference.</p>
+      <div class="btn-row" style="margin-top:22px">
+        <a class="btn btn-primary btn-lg" id="ty-wa" href={waLink(site.whatsapp, 'Hello Proline, I just sent an enquiry from your website.')} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Continue on WhatsApp</a>
+        <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call {site.phoneDisplay}</a>
+      </div>
+      <p class="muted small" style="margin-top:22px">Photos of your parking, meter and main DB help us reply faster. You can send them on WhatsApp.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ty { text-align: center; }
+  .ty-icon { display: inline-flex; width: 60px; height: 60px; align-items: center; justify-content: center; border-radius: 50%; background: var(--green-50); color: var(--green-text); margin-bottom: 18px; }
+  .ty h1 { font-size: clamp(26px, 3vw, 34px); }
+  .ty p { margin-top: 12px; }
+  .ty .btn-row { justify-content: center; }
+  .ty-type { font-size: 17px; color: var(--ink); }
+  .ty-ref strong { font-size: 18px; letter-spacing: .02em; }
+</style>
+
+<script>
+  const q = new URLSearchParams(location.search);
+  const ref = (q.get('ref') || '').replace(/[^A-Z0-9-]/gi, '').slice(0, 24);
+  const types: Record<string, string> = {
+    quote: 'Your charger enquiry', station: 'Your commercial site enquiry', b2b: 'Your installation partnership enquiry', brand: 'Your installation partnership enquiry',
+    demo: 'Your Proline CMS demo request', survey: 'Your site survey request', technician: 'Your technician application', ask: 'Your question',
+  };
+  const t = types[q.get('t') || ''];
+  if (t) document.getElementById('ty-type')!.textContent = `${t} is saved and has reached our team.`;
+  if (ref) {
+    document.getElementById('ty-ref')!.textContent = ref;
+    document.getElementById('ty-ref-wrap')!.hidden = false;
+    const wa = document.getElementById('ty-wa') as HTMLAnchorElement;
+    wa.href = wa.href.replace(/text=[^&]*/, 'text=' + encodeURIComponent(`Hello Proline, I just sent an enquiry from your website. My reference is ${ref}.`));
+  }
+</script>

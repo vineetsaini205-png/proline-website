@@ -14,7 +14,7 @@ highlights:
   - Private bays or shared chargers
   - Fair billing by meter, card or app
   - The details your RWA needs for the NOC
-form: quote
+form: station
 need: EV charger installation
 costFactors:
   - "**Shared or private:** chargers the society runs for everyone, or a charger at each resident's own bay"

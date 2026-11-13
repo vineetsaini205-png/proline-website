@@ -38,9 +38,17 @@ if (d.faqs.length) schema.push(faqNode(path, d.faqs));
 const ogImage = d.photo ?? (d.image ? `/images/og/${d.image}.jpg` : undefined);
 if (d.guide) schema.push(articleNode(path, { title: d.h1, description: d.description, date: d.updated, updated: d.updated, image: d.photo ?? (d.image ? `/images/${d.image}.webp` : undefined) }));
 const toc = headings.filter((h) => h.depth === 2);
-const tool = d.related.find((r) => r.startsWith('/chargers/#help-me-choose'));
+const tool = d.related.find((r) => r.startsWith('/tools/'));
 const toolInfo = tool ? linkInfo(tool) : undefined;
-const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you help?`;
+// Page-specific WhatsApp openers (strategy plan, section 10).
+const waByForm: Record<string, string> = {
+  station: 'Hello Proline, I want to discuss a commercial charging site.',
+  b2b: 'Hello Proline, we are looking for an installation partner.',
+  demo: 'Hello Proline, I would like a Proline CMS demonstration.',
+  survey: 'Hello Proline, I would like a site survey.',
+};
+const isVehiclePage = ['chargers', 'cars'].includes(entry.collection) || entry.id === 'home-ev-charger-installation';
+const wa = waByForm[d.form] ?? (isVehiclePage ? 'Hello Proline, I need help choosing a charger for my vehicle.' : `Hello Proline, I need help with ${d.label.toLowerCase()}.`);
 // Hero shows the first sentence of the intro; the rest opens the page text, word for word (owner, 25 Oct).
 const [introFirst, introRest] = splitFirstSentence(d.intro);
 ---
@@ -153,7 +161,7 @@ const [introFirst, introRest] = splitFirstSentence(d.intro);
   )}
 
   <RelatedLinks links={d.related} />
-  <CtaBand variant={d.form} need={d.need} waText={wa} />
+  <CtaBand variant={d.form} need={d.need} waText={wa} vehicleRequired={isVehiclePage} />
   <script is:inline>
     // Page text sits in tap-to-open sections. A link to a heading inside a closed
     // section, from this page or another, opens it; printing opens all of them.

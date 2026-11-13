@@ -14,7 +14,7 @@ highlights:
   - Depot power planned around your shifts
   - DC, AC and 2W/3W chargers of any brand
   - RFID cards and monthly fleet billing
-form: b2b
+form: station
 steps:
   - title: Share the fleet plan
     text: "Vehicle models and numbers, daily kilometres, shift times, the depot location, and your electricity bill or planned connection."

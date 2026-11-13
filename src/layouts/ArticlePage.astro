@@ -25,7 +25,7 @@ const crumbs = [{ label: 'Blog', href: '/blog/' }, { label: h1 }];
 const schema: object[] = [articleNode(path, { title: h1, description: d.description, date: d.date, updated: d.updated, image: d.photo ?? (d.image ? `/images/og/${d.image}.jpg` : undefined), author: d.author })];
 if (d.faqs.length) schema.push(faqNode(path, d.faqs));
 const toc = headings.filter((h) => h.depth === 2);
-const tool = d.related.find((r) => r.startsWith('/chargers/#help-me-choose'));
+const tool = d.related.find((r) => r.startsWith('/tools/'));
 const toolInfo = tool ? linkInfo(tool) : undefined;
 const initials = d.author.split(' ').map((w) => w[0]).join('').slice(0, 2);
 ---

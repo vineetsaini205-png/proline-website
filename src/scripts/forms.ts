@@ -1,5 +1,7 @@
 // Enquiry forms: validate, then POST to the Google Apps Script web app (Sheet + email to Sales@).
-// If no endpoint is set (or the post fails), open WhatsApp with the same details so no lead is lost.
+// Strategy plan (13 Nov 2026), section 10: every enquiry gets a reference; success is shown only when the
+// web app answers {ok: true}; otherwise the visitor is told it was not saved and gets WhatsApp and Call,
+// with the details ready. Extra fields (x_*) and the reference travel in the Details column.
 
 const LABELS: Record<string, string> = {
   name: 'Name', phone: 'Phone', company: 'Company', city: 'City', state: 'State', need: 'Need',
@@ -12,6 +14,13 @@ const TITLES: Record<string, string> = {
   b2b: 'Partnership enquiry', brand: 'Brand partner enquiry', technician: 'Technician application', ask: 'Question for an expert',
 };
 
+const validEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
+const newRef = () => {
+  const d = new Date();
+  const p2 = (n: number) => String(n).padStart(2, '0');
+  const rnd = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((b) => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[b % 31]).join('');
+  return `PEW-${String(d.getFullYear()).slice(2)}${p2(d.getMonth() + 1)}${p2(d.getDate())}-${rnd}`;
+};
 const cleanPhone = (v: string) => v.replace(/[\s\-()]/g, '').replace(/^(\+91|0091|91(?=\d{10}$)|0(?=\d{10}$))/, '');
 const validPhone = (v: string) => /^[6-9]\d{9}$/.test(cleanPhone(v));
 
@@ -33,7 +42,7 @@ function validate(form: HTMLFormElement): boolean {
   let firstBad: HTMLElement | null = null;
   form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[required]').forEach((el) => {
     let bad = !el.value.trim();
-    if (!bad && el.name === 'phone') bad = !validPhone(el.value);
+    if (!bad && el.name === 'phone') bad = el.dataset.contact === 'phone-or-email' ? !(validPhone(el.value) || validEmail(el.value)) : !validPhone(el.value);
     setInvalid(el, bad);
     if (bad && !firstBad) firstBad = el;
   });
@@ -51,8 +60,8 @@ function done(form: HTMLFormElement, mode: 'sent' | 'whatsapp', wa: string, name
     if (t) t.textContent = `Thank you${name ? ', ' + name.split(' ')[0] : ''}. We have your enquiry.`;
     if (p) p.textContent = 'We reply on WhatsApp or by phone. Calls are answered 10 am–7 pm; WhatsApp any time. Photos of your site help: you can send them on WhatsApp.';
   } else {
-    if (t) t.textContent = 'Your message is ready in WhatsApp';
-    if (p) p.textContent = 'Press send in WhatsApp and it reaches us straight away. If WhatsApp did not open, use the button below.';
+    if (t) t.textContent = 'We could not save your enquiry';
+    if (p) p.textContent = 'Please send it on WhatsApp instead: your details are ready in the message. Or call us, 10 am–7 pm.';
   }
   (form.querySelector('.form-done') as HTMLElement | null)?.focus();
   // Count the lead in analytics tools that listen for this event.
@@ -63,7 +72,7 @@ document.querySelectorAll<HTMLFormElement>('form[data-enquiry]').forEach((form) 
   form.addEventListener('input', (e) => {
     const el = e.target as HTMLInputElement;
     if (el.getAttribute('aria-invalid') === 'true') {
-      const ok = el.name === 'phone' ? validPhone(el.value) : !!el.value.trim();
+      const ok = el.name === 'phone' ? (validPhone(el.value) || (el.dataset.contact === 'phone-or-email' && validEmail(el.value))) : !!el.value.trim();
       if (ok) setInvalid(el, false);
     }
   });
@@ -79,28 +88,37 @@ document.querySelectorAll<HTMLFormElement>('form[data-enquiry]').forEach((form) 
     if (status) status.textContent = '';
     const fd = new FormData(form);
     const data: Record<string, string> = {};
-    fd.forEach((v, k) => { if (k !== 'company_website') data[k] = String(v).trim(); });
-    data.phone = cleanPhone(data.phone || '');
+    const extras: string[] = [];
+    fd.forEach((v, k) => {
+      if (k === 'company_website') return;
+      const val = String(v).trim();
+      if (k.startsWith('x_')) {
+        const label = form.querySelector<HTMLElement>(`[name="${k}"]`)?.dataset.label ?? k.slice(2);
+        if (val) extras.push(`${label}: ${val}`);
+      } else data[k] = val;
+    });
+    const ref = newRef();
+    data.extra = [`Ref: ${ref}`, ...extras, data.extra].filter(Boolean).join(' · ');
+    if (!validEmail(data.phone || '')) data.phone = cleanPhone(data.phone || '');
     data.page = location.pathname;
     data.time = new Date().toISOString();
     const wa = `https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(waText(form, data))}`;
 
-    if (hp && hp.value) { done(form, 'sent', wa, ''); return; } // bot: pretend success
+    if (hp && hp.value) { done(form, 'sent', wa, ''); return; } // bot: show the inline note, send nothing
 
     const endpoint = form.dataset.endpoint;
-    if (!endpoint) {
-      window.open(wa, '_blank', 'noopener');
-      done(form, 'whatsapp', wa, data.name);
-      return;
-    }
+    if (!endpoint) { done(form, 'whatsapp', wa, data.name); return; }
     const btn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.dataset.label = btn.innerHTML; btn.textContent = 'Sending…'; }
     try {
-      await fetch(endpoint, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) });
-      done(form, 'sent', wa, data.name);
+      // A simple POST (no custom headers) gets the web app's JSON reply back, so we know the row was saved.
+      const res = await fetch(endpoint, { method: 'POST', body: new URLSearchParams(data) });
+      const out = await res.json().catch(() => null);
+      if (!res.ok || !out || out.ok !== true) throw new Error('not saved');
+      window.dispatchEvent(new CustomEvent('proline:lead', { detail: { form: form.dataset.variant, mode: 'sent' } }));
+      location.href = `/thank-you/?ref=${encodeURIComponent(ref)}&t=${encodeURIComponent(form.dataset.variant || 'quote')}`;
     } catch {
-      if (status) status.textContent = 'We could not send the form. Opening WhatsApp instead…';
-      window.open(wa, '_blank', 'noopener');
+      if (status) status.textContent = '';
       done(form, 'whatsapp', wa, data.name);
     } finally {
       if (btn) { btn.disabled = false; if (btn.dataset.label) btn.innerHTML = btn.dataset.label; }

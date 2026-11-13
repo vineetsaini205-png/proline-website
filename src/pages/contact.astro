@@ -14,30 +14,32 @@ const faqs = [
 ];
 ---
 <SimplePage
-  title="Contact Proline: EV Charger Installation in India"
-  description="WhatsApp us any time, call 10 am–7 pm, or email Sales@prolineelectricalworks.com about EV charger installation, chargers of any brand and Proline CMS."
+  title="Contact Proline Electrical Works"
+  description="Call, WhatsApp or send your requirements for charger advice, installation, partnerships or a CMS demonstration. Delhi-based; we visit your site."
   h1="Contact Proline"
   eyebrow="Contact"
   crumb="Contact"
-  lead="WhatsApp us any time, call between 10 am and 7 pm, or send the form. Tell us about your site and we reply with the right charger options and one clear quote."
+  lead="Choose what your enquiry is about, then WhatsApp us any time, call between 10 am and 7 pm, or send the short form. We visit your site: there is no showroom or walk-in office."
   cta={false} faqs={faqs} headerCta={{ label: 'Get a quote', href: '#quote' }}>
   <section class="section" id="quote">
     <div class="wrap cta-split">
       <div>
-        <ul class="contact-list">
+        <h2 class="ctype-h">What is your enquiry about?</h2>
+        <ul class="ctype-list" role="list">
+          <li><a href="#quote-form"><Icon name="car" size={20} />A charger for my vehicle <span>Use the form on this page</span></a></li>
+          <li><a href="/start-an-ev-charging-station/#quote"><Icon name="station" size={20} />A commercial charging site <span>Fleet, society, business or station</span></a></li>
+          <li><a href="/for/charger-brands/#quote"><Icon name="plug" size={20} />An installation partnership <span>For charger brands and EV makers</span></a></li>
+          <li><a href="/cms/demo/"><Icon name="grid" size={20} />A Proline CMS demo <span>For station owners and operators</span></a></li>
+        </ul>
+        <ul class="contact-list" style="margin-top:28px">
           <li><span class="ci"><Icon name="whatsapp" size={22} /></span><div><strong><a href={waLink(site.whatsapp, 'Hello Proline, I would like to talk about EV charging.')} rel="noopener" target="_blank">WhatsApp us</a></strong><span>Any time. Photos of your meter, DB and parking spot help.</span></div></li>
           <li><span class="ci"><Icon name="phone" size={22} /></span><div><strong><a href={`tel:${site.phoneE164}`}>Call us</a></strong><span>10 am–7 pm</span></div></li>
           <li><span class="ci"><Icon name="mail" size={22} /></span><div><strong><a href={`mailto:${site.email}`}>{site.email}</a></strong><span>Tenders, drawings, documents and brand partnerships</span></div></li>
           <li><span class="ci"><Icon name="map" size={22} /></span><div><strong>{site.city}, India</strong><span>Working across 10 states in North, South and West India</span></div></li>
         </ul>
-        <div class="note" style="margin-top:28px"><strong>Site surveys</strong> are paid, and the fee is adjusted against your order if you go ahead with Proline. Choose “Site survey” in the form to book one.</div>
-        <div class="grid" style="gap:10px;margin-top:28px">
-          <a class="card" href="/cms/demo/" style="flex-direction:row;align-items:center;gap:14px;padding:16px 18px"><span class="card-icon navy"><Icon name="grid" size={22} /></span><span><strong style="color:var(--ink)">Proline CMS demo</strong><br /><span class="small muted">Book a live demo of the software</span></span></a>
-          <a class="card" href="/for/charger-brands/" style="flex-direction:row;align-items:center;gap:14px;padding:16px 18px"><span class="card-icon navy"><Icon name="handshake" size={22} /></span><span><strong style="color:var(--ink)">Partner with us</strong><br /><span class="small muted">CPOs, brands, EV makers and contractors</span></span></a>
-          <a class="card" href="/join-as-technician/" style="flex-direction:row;align-items:center;gap:14px;padding:16px 18px"><span class="card-icon navy"><Icon name="wrench" size={22} /></span><span><strong style="color:var(--ink)">Join as a technician</strong><br /><span class="small muted">Electricians and installation teams</span></span></a>
-        </div>
+        <div class="note" style="margin-top:28px"><strong>What happens next.</strong> We reply on WhatsApp or by phone, ask for photos of your parking, meter and main DB if we need them, and send our tie-up quote with the full scope. Site surveys are paid, and the fee is adjusted against your order if you go ahead with Proline.</div>
       </div>
-      <QuoteForm variant="quote" id="quote-form" />
+      <QuoteForm variant="quote" id="quote-form" vehicleRequired={false} />
     </div>
   </section>
   <section class="section section-soft" aria-labelledby="faq-title">
@@ -48,6 +50,12 @@ const faqs = [
   </section>
 </SimplePage>
 <style>
+  .ctype-h { font-size: 20px; margin-bottom: 12px; }
+  .ctype-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .ctype-list a { display: grid; grid-template-columns: 24px 1fr; column-gap: 10px; align-items: center; padding: 12px 14px; background: var(--white); border: 1px solid var(--line-strong); border-radius: 6px; color: var(--ink); font-weight: 600; text-decoration: none; }
+  .ctype-list a:hover { border-color: var(--green-text); }
+  .ctype-list a :global(svg) { color: var(--green-text); }
+  .ctype-list a span { grid-column: 2; font-weight: 400; font-size: 14px; color: var(--muted); }
   .cta-split { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: start; }
   @media (max-width: 900px) { .cta-split { grid-template-columns: minmax(0, 1fr); } }
 </style>
