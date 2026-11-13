@@ -1,6 +1,6 @@
 ---
 // Home page, release 1 (owner, 13 Nov: "focus on charger selling"; rule 17: 7 short sections, chargers first).
-//  1 hero: buy and install, three ways in   2 pick your car   3 charger cards (drawings, size, Get a quote)
+//  1 hero: buying a charger or setting up a station, why us, two ways in + WhatsApp (owner, 13 Nov 16:18)   2 pick your car   3 charger cards (drawings, size, Get a quote)
 //  4 proof: numbers, cleared clients, real job photos   5 how it works   6 FAQ   7 contact
 // Proline CMS and the calculators live in the menu and the footer. Google reviews go in as a section
 // here only once the Business Profile has real reviews (never invented, rule 6).
@@ -15,15 +15,23 @@ import site from '../data/site.json';
 import images from '../data/images.json';
 import { cars } from '../data/nav';
 import { faqNode } from '../lib/schema';
+import { waLink } from '../lib/text';
 
 const title = 'Buy EV Charger with Installation | Proline Electrical Works';
-const description = 'Buy the right EV charger for your car, home or business, installed with cabling, earthing and tests by Proline. Any brand, brand-neutral advice, 10 states.';
+const description = 'Planning to buy an EV charger or set up a charging station? Proline compares chargers from many brands, gets you the best deal and installs it.';
 
+// Owner (13 Nov): lead with "we get you the best charger and the best deal". No "cheapest" (a superlative
+// price claim needs proof; decisions log 24 Oct) and no prices (rule 1).
 const ways = [
-  { label: 'Charger for my car', href: '/chargers/for/', primary: true },
-  { label: 'Charger for my business', href: '/chargers/#types' },
-  { label: 'Installation partner', href: '/partner-with-us/' },
+  { label: 'Charger for my vehicle', href: '/chargers/#types', primary: true },
+  { label: 'Set up a charging station', href: '/start-an-ev-charging-station/' },
 ];
+const whyUs = [
+  'Chargers from many brands, compared for you',
+  'The best deal for your budget when you buy and install with us',
+  'Charging stations handled end to end, from site survey to go-live',
+];
+const dealMsg = 'Hello Proline, I found you on your website. I would like the best deal on an EV charger or a charging station.';
 
 const carChips = cars.map((c) => ({ label: c.label.replace(/ charger$/, ''), href: c.href }));
 
@@ -51,15 +59,18 @@ const faqs = [
   <section class="hero hero-dark" aria-labelledby="hero-title">
     <div class="wrap">
       <div class="hero-copy">
-        <p class="eyebrow">EV chargers, any brand</p>
-        <h1 id="hero-title">Buy and install your <span class="underline-green">EV charger</span></h1>
-        <p class="lead">Tell us your vehicle and your site. We suggest the right charger, supply it, and install it with proper cabling, earthing and tests.</p>
+        <p class="eyebrow">Chargers from many brands</p>
+        <h1 id="hero-title">Planning to buy an <span class="underline-green">EV charger</span> or set up a charging station?</h1>
+        <p class="lead">Talk to us first. We find the right charger for your vehicle or site, and get you the best deal.</p>
+        <ul class="ticks hero-why" role="list">
+          {whyUs.map((w) => <li>{w}</li>)}
+        </ul>
         <div class="btn-row hero-ways">
           {ways.map((w) => (
             <a class:list={['btn', 'btn-lg', w.primary ? 'btn-primary' : 'btn-ghost-light']} href={w.href}>{w.label}<Icon name="arrowRight" size={18} /></a>
           ))}
         </div>
-        <p class="hero-clients">{site.stats[0].value} {site.stats[0].label} in {site.stats[2].value}, for <b>{site.clients.join(' · ')}</b></p>
+        <a class="hero-wa" href={waLink(site.whatsapp, dealMsg)} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} />Get the best deal on WhatsApp</a>
       </div>
       <figure class="hero-media">
         <Photo name="job-canopy-install" eager sizes="(max-width: 900px) 100vw, 560px" />
@@ -136,7 +147,12 @@ const faqs = [
 </Base>
 
 <style>
+  .hero-why { margin: 22px 0 0; padding: 0; color: #DCE6F2; font-size: 16px; line-height: 1.45; }
+  .hero-why li::before { background-color: rgba(19, 178, 107, .18); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2313B26B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
   .hero-ways { flex-wrap: wrap; }
+  .hero-wa { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--white); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, .35); text-underline-offset: 4px; }
+  .hero-wa :global(svg) { color: var(--green); }
+  .hero-wa:hover { text-decoration-color: var(--green); color: var(--white); }
   .hero-ways .btn { gap: 8px; }
   .hero-media { margin: 0; }
   .hero-photo-note { position: absolute; left: 12px; bottom: 12px; max-width: calc(100% - 24px); padding: 6px 12px; border-radius: 999px; background: rgba(11, 37, 69, .82); color: #fff; font-size: 13px; line-height: 1.35; }
