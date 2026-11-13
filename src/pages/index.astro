@@ -11,6 +11,8 @@ import SectionHead from '../components/SectionHead.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
 import ChargerTypes from '../components/ChargerTypes.astro';
+import ChargerArt from '../components/ChargerArt.astro';
+import { chargerTypes } from '../data/charger-types';
 import site from '../data/site.json';
 import images from '../data/images.json';
 import { cars } from '../data/nav';
@@ -31,6 +33,12 @@ const whyUs = [
   'The best deal for your budget when you buy and install with us',
   'Charging stations handled end to end, from site survey to go-live',
 ];
+// Hero shelf (owner, 13 Nov 16:24): show the chargers we sell instead of a site photo.
+const shelfNames: Record<string, string> = {
+  'wallbox-7': 'Home wallbox', 'wallbox-11': 'Three-phase wallbox', 'ac-post-22': 'AC charging post',
+  'lev-dc': 'Scooter and 3-wheeler', 'dc-60': 'DC fast charger', 'dc-120': 'Highway fast charger',
+};
+const shelf = Object.keys(shelfNames).map((k) => chargerTypes.find((t) => t.kind === k)!).map((t) => ({ ...t, short: shelfNames[t.kind] }));
 const dealMsg = 'Hello Proline, I found you on your website. I would like the best deal on an EV charger or a charging station.';
 
 const carChips = cars.map((c) => ({ label: c.label.replace(/ charger$/, ''), href: c.href }));
@@ -57,7 +65,7 @@ const faqs = [
 ---
 <Base title={title} description={description} schema={[faqNode('/', faqs)]}>
   <section class="hero hero-dark" aria-labelledby="hero-title">
-    <div class="wrap">
+    <div class="wrap hero-wrap">
       <div class="hero-copy">
         <p class="eyebrow">Chargers from many brands</p>
         <h1 id="hero-title">Planning to buy an <span class="underline-green">EV charger</span> or set up a charging station?</h1>
@@ -72,10 +80,21 @@ const faqs = [
         </div>
         <a class="hero-wa" href={waLink(site.whatsapp, dealMsg)} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} />Get the best deal on WhatsApp</a>
       </div>
-      <figure class="hero-media">
-        <Photo name="job-canopy-install" eager sizes="(max-width: 900px) 100vw, 560px" />
-        <figcaption class="hero-photo-note">Our work · {meta['job-canopy-install'].caption}</figcaption>
-      </figure>
+      <div class="hero-shelf">
+        <p class="shelf-title" id="shelf-title">Chargers we supply and install</p>
+        <ul class="shelf" role="list" aria-labelledby="shelf-title">
+          {shelf.map((t) => (
+            <li>
+              <a href={t.href}>
+                <ChargerArt kind={t.kind} label={`Drawing of a typical ${t.name.toLowerCase()}`} />
+                <span class="shelf-tag">{t.tag}</span>
+                <span class="shelf-name">{t.short}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a class="shelf-all" href="/chargers/#types">All 11 charger types and sizes<Icon name="arrowRight" size={16} /></a>
+      </div>
     </div>
   </section>
 
@@ -154,8 +173,16 @@ const faqs = [
   .hero-wa :global(svg) { color: var(--green); }
   .hero-wa:hover { text-decoration-color: var(--green); color: var(--white); }
   .hero-ways .btn { gap: 8px; }
-  .hero-media { margin: 0; }
-  .hero-photo-note { position: absolute; left: 12px; bottom: 12px; max-width: calc(100% - 24px); padding: 6px 12px; border-radius: 999px; background: rgba(11, 37, 69, .82); color: #fff; font-size: 13px; line-height: 1.35; }
+  .hero-shelf { background: var(--soft); border-radius: var(--radius-xl); padding: 20px 20px 18px; color: var(--body); }
+  .shelf-title { margin: 0 0 14px; font-family: var(--font-head); font-weight: 700; font-size: 17px; color: var(--ink); }
+  .shelf { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .shelf a { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; padding: 10px 8px 12px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; color: var(--ink); text-decoration: none; text-align: center; transition: border-color .15s, box-shadow .15s; }
+  .shelf a:hover { border-color: var(--green); box-shadow: 0 6px 18px rgba(11, 37, 69, .10); color: var(--ink); }
+  .shelf a :global(svg.charger-art) { width: 100%; max-width: 128px; }
+  .shelf-tag { font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--green-text); background: var(--green-50); border-radius: 999px; padding: 3px 9px; }
+  .shelf-name { font-size: 13.5px; font-weight: 600; line-height: 1.3; }
+  .shelf-all { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 600; font-size: 15px; color: var(--green-text); text-decoration: none; }
+  .shelf-all:hover { text-decoration: underline; }
 
   .home-cars { padding-bottom: 8px; }
   .car-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
@@ -186,7 +213,24 @@ const faqs = [
   .how p { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
 
   @media (max-width: 900px) {
-    .hero-photo-note { display: none; }
+    /* Phones: the chargers come straight after the heading, then the buttons, then the reasons */
+    .hero-wrap { gap: 0; }
+    .hero-copy { display: contents; }
+    .hero-copy > .eyebrow { order: 0; justify-self: start; }
+    .hero-copy > h1 { order: 1; }
+    .hero-copy > .lead { order: 2; }
+    .hero-shelf { order: 3; margin: 20px 0 0; padding: 14px 14px 12px; }
+    .hero-ways { order: 4; }
+    .hero-wa { order: 5; justify-self: start; }
+    .hero-why { order: 6; }
+    .shelf-title { font-size: 15px; margin-bottom: 10px; }
+    .shelf { display: flex; overflow-x: auto; gap: 8px; margin: 0 -14px; padding: 0 14px 4px; scrollbar-width: none; scroll-snap-type: x proximity; }
+    .shelf::-webkit-scrollbar { display: none; }
+    .shelf li { flex: 0 0 112px; scroll-snap-align: start; }
+    .shelf a { padding: 8px 6px 10px; }
+    .shelf a :global(svg.charger-art) { max-width: 82px; }
+    .shelf-name { font-size: 12.5px; }
+    .shelf-all { margin-top: 10px; font-size: 14px; }
     .hero-copy .hero-ways { grid-template-columns: 1fr; }
     .hero-ways .btn { justify-content: space-between; }
   }
