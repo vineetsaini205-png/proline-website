@@ -176,6 +176,19 @@ Company
 - [x] New home page (rule 17)
 - [x] Owner review of the preview, then merge to `main` (owner, 13 Nov 09:00 IST: "make it live")
 
+### Redesign to the strategy plan (branch `redesign`, preview first; owner, 13 Nov 17:30)
+- [x] New look: Noto Sans (self-hosted), warm white page, deep green buttons, 6 px corners, sentence-case labels, 17 px body text on phones
+- [x] Menu: Choose a charger · Commercial charging · Installation · For charger brands · Proline CMS · Our work; Call and WhatsApp always visible; phones: logo and menu, Call/WhatsApp bar at the bottom
+- [x] Merged with 301 redirects (`public/_redirects`): /services/ → installation; station setup and /for/charge-point-operators/ → /start-an-ev-charging-station/; /partner-with-us/ and /brand-partners/ → /for/charger-brands/ (the "commission or resale margin" line is gone, rule 14); bus/truck chargers → /for/fleets/; four CMS sub-pages → /cms/; /tools/ and the charger finder → /chargers/#help-me-choose; /ask/ → /contact/
+- [x] Home page in the plan's seven sections: headline "Compare charger brands. Get a Proline tie-up quote. Have it installed.", four audience routes, Reliable Charge DC station photo, proof, how we help you choose (with what the tie-up quote includes and the charger drawings), two documented jobs, on-site steps, brands and CMS, FAQ and form
+- [x] /projects/ (Our work): the 3.3 kW Jambhulni home job (18 May 2026), the 7.4 kW basement network, DC sites; no customer names or exact addresses
+- [x] /chargers/: Help me choose (finder) at the top, car links, charger drawings and sizes; /brands/ explains how we compare brands and what our tie-ups mean
+- [x] Earnings calculator: revenue, operating surplus and cash after loan shown separately; blank costs listed, not counted as zero; low/base/high; payback from monthly cash with a 30%→12-month ramp-up; "not within 10 years" when it never pays back
+- [x] Forms: four types with the plan's required fields; reference number (in the Details column of the Sheet); success only when the web app answers ok, then /thank-you/ (noindex); otherwise a clear "not saved" with WhatsApp and Call. Page-specific WhatsApp openers
+- [x] Titles and descriptions from the plan for main pages and car pages; all seven client names
+- [~] Owner review of the preview, then merge to `main`
+- [ ] Later phases (plan section 11): guides 1–20, Delhi page, Hindi pages (need a Hindi checker, rule 10), case-study pages, Google Business Profile, paid-search test. Most need the facts listed at the end of the plan
+
 ### Site-wide
 - [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → **live** Google Apps Script web app (owner's Sheet "Website Inquiry", tab "Enquiries"; Apps Script project "Proline website enquiries", deployed 24 Oct as the owner, access Anyone). URL in `site.json` → `formEndpoint`. Test row sent 24 Oct and arrived. If the script changes: Deploy → Manage deployments → Edit → New version (same URL)
 - [x] SEO: titles ≤ 60, descriptions, canonical, Open Graph, sitemap, robots.txt (AI training bots blocked; AI search bots allowed since 13 Nov), breadcrumbs (`npm run check:seo`)
@@ -240,3 +253,4 @@ Company
 - 13 Nov 2026 (09:00 IST): owner said "make it live": `release-1` merged into `main` (fast-forward) and deployed to www.prolineelectricalworks.com.
 - 13 Nov 2026 (16:20 IST): home page hero rewritten as the owner asked: "Planning to buy an EV charger or set up a charging station?", three why-us ticks (many brands compared, best deal when you buy and install with us, stations end to end), buttons "Charger for my vehicle" and "Set up a charging station", WhatsApp link "Get the best deal". The "500+ chargers … TATA · ThunderPlus …" line removed from the hero (numbers stay in the Our work section).
 - 13 Nov 2026 (16:26 IST): owner asked to replace the hero site photo with chargers, to show what Proline sells: the hero now shows 6 charger drawings (7.4 kW and 11 kW wallboxes, 22 kW AC post, 2W/3W DC, 60 kW and 120 kW DC), each linking to its page, plus "All 11 charger types and sizes". On phones they come straight after the heading as a sideways-swipe row. The canopy photo stays on the civil work page.
+- 13 Nov 2026 (evening): owner adopted the brand expert's strategy plan ("this is our plan for the website make it"); answers: preview first, follow the plan's home page fully, keep the numbers, name all seven clients, merge pages as listed. Built on branch `redesign`: new look and menu, merges with redirects, new home and Our work pages, calculator rebuilt, enquiry forms with references and an honest result, plan titles. Checks: content, links and SEO 0 problems; no sideways scrolling 360–1440 px; home page about 173 KB. Waiting for the owner's OK to merge.
