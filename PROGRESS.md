@@ -170,7 +170,7 @@ Company
 - [x] Menu: Chargers · Installation · Stations · Partners · Proline CMS (Tools and guides moved to the footer and the phone menu)
 - [x] Phone number as text in the header (desktop and tablet) and the footer; the phone menu's call button shows it too
 - [x] New home page (rule 17)
-- [~] Owner review of the preview, then merge to `main`
+- [x] Owner review of the preview, then merge to `main` (owner, 13 Nov 09:00 IST: "make it live")
 
 ### Site-wide
 - [x] Enquiry forms (8 variants, `QuoteForm.astro` + `src/scripts/forms.ts`) → **live** Google Apps Script web app (owner's Sheet "Website Inquiry", tab "Enquiries"; Apps Script project "Proline website enquiries", deployed 24 Oct as the owner, access Anyone). URL in `site.json` → `formEndpoint`. Test row sent 24 Oct and arrived. If the script changes: Deploy → Manage deployments → Edit → New version (same URL)
@@ -185,7 +185,6 @@ Company
 - [x] Packaging: not needed. The site deploys from GitHub to Cloudflare Pages on every push (a `dist/` zip was only for the manual-upload fallback)
 
 ## Waiting on the owner (site works without these; add when they arrive)
-- Release 1 preview: OK to merge `release-1` into `main`?
 - UV Supercharge photo (30 Oct, 3.07.10 PM): is it a real job photo? Its sign has garbled lettering ("Tomoorok") and made-up icons, which AI images have, so it is not used yet
 - Reliable Charge DC station photo: processed with the brand blurred (`job-dc-station`) but not placed; may the brand show?
 - Coverage list (deck: North + West India; site: 10 states incl. TN, Telangana, Chhattisgarh, MP) · workmanship warranty (deck says both "1 months" and "12-month") · EV Infura deck material under Proline's name
@@ -232,3 +231,4 @@ Company
 - 11 Nov 2026: PEW-PI/2627/02 (Ujoy) amended as per owner's revised BOQ: panel foundation 1 × 3,000; charger stand foundations 5 × 2,200; trench excavation 90 Rmt × 220; earthing pit with RCC chamber 1 × 4,000 (SAC 995461); four new terms. ₹37,800 + IGST 6,804 = ₹44,604. PDF replaced, no email.
 - 12–13 Nov 2026: SEO and leads plan written as a Claude doc ("Proline SEO and Leads Plan": Final plan, Strategy, Build plan, Profiles and AI search). Rebuild planned in 4 releases (sell chargers, show the work, vendor work, CMS and growth). AI-generated charger images dropped; charger pages will use real job photos and simple drawings. Waiting on owner decisions: prices (rule 1), phone as text (rule 4), AI search bots (rule 2), 7-section home page (rule 17), coverage list, warranty, client brands in photos, EV Infura material.
 - 13 Nov 2026: release 1 built on branch `release-1` (preview, not live): 5 car-model charger pages from the carmakers' own figures, `/chargers/for/` hub, 10 job photos (GPS stamps cropped or blurred, plates blurred), new 7-section home page (chargers first), new menu, phone number as text in header and footer. Content, links and SEO checks 0 problems; no sideways scrolling at 360–1440 px; home page about 126 KB. Owner decisions still open: merge, UV Supercharge photo, Reliable Charge brand, coverage, warranty, EV Infura.
+- 13 Nov 2026 (09:00 IST): owner said "make it live": `release-1` merged into `main` (fast-forward) and deployed to www.prolineelectricalworks.com.
