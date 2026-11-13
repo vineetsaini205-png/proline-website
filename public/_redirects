@@ -1,0 +1,14 @@
+# Pages merged by the website strategy plan (13 Nov 2026). Permanent redirects to the closest replacement.
+/services/                              /services/ev-charger-installation/      301
+/services/ev-charging-station-setup/    /start-an-ev-charging-station/          301
+/partner-with-us/                       /for/charger-brands/                    301
+/brand-partners/                        /for/charger-brands/                    301
+/for/charge-point-operators/            /start-an-ev-charging-station/          301
+/chargers/bus-truck-chargers/           /for/fleets/                            301
+/cms/features/                          /cms/                                   301
+/cms/built-for-india/                   /cms/                                   301
+/cms/security/                          /cms/                                   301
+/cms/white-label-self-hosted/           /cms/                                   301
+/tools/                                 /chargers/#help-me-choose               301
+/tools/charger-finder/                  /chargers/#help-me-choose               301
+/ask/                                   /contact/                               301

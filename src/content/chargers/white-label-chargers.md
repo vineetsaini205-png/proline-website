@@ -46,14 +46,13 @@ faqs:
   - q: How long does a white-label order take?
     a: It depends on the maker, the model, the branding you choose and the size of your order, and on how quickly the sample is approved. We share the maker's timeline with the quote.
   - q: Can the chargers run on our own software?
-    a: Yes, if the base model supports OCPP 1.6J, because then any CMS that supports it can run them. [Proline CMS](/cms/white-label-self-hosted/) is our own, and it can carry your brand too.
+    a: Yes, if the base model supports OCPP 1.6J, because then any CMS that supports it can run them. [Proline CMS](/cms/) is our own, and it can carry your brand too.
   - q: What does a white-label charger cost?
     a: It depends on the base model, the number of units, how far the branding goes, the packaging and warranty you offer, and the installation each site needs. Send us your brief, and we give one quote from the makers we work with.
 related:
-  - /cms/white-label-self-hosted/
-  - /brand-partners/
+  - /cms/
   - /for/charger-brands/
-  - /for/charge-point-operators/
+  - /start-an-ev-charging-station/
   - /for/ev-makers-and-dealers/
   - /chargers/ac-chargers/
 updated: 2026-10-24
@@ -68,7 +67,7 @@ It puts your name on proven chargers without designing your own. The trade-off i
 ## Who white-label chargers suit
 
 - **New EV brands** that want a home charger in their own brand, delivered with the vehicle. See [EV makers and dealers](/for/ev-makers-and-dealers/).
-- **Charge point operators** that want one look at every site, so drivers recognise the network from the road. See [charge point operators](/for/charge-point-operators/).
+- **Charge point operators** that want one look at every site, so drivers recognise the network from the road. See [charge point operators](/start-an-ev-charging-station/).
 - **Real-estate developers** that want chargers in the project's brand in housing societies, offices and malls.
 - **Dealers and distributors** that want to sell chargers under their own name, alongside vehicles or electrical goods.
 
@@ -107,12 +106,12 @@ What stays the maker's: the internal design, the safety electronics and the core
 
 ## Running the chargers in your brand
 
-A branded charger is half the picture: drivers also see the app, the payment page and the receipt. Chargers that speak OCPP 1.6J can run on a charge management system (CMS) in your brand. [Proline CMS](/cms/white-label-self-hosted/) is our own: software you own, built in your brand and handed over, with no commission on charging payments and no fee per charger per month. It runs on your own server, or we host it for you on our servers in India.
+A branded charger is half the picture: drivers also see the app, the payment page and the receipt. Chargers that speak OCPP 1.6J can run on a charge management system (CMS) in your brand. [Proline CMS](/cms/) is our own: software you own, built in your brand and handed over, with no commission on charging payments and no fee per charger per month. It runs on your own server, or we host it for you on our servers in India.
 
 ## From order to installation
 
 The steps below show how a white-label order runs, from your brief to the first charge. Once the units arrive, our technicians install and commission them in the 10 states we work in, with the cabling, DB box, earthing and civil work each site needs, and connect each charger to your app or CMS. If your customers buy the chargers and need them installed at home or at work, see [installation for charger brands](/for/charger-brands/).
 
-Do you make chargers and build white-label units for other companies? Tell us on [sell your chargers through Proline](/brand-partners/).
+Do you make chargers and build white-label units for other companies? Tell us on [sell your chargers through Proline](/for/charger-brands/).
 
 See your brand on a charger below: type your name and pick a colour to preview it on an AC wall box or a DC charger. Then send us your brief, and we come back with base models and one quote.

@@ -24,7 +24,6 @@ faqs:
 related:
   - /tools/ev-charging-station-earnings-calculator/
   - /start-an-ev-charging-station/
-  - /services/ev-charging-station-setup/
   - /chargers/dc-fast-chargers/
   - /coverage/
   - /cms/
@@ -135,6 +134,6 @@ Enter your quote in the [earnings calculator](/tools/ev-charging-station-earning
 
 Before you open the calculator, gather your EV tariff and fixed charge from your DISCOM's tariff order or bill, the price you plan to charge drivers, realistic charging hours, your rent or revenue share, any app commission and your running costs.
 
-With your own charge management software there is no app commission, though you handle payments and driver support yourself; [Proline CMS](/cms/) takes no commission on charging payments. When the numbers work, see [charging station setup](/services/ev-charging-station-setup/) for how we build a station from survey to first charge.
+With your own charge management software there is no app commission, though you handle payments and driver support yourself; [Proline CMS](/cms/) takes no commission on charging payments. When the numbers work, see [charging station setup](/start-an-ev-charging-station/) for how we build a station from survey to first charge.
 
 Start with the [EV charging station earnings calculator](/tools/ev-charging-station-earnings-calculator/): pick your state and chargers, and compare a quiet, likely and busy month before you commit.

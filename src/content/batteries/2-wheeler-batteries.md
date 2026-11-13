@@ -50,7 +50,7 @@ related:
   - /batteries/e-rickshaw-batteries/
   - /for/fleets/
   - /tools/ev-vs-petrol-savings-calculator/
-  - /tools/charger-finder/
+  - /chargers/#help-me-choose
 updated: 2026-10-24
 ---
 

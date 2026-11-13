@@ -138,7 +138,7 @@ See [cabling and wiring](/services/ev-charger-cabling/) and [earthing](/services
 
 ## Why Proline
 
-We are based in Delhi and install EV chargers in 10 states across North, South and West India, with more than 200 technicians. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA. We work with many charger brands and help you choose for free, so the chargers suit your society's supply and billing, not one maker's catalogue.
+We are based in Delhi and install EV chargers in 10 states across North, South and West India, with more than 200 technicians. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. We work with many charger brands and help you choose for free, so the chargers suit your society's supply and billing, not one maker's catalogue.
 
 ## What to send us
 

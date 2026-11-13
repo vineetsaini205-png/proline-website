@@ -39,7 +39,7 @@ faqs:
 related:
   - /batteries/e-rickshaw-batteries/
   - /for/fleets/
-  - /tools/charger-finder/
+  - /chargers/#help-me-choose
   - /for/ev-makers-and-dealers/
   - /batteries/2-wheeler-batteries/
   - /services/ev-charger-db-box/
@@ -112,4 +112,4 @@ Under the Delhi EV Policy 2026, every vehicle maker operating in Delhi must set 
 
 Fleets that run many e-rickshaws or delivery scooters from one yard can see how we plan depot charging on [fleets](/for/fleets/).
 
-Not sure what your vehicles need? The [charger finder](/tools/charger-finder/) suggests chargers for scooters, 3-wheelers and cars in a minute, or send us a photo of the battery label and your meter on WhatsApp.
+Not sure what your vehicles need? The [charger finder](/chargers/#help-me-choose) suggests chargers for scooters, 3-wheelers and cars in a minute, or send us a photo of the battery label and your meter on WhatsApp.

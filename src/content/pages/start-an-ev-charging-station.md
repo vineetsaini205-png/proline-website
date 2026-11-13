@@ -55,7 +55,6 @@ faqs:
   - q: Can you help with the electricity connection?
     a: "Yes, with what the application needs. We work out the load your chargers need, whether an LT or HT connection fits and which documents to keep ready, so you can apply to your DISCOM with the right details. This guide lists the questions to ask your DISCOM."
 related:
-  - /services/ev-charging-station-setup/
   - /services/site-survey/
   - /chargers/dc-fast-chargers/
   - /for/businesses/
@@ -127,7 +126,7 @@ Two more checks before you buy:
 - **Software support.** Choose chargers that support OCPP, the open protocol chargers use to talk to charging software, so you can change software later without changing chargers.
 - **Service in your state.** A charger that is out of order loses the drivers you worked to win, so ask each brand how it handles repairs and spares where your station is.
 
-The [charger finder](/tools/charger-finder/) suggests a charger type and power for your vehicles and site, and our advice on brands is free.
+The [charger finder](/chargers/#help-me-choose) suggests a charger type and power for your vehicles and site, and our advice on brands is free.
 
 ## The electricity connection
 
@@ -190,16 +189,65 @@ The central PM E-DRIVE scheme supports public charging stations, but it is not a
 
 Build your plan so it works without a subsidy, and treat any support as a bonus if your site qualifies. Check your state's EV policy as well.
 
+## What Proline does for your station, from survey to go-live
+
+A charging station brings several trades together: electrical, civil and software work, plus the electricity connection from your DISCOM. We plan them as one job, so trenches are dug once and every charger has its foundation, cable and software ready when it arrives.
+
+| Stage | What we do | What you do |
+|---|---|---|
+| Site and power check | Survey the supply, load, cable routes, earth, space and signal | Give access and the electricity bill |
+| Chargers | Compare brands for your site, then supply them or install yours | Choose the brand and how many |
+| Permissions | List what your site needs and the documents to keep ready | Apply for the connection, get the NOCs |
+| Build | Foundations, trenches, canopy, panels, cabling and earthing | Agree the layout |
+| Branding | Plan sign positions, fixings and power supply | Choose the signs, share your logo |
+| Software | Connect every charger to Proline CMS, your CMS or a network's app | Choose the software |
+| Go-live | Tests, test charges, handover and help with listings | Open the station to drivers |
+
+### Commissioning and go-live
+
+Before the station opens, every charger is commissioned: electrical tests, network and firmware settings, and a test charge on each gun that shows up in your software. You get a handover pack with the results, photos and settings, and your site staff get a short walk-through on using the chargers safely. The full checklist is on our [commissioning](/services/ev-charger-commissioning/) page.
+
+Then drivers need to find you:
+
+- **Google Maps.** A Google Business Profile for the station puts it on the map with its exact location, opening hours and photos.
+- **EV Yatra.** The Bureau of Energy Efficiency keeps a national online database of public charging stations: operators register their stations on its EV Yatra portal, and its app helps drivers find the nearest public charger ([Power Line, Dec 2022](https://powerline.net.in/2022/12/14/ev-yatra-web-portal-and-mobile-app-launched/)). Proline CMS prepares the station and energy files for it.
+- **Unified Bharat eCharge (UBC).** The government's national charging network, launched in August 2026: drivers find chargers and pay by UPI in the BHIM app, while operators keep their own chargers and brand ([Autocar Professional, Aug 2026](https://www.autocarpro.in/news/pulse-energy-joins-unified-bharat-echarge-as-certified-tech-enabler-134136)). Stations on [Proline CMS](/cms/) can join in a few simple steps, now or later.
+- **Apps and fleets.** On a network's platform, your chargers appear in its app. Tie-ups with cab, delivery and e-rickshaw fleets nearby can bring regular users early.
+
+We help with each listing: the exact location, charger types, connectors, power and photos. Expect quiet early months, as usage at a new station typically builds over 6–12 months ([Bolt.Earth](https://bolt.earth/franchise)).
+
+## For charge point operators: rollouts across many cities
+
+On a rollout, consistency matters more than any single site. This is what passes between your team and ours at each stage:
+
+| Stage | You give us | You get back |
+|---|---|---|
+| Survey | Site address, site contact, planned chargers | A survey report in your format: supply, load, cable route, earthing, civil scope, photos |
+| Installation | The approved layout, chargers delivered to site | Cabling, panel or DB box, earthing, foundation and mounting, to the maker's manual |
+| Commissioning | OCPP backend URL and charge point IDs | Tests, power-up and a test session that shows in your CMS |
+| Handover | Your handover template | Test results, serial numbers and photos, filled in your format |
+
+- **One checklist everywhere.** The same checklist and report format in every city, so a site in one state is documented exactly like a site in another.
+- **Survey before dispatch.** We flag sites where the supply, the load or the host's permission isn't ready, so chargers aren't sent to sites that can't be powered.
+- **Build for the next charger.** Where you plan more chargers later, we lay spare pipes in the trench and leave spare ways in the panel, so the site isn't dug up twice.
+- **One point of contact for each site**, from survey to handover.
+
+### Onto your CMS, or ours
+
+Most networked chargers talk to their charge management system (CMS) over OCPP. During commissioning we set each charger's backend URL and charge point ID as you give them, update the firmware if you or the maker ask, and run a test session that you can see in your CMS before the site is handed over.
+
+If you don't run a CMS yet, or want one that doesn't take a share of every session, [Proline CMS](/cms/) is our own. It is software you own, built in your brand and handed over, with no commission on charging payments and no fee per charger per month. It connects chargers of any brand over OCPP 1.6J, and runs on your own server or is hosted by us on servers in India with 24/7 support.
+
 ## How Proline helps
 
 We are a Delhi-based EV charging company working in 10 states across North, South and West India, and we help investors from the first site visit to the first charge:
 
 - **Free, brand-neutral advice.** We work with many charger brands, so we compare options on power, connectors, software, warranty and service for your site, not one brand's catalogue.
 - **A site survey.** An engineer checks the supply, load, cable route, earthing, space and layout. The survey is paid, and the fee is adjusted against your order if you go ahead.
-- **Installation and commissioning.** Cabling, panels, DB boxes, earthing, foundations, canopy and chargers, AC and DC, followed by tests and a test charge. See [charging station setup](/services/ev-charging-station-setup/).
+- **Installation and commissioning.** Cabling, panels, DB boxes, earthing, foundations, canopy and chargers, AC and DC, followed by tests and a test charge. See [what we do for your station](#what-proline-does-for-your-station-from-survey-to-go-live).
 - **Solar and storage.** Panels and batteries if you want part of your power from the sun. See [solar EV charging](/solar-ev-charging/).
 - **Proline CMS** to run the station in your own brand.
 
-We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
+We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Before you commit to a site, run it through the [earnings calculator](/tools/ev-charging-station-earnings-calculator/) for quiet, likely and busy months, then send us the location for a quote.

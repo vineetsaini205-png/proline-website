@@ -40,12 +40,11 @@ faqs:
   - q: Can you prepare the site for more chargers later?
     a: Yes. Spare ducts, a wider trench, room on the island and space for more plinths are far easier to build while the ground is open than to add later, when the same ground must be broken again.
 related:
-  - /services/ev-charging-station-setup/
+  - /start-an-ev-charging-station/
   - /services/dc-fast-charger-installation/
   - /tools/installation-checklist/
   - /solar-ev-charging/
   - /services/ev-charger-cabling/
-  - /start-an-ev-charging-station/
 updated: 2026-10-24
 ---
 
@@ -126,6 +125,6 @@ In many Indian cities, parking areas flood in the monsoon, and water in a charge
 
 When a civil contractor builds the plinth and an electrician arrives later, the anchor bolts can be in the wrong place, the duct too narrow for the cable, or the plinth too low for the site. We build the civil work along with the electrical installation, in order: foundations and trenches first, then the cable, panels, DB boxes and earthing, and the chargers last. One team answers for all of it, from the plinth to the test charge.
 
-We are based in Delhi and work in 10 states with more than 200 technicians. We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
+We are based in Delhi and work in 10 states with more than 200 technicians. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Planning a whole station? Our guide to [starting an EV charging station](/start-an-ev-charging-station/) covers the site, the power and the numbers, and the [installation checklist](/tools/installation-checklist/) lists the civil work your charger needs in a minute.

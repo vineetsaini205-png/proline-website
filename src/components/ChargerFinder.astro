@@ -1,8 +1,9 @@
 ---
-import ToolPage from '../../layouts/ToolPage.astro';
-import Icon from '../../components/Icon.astro';
-import site from '../../data/site.json';
-import { findCharger, type FinderInput } from '../../lib/finder';
+// Charger finder ("Help me choose"), moved from /chargers/#help-me-choose into /chargers/ (strategy plan, 13 Nov 2026).
+// Rules in src/lib/finder.ts. Needs a #quote form on the page (CtaBand) for "Ask for a quote".
+import Icon from './Icon.astro';
+import site from '../data/site.json';
+import { findCharger, type FinderInput } from '../lib/finder';
 
 const def: FinderInput = { vehicles: ['car'], place: 'home', stay: 'long', supply: 'single', loadKw: null, budget: 'mid' };
 const r0 = findCharger(def);
@@ -11,27 +12,7 @@ const places = [['home', 'Home'], ['society', 'Housing society'], ['business', '
 const stays = [['long', 'Overnight or 8+ hours'], ['medium', '1–8 hours'], ['short', 'Under an hour']];
 const supplies = [['single', 'Single phase'], ['three', 'Three phase'], ['unknown', 'Not sure']];
 const budgets = [['basic', 'Basic'], ['mid', 'Mid'], ['premium', 'Premium']];
-const faqs = [
-  { q: 'Which EV charger should I buy for home?', a: 'For most cars, a 7.4 kW AC wall box on a single-phase connection, or 11 kW on three phase if your car accepts it. Check your sanctioned load first; a 3.3 kW charger suits low loads and two-wheelers. See [AC and home chargers](/chargers/ac-chargers/).' },
-  { q: 'Is a 22 kW charger better than 7.4 kW?', a: 'Only if your car accepts 22 kW on AC, and few cars in India do. Most accept 7.2 kW and some 11 kW, so a 22 kW charger would charge them at those speeds anyway, while needing three-phase supply.' },
-  { q: 'When do I need a DC fast charger?', a: 'When vehicles stop for under an hour: highways, public stations, fleets that need quick top-ups. DC chargers need a three-phase commercial connection with a much higher load. See [DC fast chargers](/chargers/dc-fast-chargers/).' },
-  { q: 'Why don’t you name brands here?', a: 'Because the right brand depends on your site and budget, and models change often. Tell us your answers and we send options from up to three brands we work with, compared on features, warranty and service.' },
-  { q: 'Is the advice free?', a: 'Yes. Advice on choosing a charger is free, for any brand. Installation, and the site survey where one is needed, are quoted separately.' },
-];
 ---
-<ToolPage
-  title="EV Charger Finder: Which Charger Do You Need? | Proline"
-  description="Answer six questions about your vehicles, site and supply, and see which EV charger type and power fits, what to look for, and what the installation needs."
-  h1="EV charger finder"
-  label="Charger finder"
-  intro="Pick your vehicles, where they park and your electricity supply, and the finder suggests the charger type and power that fit, the features worth paying for and what the installation needs. Then ask us for options from up to three brands."
-  faqs={faqs}
-  related={['/chargers/', '/chargers/ac-chargers/', '/chargers/dc-fast-chargers/', '/tools/installation-checklist/', '/services/ev-charger-installation/']}
-  form="quote" need="Help choosing a charger (any brand)"
-  ctaTitle="Get options from up to three brands"
-  ctaLead="Send your answers and we reply with charger options compared on features, warranty and service, plus a quote for installation. The advice is free."
-  waText="Hello Proline, I used your charger finder and would like charger options.">
-
   <div class="calc" id="finder" data-wa={site.whatsapp}>
     <form class="calc-in" onsubmit="return false" aria-label="Your vehicles and site">
       <fieldset class="field" style="border:0;padding:0;margin:0">
@@ -81,22 +62,21 @@ const faqs = [
       </div>
     </div>
   </div>
-
-  <div slot="method">
-    <h2 id="method-title">How the finder chooses</h2>
-    <p>It applies the same rules of thumb we use on a first call. The site survey, or photos of your meter and DB, confirm the choice.</p>
-    <ul>
+<details class="finder-method">
+  <summary>How the finder chooses</summary>
+  <ul>
       <li><strong>How long vehicles stay decides AC or DC.</strong> Parked for hours: AC. Stopping for under an hour: DC fast charging.</li>
       <li><strong>The car decides AC power.</strong> Many cars in India accept 7.2 kW on AC and some 11 kW, so 7.4 kW fits most homes and 22 kW only helps cars that accept it.</li>
       <li><strong>Your supply sets the limit.</strong> 7.4 kW works on single phase if the load allows; 11–22 kW AC and all DC chargers need three phase, and DC needs a much higher load.</li>
       <li><strong>Two- and three-wheelers</strong> mostly charge from portable chargers on 16 A sockets; newer models also use Type 6 (DC) and Type 7 (AC and DC) connectors.</li>
       <li><strong>Budget changes features, not safety.</strong> Every option needs proper protection and earthing; higher budgets add apps, OCPP, load management and payment.</li>
     </ul>
-    <p>Next, see what your job involves with the <a href="/tools/installation-checklist/">installation checklist</a>, or read about <a href="/chargers/">all chargers we supply</a>.</p>
-  </div>
-</ToolPage>
+</details>
 
 <style>
+  .finder-method { margin-top: 16px; font-size: 15px; }
+  .finder-method summary { cursor: pointer; font-weight: 600; color: var(--green-text); }
+  .finder-method ul { margin: 10px 0 0 20px; display: grid; gap: 6px; }
   .pick { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 16px; margin-top: 10px; }
   .pick h3 { font-size: 18px; color: #fff; }
   .pick .pick-meta { color: var(--green); font-weight: 600; font-size: 14px; margin-top: 4px; }
@@ -104,7 +84,7 @@ const faqs = [
 </style>
 
 <script>
-  import { findCharger, type FinderInput, type Vehicle, type Place, type Stay, type Supply, type Budget } from '../../lib/finder';
+  import { findCharger, type FinderInput, type Vehicle, type Place, type Stay, type Supply, type Budget } from '../lib/finder';
   const root = document.getElementById('finder');
   if (root) {
     const val = (n: string) => root.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value || '';

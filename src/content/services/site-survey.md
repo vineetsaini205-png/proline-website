@@ -39,14 +39,13 @@ faqs:
   - q: Is a recce the same as a site survey?
     a: "Yes. Recce, short for reconnaissance, is a common name in India for the site survey done before a charger is installed, and we use both words. Whichever you use, it covers the checks on this page."
   - q: Do you survey sites for charge point operators in other cities?
-    a: "Yes. We survey sites in all 10 states we work in and can report each one in your own format, with your checklist and photo list. See [charge point operators](/for/charge-point-operators/)."
+    a: "Yes. We survey sites in all 10 states we work in and can report each one in your own format, with your checklist and photo list. See [charge point operators](/start-an-ev-charging-station/)."
 related:
   - /tools/installation-checklist/
   - /services/ev-charger-installation/
-  - /services/ev-charging-station-setup/
+  - /start-an-ev-charging-station/
   - /services/dc-fast-charger-installation/
   - /services/ev-charger-earthing/
-  - /for/charge-point-operators/
 updated: 2026-10-24
 ---
 
@@ -99,7 +98,7 @@ Not every job needs a visit. For most homes, and for a single AC charger close t
 
 Book a survey instead when:
 
-- you plan a DC fast charger, several chargers or a [charging station](/services/ev-charging-station-setup/)
+- you plan a DC fast charger, several chargers or a [charging station](/start-an-ev-charging-station/)
 - the supply may need a load increase, a new connection or HT
 - the cable route is long, runs through a basement, or crosses a driveway or road
 - the charger needs a foundation, a trench or a canopy
@@ -108,7 +107,7 @@ Book a survey instead when:
 
 ## Surveys for operators, brands and many sites
 
-Charge point operators, charger brands and businesses with several sites often need recces in many cities before they commit. Our technicians work in 10 states, so we can survey across a region and report each site in your own format: your checklist, your photo list and your template. Send us the site list and your format, and we plan the visits with you. See [charge point operators](/for/charge-point-operators/).
+Charge point operators, charger brands and businesses with several sites often need recces in many cities before they commit. Our technicians work in 10 states, so we can survey across a region and report each site in your own format: your checklist, your photo list and your template. Send us the site list and your format, and we plan the visits with you. See [charge point operators](/start-an-ev-charging-station/).
 
 ## How to prepare for the visit
 

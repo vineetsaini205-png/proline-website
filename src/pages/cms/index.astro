@@ -41,9 +41,9 @@ const india = [
 ];
 const pillars = [
   { tab: 'Affordable', icon: 'rupee', title: 'Affordable to run', text: 'No commission on your charging payments and no fee per charger every month: a one-time licence, or low-cost hosting by us in India.', href: '/cms/affordable-ev-charging-software/', cta: 'What a CMS really costs' },
-  { tab: 'Safe', icon: 'shield', title: 'Safe', text: 'Bills capped at what was paid, automatic refunds, fake-QR checks, two-person approvals and data in India.', href: '/cms/security/', cta: 'How it stays safe' },
-  { tab: 'Feature-rich', icon: 'layers', title: 'Feature-rich', text: 'Payments, refunds, alerts, tickets, GST, reports, fleets and a field app for technicians, for any charger brand.', href: '/cms/features/', cta: 'All features' },
-  { tab: 'Customisable', icon: 'palette', title: 'Customisable', text: 'Your brand and domain, prices, roles, alerts, reports and API, on your own server.', href: '/cms/white-label-self-hosted/', cta: 'Your server, your brand' },
+  { tab: 'Safe', icon: 'shield', title: 'Safe', text: 'Bills capped at what was paid, automatic refunds, fake-QR checks, two-person approvals and data in India.', href: '/cms/', cta: 'How it stays safe' },
+  { tab: 'Feature-rich', icon: 'layers', title: 'Feature-rich', text: 'Payments, refunds, alerts, tickets, GST, reports, fleets and a field app for technicians, for any charger brand.', href: '/cms/', cta: 'All features' },
+  { tab: 'Customisable', icon: 'palette', title: 'Customisable', text: 'Your brand and domain, prices, roles, alerts, reports and API, on your own server.', href: '/cms/', cta: 'Your server, your brand' },
 ];
 const path = '/cms/';
 ---
@@ -154,7 +154,7 @@ const path = '/cms/';
           </div>
         ))}
       </div>
-      <p style="margin-top:28px"><a class="btn btn-ghost-light" href="/cms/features/">All features<Icon name="arrowRight" size={18} /></a></p>
+      <p style="margin-top:28px"><a class="btn btn-ghost-light" href="/cms/">All features<Icon name="arrowRight" size={18} /></a></p>
     </div>
   </section>
 
@@ -168,7 +168,7 @@ const path = '/cms/';
   <section class="section section-soft" aria-labelledby="india-title">
     <div class="wrap split top">
       <SectionHead eyebrow="Built for India" title="UPI, GST, DPDP and Ministry of Power rules, handled" lead="Indian payments, tax documents and data rules are built into the product, not added later." id="india-title">
-        <p style="margin-top:20px"><a class="btn btn-outline" href="/cms/built-for-india/">How Proline CMS handles Indian rules<Icon name="arrowRight" size={18} /></a></p>
+        <p style="margin-top:20px"><a class="btn btn-outline" href="/cms/">How Proline CMS handles Indian rules<Icon name="arrowRight" size={18} /></a></p>
       </SectionHead>
       <div class="faqs" aria-label="What India requires, and how Proline CMS handles it">
         {india.map(([a, b]) => (
@@ -184,7 +184,7 @@ const path = '/cms/';
   <section class="section" aria-labelledby="deploy-title">
     <div class="wrap split">
       <SectionHead eyebrow="Your server, your brand" title="Runs on infrastructure you control" lead="One virtual machine runs a small network; larger networks add nodes. Chargers connect securely over OCPP 1.6J, and the console, the charger connection and the driver pages each get a web address on your own domain." id="deploy-title">
-        <p style="margin-top:20px"><a class="btn btn-outline" href="/cms/white-label-self-hosted/">Deployment and white-label<Icon name="arrowRight" size={18} /></a></p>
+        <p style="margin-top:20px"><a class="btn btn-outline" href="/cms/">Deployment and white-label<Icon name="arrowRight" size={18} /></a></p>
       </SectionHead>
       <details class="fold-sec">
         <summary><span class="card-icon"><Icon name="server" size={20} /></span><span class="fs-text"><strong>Technical details</strong><span>Installer checks, database, amounts, licence</span></span><Icon name="chevronDown" size={20} class="chev" /></summary>

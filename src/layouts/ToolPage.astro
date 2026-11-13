@@ -17,7 +17,7 @@ interface Props {
 }
 const { title, description, h1, intro, label, faqs = [], related = [], form = 'quote', need, ctaTitle, ctaLead, waText } = Astro.props;
 const path = Astro.url.pathname;
-const crumbs = [{ label: 'Tools', href: '/tools/' }, { label }];
+const crumbs = [{ label }];
 const schema: object[] = [toolNode(path, h1, plainText(intro))];
 if (faqs.length) schema.push(faqNode(path, faqs));
 ---

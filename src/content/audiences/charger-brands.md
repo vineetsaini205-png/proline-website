@@ -39,9 +39,8 @@ faqs:
   - q: Do you install outside your 10 states?
     a: "Our technicians work in Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. If you have regular installations in other states, tell us where and how many, and we tell you what we can take on."
   - q: Can you sell our chargers as well as install them?
-    a: "Yes, through our brand partner programme. We advise buyers without favouring any brand and recommend your chargers where they fit the site. See [sell your chargers through Proline](/brand-partners/)."
+    a: "Yes. We advise buyers without favouring any brand and recommend your chargers where they fit the site. See [selling your chargers through Proline](#selling-your-chargers-through-proline)."
 related:
-  - /brand-partners/
   - /services/ev-charger-installation/
   - /services/ev-charger-commissioning/
   - /services/home-ev-charger-installation/
@@ -85,11 +84,36 @@ We are based in Delhi, and our technicians travel to your buyers' sites in 10 st
 
 ## Our record
 
-In two years we have installed more than 500 chargers and DB boxes, AC and DC, and our network has grown to 200+ technicians. We have installed chargers for TATA, ThunderPlus, Bolt.Earth and KIA.
+In two years we have installed more than 500 chargers and DB boxes, AC and DC, and our network has grown to 200+ technicians. We have installed chargers for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
-## Want buyers as well as installers?
+## Hand us your installations
 
-Proline also sells chargers of many brands, with free advice for buyers that doesn't favour any one maker. If you want more sales in the states we cover, you can [sell your chargers through Proline](/brand-partners/): we recommend your chargers where they suit the buyer's site, then install and commission every one. If your factory also makes white-label units for other companies, tell us about that too.
+For charger brands, charge point operators and EV makers who need chargers surveyed, installed and commissioned in many places:
+
+- **Your checklist, your format.** Survey, installation and commissioning to your checklist, with handover reports and photos in the format you ask for.
+- **Any charger, AC or DC.** We install chargers to the maker's manual, from 3.3 kW AC points to 240 kW DC.
+- **Onto your CMS.** Chargers connected and tested on your own CMS over OCPP, or on Proline CMS if you need one.
+- **Civil and electrical in one.** Cabling, DB boxes, earthing, foundations and canopies by the same team, so there is one point of contact per site.
+
+How a partnership starts:
+
+1. **Tell us the scope.** Sites a month, states, charger types and your installation checklist. A short call or email is enough to start.
+2. **Vendor onboarding.** We complete your vendor registration and share our documents and rates directly with your team.
+3. **Pilot site.** We survey, install and commission a first site to your checklist, so you can check our work and our reports.
+4. **Scale up.** We plan crews city by city with your team as the rollout grows.
+
+## Selling your chargers through Proline
+
+Buyers often ask us which charger to buy before they have chosen a brand: home owners after buying an EV, businesses and housing societies adding chargers, operators planning DC fast charging, and fleets that need depot charging. When your chargers fit a buyer's site, we put them in front of that buyer, compared fairly on features, warranty and service, and our technicians install and commission every unit to your manual.
+
+How brands join:
+
+1. **Send your range.** Models, specifications, connectors, software (app or OCPP), certificates and warranty terms.
+2. **Agree how it works.** Terms, warranty claims and spares are agreed directly with your team; price lists stay private.
+3. **Training and demo units.** Your team trains our technicians on installation and commissioning; a demo unit helps us show buyers.
+4. **Selling and installing.** We recommend your chargers where they fit, then install, commission and hand over each one.
+
+We stay brand-neutral: we recommend a charger when it is the right fit for the buyer's site and budget. If your factory also makes [white-label chargers](/chargers/white-label-chargers/) for other companies, tell us.
 
 ## What to send us to get started
 

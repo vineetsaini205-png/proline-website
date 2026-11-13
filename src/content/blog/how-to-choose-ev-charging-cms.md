@@ -20,9 +20,6 @@ faqs:
 related:
   - /cms/
   - /cms/affordable-ev-charging-software/
-  - /cms/security/
-  - /cms/features/
-  - /cms/white-label-self-hosted/
   - /cms/demo/
 ---
 
@@ -72,11 +69,11 @@ Under the DPDP Act 2023, the operator is the Data Fiduciary for drivers' details
 
 ## 9. How secure is sign-in, and who can change what?
 
-Check for sign-in with an authenticator app, roles for each area of work, site limits so people see only their sites, two-person approval for payment settings and large refunds, and an audit log that cannot be quietly edited. See [how Proline CMS keeps drivers, money and data safe](/cms/security/).
+Check for sign-in with an authenticator app, roles for each area of work, site limits so people see only their sites, two-person approval for payment settings and large refunds, and an audit log that cannot be quietly edited. See [how Proline CMS keeps drivers, money and data safe](/cms/).
 
 ## 10. Can you make it yours?
 
-A customisable CMS should carry your name, logo, colours and web address on every screen, receipt and QR sticker, and let you set prices with time-of-day bands, members' prices for societies and fleets, your own roles and alert routing, and connect to your other systems through an API. See [what you can customise](/cms/white-label-self-hosted/).
+A customisable CMS should carry your name, logo, colours and web address on every screen, receipt and QR sticker, and let you set prices with time-of-day bands, members' prices for societies and fleets, your own roles and alert routing, and connect to your other systems through an API. See [what you can customise](/cms/).
 
 ## 11. What will it cost over five years?
 

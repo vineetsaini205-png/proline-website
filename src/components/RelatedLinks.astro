@@ -8,7 +8,7 @@ interface Props { links: (string | NavLink)[]; title?: string }
 const { links, title = 'Related pages' } = Astro.props;
 
 const map = new Map<string, NavLink>();
-const bases = { services: '/services/', chargers: '/chargers/', batteries: '/batteries/', audiences: '/for/', pages: '/' } as const;
+const bases = { services: '/services/ev-charger-installation/', chargers: '/chargers/', batteries: '/batteries/', audiences: '/for/', pages: '/' } as const;
 for (const [coll, base] of Object.entries(bases)) {
   for (const e of await getCollection(coll as keyof typeof bases)) map.set(`${base}${e.id}/`, { label: e.data.label, href: `${base}${e.id}/`, note: e.data.summary });
 }

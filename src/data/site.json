@@ -1,7 +1,12 @@
 {
   "name": "Proline Electrical Works",
   "shortName": "Proline",
-  "alternateNames": ["Proline", "Proline EV", "Proline Electrical", "Proline CMS"],
+  "alternateNames": [
+    "Proline",
+    "Proline EV",
+    "Proline Electrical",
+    "Proline CMS"
+  ],
   "url": "https://www.prolineelectricalworks.com",
   "tagline": "EV charger installation and commissioning across India",
   "phoneDisplay": "+91 73038 87364",
@@ -11,19 +16,68 @@
   "city": "Delhi",
   "callHours": "Calls 10 am–7 pm",
   "whatsappHours": "WhatsApp any time",
-  "offerStrip": "Free consultation: we help you pick the right charger, any brand.",
+  "offerStrip": "Proline Electrical Works · Delhi · Projects across India",
   "formEndpoint": "https://script.google.com/macros/s/AKfycbxN4j9jji98iwzhmkJmu2sBzweAR8uLDRBlWd619E4uyNCXesUa9E_w4y6GJFA9mTmb4w/exec",
   "stats": [
-    { "value": "500+", "label": "chargers installed" },
-    { "value": "200+", "label": "technicians" },
-    { "value": "10 states", "label": "North, South and West India" },
-    { "value": "2 years", "label": "installing EV chargers" }
+    {
+      "value": "500+",
+      "label": "chargers and DB boxes installed"
+    },
+    {
+      "value": "200+",
+      "label": "technicians"
+    },
+    {
+      "value": "10 states",
+      "label": "North, South and West India"
+    },
+    {
+      "value": "2 years",
+      "label": "installing EV chargers"
+    }
   ],
-  "clients": ["TATA", "ThunderPlus", "Bolt.Earth", "KIA"],
+  "clients": [
+    "Tata Motors",
+    "KIA",
+    "Bolt.Earth",
+    "ThunderPlus",
+    "Ultraviolette",
+    "Reliable Charge",
+    "Mtekpower"
+  ],
   "regions": [
-    { "name": "North India", "states": ["Delhi", "Haryana", "Uttar Pradesh", "Uttarakhand", "Himachal Pradesh"] },
-    { "name": "West and Central India", "states": ["Maharashtra", "Madhya Pradesh", "Chhattisgarh"] },
-    { "name": "South India", "states": ["Telangana", "Tamil Nadu"] }
+    {
+      "name": "North India",
+      "states": [
+        "Delhi",
+        "Haryana",
+        "Uttar Pradesh",
+        "Uttarakhand",
+        "Himachal Pradesh"
+      ]
+    },
+    {
+      "name": "West and Central India",
+      "states": [
+        "Maharashtra",
+        "Madhya Pradesh",
+        "Chhattisgarh"
+      ]
+    },
+    {
+      "name": "South India",
+      "states": [
+        "Telangana",
+        "Tamil Nadu"
+      ]
+    }
   ],
-  "social": { "linkedin": "", "youtube": "", "indiamart": "", "justdial": "", "facebook": "", "instagram": "" }
+  "social": {
+    "linkedin": "",
+    "youtube": "",
+    "indiamart": "",
+    "justdial": "",
+    "facebook": "",
+    "instagram": ""
+  }
 }

@@ -41,7 +41,7 @@ faqs:
   - q: Which states do you work in?
     a: "Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We are based in Delhi and our technicians travel to your sites. See [coverage](/coverage/)."
 related:
-  - /services/ev-charging-station-setup/
+  - /start-an-ev-charging-station/
   - /services/ev-charger-commissioning/
   - /services/site-survey/
   - /cms/
@@ -66,7 +66,7 @@ SITC stands for supply, installation, testing and commissioning: one contractor 
 | Commissioning | Power-up, configuration, the OCPP connection to the chosen software and a test charge with a vehicle |
 | Handover | Test results and photos of the work for every site, and a short session for site staff on using the chargers |
 
-We don't make chargers, so we can match your specification across brands instead of fitting it to one catalogue. Every installation follows the charger maker's manual, the Central Electricity Authority's safety regulations and the Indian Standards that apply, such as IS 17017 for EV charging systems, IS 732 for wiring and IS 3043 for earthing. For the full build, see [charging station setup](/services/ev-charging-station-setup/) and [commissioning](/services/ev-charger-commissioning/).
+We don't make chargers, so we can match your specification across brands instead of fitting it to one catalogue. Every installation follows the charger maker's manual, the Central Electricity Authority's safety regulations and the Indian Standards that apply, such as IS 17017 for EV charging systems, IS 732 for wiring and IS 3043 for earthing. For the full build, see [charging station setup](/start-an-ev-charging-station/) and [commissioning](/services/ev-charger-commissioning/).
 
 ## Chargers for each kind of site
 
@@ -102,7 +102,7 @@ On tenders like these, we work with the charger maker or the main contractor tha
 
 ## Our record
 
-Proline has installed more than 500 chargers and DB boxes, AC and DC, in two years, and works with 200+ technicians across 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed chargers for TATA, ThunderPlus, Bolt.Earth and KIA. See [coverage](/coverage/).
+Proline has installed more than 500 chargers and DB boxes, AC and DC, in two years, and works with 200+ technicians across 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed chargers for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. See [coverage](/coverage/).
 
 ## What to send us to get started
 

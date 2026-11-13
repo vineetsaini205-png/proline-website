@@ -1,35 +1,48 @@
 ---
-// Compact footer (owner, 24 Oct: less crowded). The menu, the sitemap and links inside page text
-// carry the internal linking for SEO, so the footer keeps only the main pages.
+// Compact footer (owner, 24 Oct: less crowded).
 import site from '../data/site.json';
 import { tools } from '../data/nav';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { waLink } from '../lib/text';
 const year = new Date().getFullYear();
+// Strategy plan (13 Nov 2026): four columns that follow the menu; background pages (batteries, solar,
+// white-label, government, technicians) live here rather than in the header.
 const cols = [
-  { title: 'Services', links: [
-    { label: 'EV charger installation', href: '/services/ev-charger-installation/' },
-    { label: 'Home charger installation', href: '/services/home-ev-charger-installation/' },
-    { label: 'Charging station setup', href: '/services/ev-charging-station-setup/' },
-    { label: 'AMC and maintenance', href: '/services/ev-charger-amc/' },
-    { label: 'All services', href: '/services/' },
-  ] },
-  { title: 'Products', links: [
-    { label: 'Chargers, any brand', href: '/chargers/' },
+  { title: 'Choose a charger', links: [
+    { label: 'Help me choose', href: '/chargers/#help-me-choose' },
     { label: 'Chargers for your car', href: '/chargers/for/' },
+    { label: 'AC and home chargers', href: '/chargers/ac-chargers/' },
+    { label: 'DC fast chargers', href: '/chargers/dc-fast-chargers/' },
+    { label: '2W and 3W chargers', href: '/chargers/2w-3w-chargers/' },
+    { label: 'White-label chargers', href: '/chargers/white-label-chargers/' },
     { label: 'Batteries', href: '/batteries/' },
-    { label: 'Solar + EV charging', href: '/solar-ev-charging/' },
-    { label: 'Proline CMS', href: '/cms/' },
   ] },
-  { title: 'Tools and guides', links: [...tools.map((t) => ({ label: t.label, href: t.href })), { label: 'Blog', href: '/blog/' }, { label: 'FAQ', href: '/faq/' }, { label: 'Ask an expert', href: '/ask/' }] },
+  { title: 'Commercial and installation', links: [
+    { label: 'Plan a charging station', href: '/start-an-ev-charging-station/' },
+    { label: 'Fleets', href: '/for/fleets/' },
+    { label: 'Housing societies', href: '/for/housing-societies/' },
+    { label: 'Businesses', href: '/for/businesses/' },
+    { label: 'EV charger installation', href: '/services/ev-charger-installation/' },
+    { label: 'Site survey', href: '/services/site-survey/' },
+    { label: 'AMC and maintenance', href: '/services/ev-charger-amc/' },
+    { label: 'Solar + EV charging', href: '/solar-ev-charging/' },
+  ] },
+  { title: 'Brands and software', links: [
+    { label: 'For charger brands', href: '/for/charger-brands/' },
+    { label: 'EV makers and dealers', href: '/for/ev-makers-and-dealers/' },
+    { label: 'Government and PSUs', href: '/for/government-and-psu/' },
+    { label: 'Proline CMS', href: '/cms/' },
+    { label: 'Request a CMS demo', href: '/cms/demo/' },
+    ...tools.map((t) => ({ label: t.label, href: t.href })),
+  ] },
   { title: 'Company', links: [
+    { label: 'Our work', href: '/projects/' },
     { label: 'About Proline', href: '/about/' },
     { label: 'Contact', href: '/contact/' },
     { label: 'Coverage', href: '/coverage/' },
-    { label: 'Who we serve', href: '/for/' },
-    { label: 'Brands we work with', href: '/brands/' },
-    { label: 'Partner with us', href: '/partner-with-us/' },
+    { label: 'Blog', href: '/blog/' },
+    { label: 'FAQ', href: '/faq/' },
     { label: 'Join as a technician', href: '/join-as-technician/' },
   ] },
 ];
@@ -38,7 +51,7 @@ const cols = [
   <div class="wrap footer-top">
     <div class="footer-brand">
       <Logo variant="white" lazy />
-      <p>EV chargers of any brand, installed and commissioned across India. Based in {site.city}, working in 10 states.</p>
+      <p>Charger advice across brands, tie-up quotes and site installation. Based in {site.city}, working across India. We visit your site; there is no showroom or walk-in office.</p>
       <p class="footer-phone"><a href={`tel:${site.phoneE164}`}>{site.phoneDisplay}</a><span>{site.callHours} · {site.whatsappHours}</span></p>
       <div class="footer-actions">
         <a class="fbtn" href={waLink(site.whatsapp)} rel="noopener" target="_blank"><Icon name="whatsapp" size={16} />WhatsApp us</a>

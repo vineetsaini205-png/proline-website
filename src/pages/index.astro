@@ -1,247 +1,333 @@
 ---
-// Home page, release 1 (owner, 13 Nov: "focus on charger selling"; rule 17: 7 short sections, chargers first).
-//  1 hero: buying a charger or setting up a station, why us, two ways in + WhatsApp (owner, 13 Nov 16:18)   2 pick your car   3 charger cards (drawings, size, Get a quote)
-//  4 proof: numbers, cleared clients, real job photos   5 how it works   6 FAQ   7 contact
-// Proline CMS and the calculators live in the menu and the footer. Google reviews go in as a section
-// here only once the Business Profile has real reviews (never invented, rule 6).
+// Home page, strategy plan (adopted by the owner 13 Nov 2026), section 4: seven sections.
+//  1 what Proline does + four audience routes   2 proof of actual work   3 how we help you choose
+//  4 one home job and one commercial job   5 what happens on site   6 for brands and station operators
+//  7 common questions and the enquiry form
+// Main outcome: start a charger or site consultation. No prices (rule 1); no "best deal" or "cheapest".
+// Google reviews go in only once real ones exist (rule 6).
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import Photo from '../components/Photo.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
-import ChargerTypes from '../components/ChargerTypes.astro';
 import ChargerArt from '../components/ChargerArt.astro';
-import { chargerTypes } from '../data/charger-types';
 import site from '../data/site.json';
 import images from '../data/images.json';
 import { cars } from '../data/nav';
+import { chargerTypes } from '../data/charger-types';
 import { faqNode } from '../lib/schema';
 import { waLink } from '../lib/text';
 
-const title = 'Buy EV Charger with Installation | Proline Electrical Works';
-const description = 'Planning to buy an EV charger or set up a charging station? Proline compares chargers from many brands, gets you the best deal and installs it.';
+const title = 'EV Charger Advice & Installation in India | Proline';
+const description = 'Compare suitable charger options across brands. Delhi-based advice, tie-up quotes and site installation across India.';
+const waText = 'Hello Proline, I need help choosing a charger for my vehicle.';
 
-// Owner (13 Nov): lead with "we get you the best charger and the best deal". No "cheapest" (a superlative
-// price claim needs proof; decisions log 24 Oct) and no prices (rule 1).
-const ways = [
-  { label: 'Charger for my vehicle', href: '/chargers/#types', primary: true },
-  { label: 'Set up a charging station', href: '/start-an-ev-charging-station/' },
+const routes = [
+  { icon: 'car', title: 'For my vehicle', text: 'Car, two-wheeler or three-wheeler', cta: 'I need a charger for my vehicle', href: '/chargers/' },
+  { icon: 'station', title: 'For a commercial site', text: 'Fleet, society, business or charging station', cta: 'I want to set up charging at a site', href: '/start-an-ev-charging-station/' },
+  { icon: 'plug', title: 'For my charger brand', text: 'Installation and commissioning support', cta: 'I need an installation partner', href: '/for/charger-brands/' },
+  { icon: 'grid', title: 'For my stations', text: 'Software to run your chargers', cta: 'I want to see Proline CMS', href: '/cms/' },
 ];
-const whyUs = [
-  'Chargers from many brands, compared for you',
-  'The best deal for your budget when you buy and install with us',
-  'Charging stations handled end to end, from site survey to go-live',
-];
-// Hero shelf (owner, 13 Nov 16:24): show the chargers we sell instead of a site photo.
-const shelfNames: Record<string, string> = {
-  'wallbox-7': 'Home wallbox', 'wallbox-11': 'Three-phase wallbox', 'ac-post-22': 'AC charging post',
-  'lev-dc': 'Scooter and 3-wheeler', 'dc-60': 'DC fast charger', 'dc-120': 'Highway fast charger',
-};
-const shelf = Object.keys(shelfNames).map((k) => chargerTypes.find((t) => t.kind === k)!).map((t) => ({ ...t, short: shelfNames[t.kind] }));
-const dealMsg = 'Hello Proline, I found you on your website. I would like the best deal on an EV charger or a charging station.';
-
-const carChips = cars.map((c) => ({ label: c.label.replace(/ charger$/, ''), href: c.href }));
 
 const meta = images as Record<string, { alt: string; caption?: string }>;
-const jobs = ['job-basement-row', 'job-home-db-box', 'job-earth-pit', 'job-socket-test'].map((k) => ({ key: k, caption: meta[k].caption ?? meta[k].alt }));
 
-const how = [
-  { icon: 'clipboard', title: 'Survey', text: 'Photos on WhatsApp for most homes; a paid site visit for bigger sites, adjusted against your order.' },
-  { icon: 'cable', title: 'Civil and cabling', text: 'Cable sized for the load and the distance, with trenches, trays and foundations where the site needs them.' },
-  { icon: 'earth', title: 'Earthing', text: 'A dedicated earth for the charger, tested, with the reading written down for you.' },
-  { icon: 'gauge', title: 'Testing', text: 'Insulation, earth and RCD tests before the charger is switched on.' },
-  { icon: 'bolt', title: 'Commissioning', text: 'The charger set up in its app or on OCPP, and a test charge with your vehicle.' },
-  { icon: 'wrench', title: 'AMC', text: 'Planned visits and safety tests afterwards, if you want them.' },
+const checks = [
+  { icon: 'car', title: 'Your vehicle', text: 'The most AC power it accepts, its connector, and whether a charger came with it.' },
+  { icon: 'gauge', title: 'Available power', text: 'Single or three phase, and how much of your sanctioned load is free.' },
+  { icon: 'map', title: 'Parking', text: 'Where the vehicle parks, the cable route from the meter, and society rules.' },
+  { icon: 'clock', title: 'Charging time', text: 'How long it stays parked and how far it drives, which sets the kW you need.' },
+  { icon: 'wrench', title: 'Brand support', text: 'Local service, spares and app or OCPP support where you are.' },
+  { icon: 'shield', title: 'Warranty', text: 'What the maker covers, and who handles warranty calls and site visits.' },
+  { icon: 'clipboard', title: 'Complete installed cost', text: 'Charger, cable, protection, earthing and civil work together, not the charger alone.' },
+];
+
+const quoteIncludes = [
+  'The charger we suggest: brand, model and kW rating, and why it suits your vehicle and site',
+  'The installation scope: cable route and size, DB box and protection, earthing and any civil work',
+  'Testing and commissioning, with a test charge on your vehicle',
+  'Who handles installation, warranty calls and site visits afterwards',
+  'What is not included, written down, so you can compare quotes on the same scope',
+];
+
+const shelfKinds = ['wallbox-7', 'wallbox-11', 'ac-post-22', 'lev-dc', 'dc-60', 'dc-120'] as const;
+const shelf = shelfKinds.map((k) => chargerTypes.find((t) => t.kind === k)!);
+
+const jobs = [
+  {
+    photo: 'job-home-db-box', kind: 'Home installation',
+    title: '3.3 kW home charging point in a Maharashtra village',
+    facts: 'Jambhulni, Maharashtra · 18 May 2026 · 3.3 kW DB box and socket',
+    need: 'A safe, dedicated charging point at a house, with an earth good enough for daily charging.',
+    did: 'Mounted the DB box with its socket and protection, dug and finished an earth pit with a chamber, then tested the socket three times.',
+    handover: 'The car charged from the new point the same evening. Every step was photographed, geotagged and time-stamped by our field team.',
+  },
+  {
+    photo: 'job-basement-row', kind: 'Commercial installation',
+    title: '7.4 kW wallboxes as a multi-point network in a basement',
+    facts: 'Basement with live stack-parking systems · multiple 7.4 kW AC wallboxes',
+    need: 'Several charging points in a working basement, safe around cars and moving stack-parking platforms.',
+    did: 'Steel pedestal stands anchored to the floor, an acrylic shield on every charger, cables in galvanised trays, and an emergency stop and user QR signage at each point.',
+    handover: 'Each point was tested the same way as our home installs before it was handed over.',
+  },
+];
+
+const onSite = [
+  { title: 'Survey', text: 'Photos on WhatsApp for most homes; a paid site visit for bigger sites, adjusted against your order.' },
+  { title: 'Agreed scope', text: 'One written scope and our tie-up quote, with what is included and what is not.' },
+  { title: 'Civil and electrical work', text: 'Trenches, trays, foundations, cable, DB box and a tested earth.' },
+  { title: 'Installation', text: 'The charger mounted and connected to the maker’s manual.' },
+  { title: 'Testing and commissioning', text: 'Insulation, earth and RCD tests, app or OCPP setup, and a test charge with your vehicle.' },
 ];
 
 const faqs = [
-  { q: 'Do you sell and install chargers of any brand?', a: `Yes. Proline is brand-neutral: we help you choose a charger from the brands we work with, supply it, and install and commission it. We also install chargers you buy elsewhere, including the one that came with your car. We have installed chargers for ${site.clients.join(', ').replace(/, ([^,]*)$/, ' and $1')}.` },
-  { q: 'Which charger do I need for my car?', a: 'Many cars charge fastest at home on a 7.2–7.4 kW wall box, which runs on a normal single-phase supply; some accept 11 kW on a three-phase supply. Pick your car on our [chargers for your car](/chargers/for/) page to see the carmaker\'s own charging times.' },
-  { q: 'How much does an EV charger with installation cost?', a: 'It depends on the charger, the cable run from your meter or panel, the earthing and DB box, any civil work, and whether your connection needs more load. We don\'t publish prices because no two sites are the same; send us a few details or photos and we reply with one clear quote.' },
-  { q: 'Which states do you work in?', a: `We are based in Delhi and work across ${site.regions.flatMap((r) => r.states).join(', ')}. See the [coverage page](/coverage/).` },
-  { q: 'Can you run the chargers for my charging station too?', a: 'Yes. Proline CMS is our own software for charge point operators: chargers of any brand on one console, QR and UPI payments with automatic refunds, GST documents, in your brand and on your own server. [See Proline CMS](/cms/).' },
+  { q: 'My car came with a charger. Do I need to buy another one?', a: 'Often not. Many cars come with a portable or wall charger, and it needs a safe, dedicated point with the right protection and a good earth. We install the charger you already have. If you want faster charging, we check whether your car can use it before you buy. See [chargers for your car](/chargers/for/).' },
+  { q: 'Which kW rating do I need?', a: 'It depends on the most AC power your vehicle accepts, your electricity connection and how long it stays parked. Many cars charge fastest on a 7.2–7.4 kW wall box on a single-phase supply; a higher-rated AC charger does not make every car charge faster.' },
+  { q: 'Can you install a charger in society parking?', a: 'Yes. In an apartment the cable usually runs from your own meter to your parking slot, after the society agrees. We give you the technical details for the application. See [housing societies](/for/housing-societies/).' },
+  { q: 'What changes the quote?', a: 'The charger, the cable run from your meter or panel, the DB box and protection, earthing, any civil work, and whether your connection needs more load. We don’t publish prices because no two sites are the same; our tie-up quote states the full scope and what is excluded.' },
+  { q: 'Who handles the warranty?', a: 'The charger maker’s warranty covers the charger. Your quote states who handles warranty calls and site visits, and our own terms for the installation work.' },
+  { q: 'Can you install a charger I already own?', a: 'Yes. We install chargers of any brand, including one bought elsewhere or supplied with your car, and follow the maker’s manual for cable size, protection and earthing.' },
 ];
 ---
-<Base title={title} description={description} schema={[faqNode('/', faqs)]}>
-  <section class="hero hero-dark" aria-labelledby="hero-title">
-    <div class="wrap hero-wrap">
-      <div class="hero-copy">
-        <p class="eyebrow">Chargers from many brands</p>
-        <h1 id="hero-title">Planning to buy an <span class="underline-green">EV charger</span> or set up a charging station?</h1>
-        <p class="lead">Talk to us first. We find the right charger for your vehicle or site, and get you the best deal.</p>
-        <ul class="ticks hero-why" role="list">
-          {whyUs.map((w) => <li>{w}</li>)}
-        </ul>
-        <div class="btn-row hero-ways">
-          {ways.map((w) => (
-            <a class:list={['btn', 'btn-lg', w.primary ? 'btn-primary' : 'btn-ghost-light']} href={w.href}>{w.label}<Icon name="arrowRight" size={18} /></a>
-          ))}
+<Base title={title} description={description} schema={[faqNode('/', faqs)]} waText={waText}>
+  <section class="home-hero" aria-labelledby="hero-title">
+    <div class="wrap home-hero-grid">
+      <div class="hero-text">
+        <p class="hero-kicker">Proline Electrical Works · Delhi · Projects across India</p>
+        <h1 id="hero-title">Compare charger brands. Get a Proline tie-up quote. Have it installed.</h1>
+        <p class="hero-lead">Buying a charger for your vehicle or planning a commercial charging site? We help you choose the type, kW rating and brand around your requirements.</p>
+        <p class="hero-lead">We compare price, build quality, local service support and warranty terms. Our technical team also handles the survey, civil work, installation and commissioning.</p>
+        <div class="btn-row hero-actions">
+          <a class="btn btn-primary btn-lg" href={waLink(site.whatsapp, waText)} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} />Help me choose on WhatsApp</a>
+          <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call {site.phoneDisplay}</a>
         </div>
-        <a class="hero-wa" href={waLink(site.whatsapp, dealMsg)} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} />Get the best deal on WhatsApp</a>
+        <p class="hero-note">We visit your site. There is no showroom or walk-in office. Calls 10 am–7 pm, WhatsApp any time.</p>
       </div>
-      <div class="hero-shelf">
-        <p class="shelf-title" id="shelf-title">Chargers we supply and install</p>
-        <ul class="shelf" role="list" aria-labelledby="shelf-title">
+      <figure class="hero-photo">
+        <Photo name="job-dc-station" eager sizes="(max-width: 900px) 100vw, 540px" />
+        <figcaption>{meta['job-dc-station'].caption}</figcaption>
+      </figure>
+      <ul class="routes" role="list" aria-label="What do you need?">
+        {routes.map((r) => (
+          <li>
+            <a href={r.href}>
+              <span class="route-icon"><Icon name={r.icon} size={22} /></span>
+              <span class="route-text"><strong>{r.title}</strong><span>{r.text}</span><em>{r.cta}<Icon name="arrowRight" size={16} /></em></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section home-proof" aria-labelledby="proof-title">
+    <div class="wrap proof-grid">
+      <figure class="proof-photo">
+        <Photo name="job-basement-points" sizes="(max-width: 900px) 100vw, 420px" />
+        <figcaption>{meta['job-basement-points'].caption} · Bolt.Earth chargers installed by Proline</figcaption>
+      </figure>
+      <div>
+        <SectionHead eyebrow="Proof of our work" title="Installation work for networks, carmakers and homes" id="proof-title" />
+        <p class="proof-clients">We have done installation work for <strong>{site.clients.slice(0, -1).join(', ')} and {site.clients.at(-1)}</strong>.</p>
+        <dl class="proof-stats">
+          {site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
+        </dl>
+        <p class="proof-more"><a class="link-arrow" href="/projects/">See our work<Icon name="arrowRight" size={16} /></a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="choose-title">
+    <div class="wrap">
+      <SectionHead eyebrow="How we help you choose" title="What we check before we suggest a charger" lead="A charger is right only when it suits the vehicle, the supply and the parking. We check these first, then compare brands." id="choose-title" />
+      <ul class="checks-grid" role="list">
+        {checks.map((c) => <li><span class="check-icon"><Icon name={c.icon} size={20} /></span><div><h3>{c.title}</h3><p>{c.text}</p></div></li>)}
+      </ul>
+      <div class="quote-box">
+        <h3>What our tie-up quote includes</h3>
+        <p>We work with several charger brands, so the quote is for the charger that fits, supplied through our tie-ups and installed by our team. A better deal is one that compares the same charger, scope, warranty and support.</p>
+        <ul class="ticks">{quoteIncludes.map((q) => <li>{q}</li>)}</ul>
+      </div>
+      <div class="shelf-wrap">
+        <h3 class="shelf-title">What the chargers look like</h3>
+        <ul class="shelf" role="list">
           {shelf.map((t) => (
             <li>
               <a href={t.href}>
                 <ChargerArt kind={t.kind} label={`Drawing of a typical ${t.name.toLowerCase()}`} />
                 <span class="shelf-tag">{t.tag}</span>
-                <span class="shelf-name">{t.short}</span>
+                <span class="shelf-name">{t.name}</span>
               </a>
             </li>
           ))}
         </ul>
-        <a class="shelf-all" href="/chargers/#types">All 11 charger types and sizes<Icon name="arrowRight" size={16} /></a>
+        <p class="shelf-links">
+          <a class="link-arrow" href="/chargers/#types">All 11 charger types and sizes<Icon name="arrowRight" size={16} /></a>
+          <span class="shelf-cars">Your car: {cars.map((c, i) => <>{i > 0 && ' · '}<a href={c.href}>{c.label.replace(/ charger$/, '')}</a></>)}</span>
+        </p>
       </div>
     </div>
   </section>
 
-  <section class="section home-cars" aria-labelledby="cars-title">
+  <section class="section" aria-labelledby="jobs-title">
     <div class="wrap">
-      <SectionHead eyebrow="Charger for your car" title="Pick your car" lead="See which home charger suits it, with the carmaker's own charging times, and what installing it involves." id="cars-title" />
-      <ul class="car-chips" role="list">
-        {carChips.map((c) => <li><a class="car-chip" href={c.href}><Icon name="car" size={20} />{c.label}</a></li>)}
-        <li><a class="car-chip car-chip-all" href="/chargers/for/">All cars<Icon name="arrowRight" size={16} /></a></li>
-      </ul>
-    </div>
-  </section>
-
-  <section class="section section-soft" id="chargers" aria-labelledby="chargers-title">
-    <div class="wrap">
-      <div class="shead-row">
-        <SectionHead eyebrow="Chargers" title="Chargers we supply and install" lead="What each one looks like and how big it is. Tap Get a quote: we suggest the exact brand and model for your vehicle, supply and budget." id="chargers-title" />
-        <a class="link-arrow" href="/chargers/#types">All 11 types and sizes<Icon name="arrowRight" size={16} /></a>
-      </div>
-      <ChargerTypes only={['home-socket', 'wallbox-7', 'wallbox-11', 'dc-60']} />
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="proof-title">
-    <div class="wrap">
-      <SectionHead eyebrow="Our work" title="Chargers installed for networks, brands, businesses and homes" id="proof-title" />
-      <dl class="proof-stats" aria-label="Proline in numbers">
-        {site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
-      </dl>
-      <p class="proof-clients">Installed for <b>{site.clients.join(' · ')}</b></p>
-      <div class="job-strip swipe">
+      <SectionHead eyebrow="Two jobs" title="One home installation and one commercial job" id="jobs-title" />
+      <div class="jobs">
         {jobs.map((j) => (
-          <figure class="job">
-            <Photo name={j.key} sizes="(max-width: 760px) 82vw, 290px" />
-            <figcaption>{j.caption}</figcaption>
-          </figure>
+          <article class="job">
+            <Photo name={j.photo} sizes="(max-width: 900px) 100vw, 560px" />
+            <div class="job-body">
+              <p class="job-kind">{j.kind}</p>
+              <h3>{j.title}</h3>
+              <p class="job-facts">{j.facts}</p>
+              <dl>
+                <dt>What the site needed</dt><dd>{j.need}</dd>
+                <dt>What Proline did</dt><dd>{j.did}</dd>
+                <dt>Handover</dt><dd>{j.handover}</dd>
+              </dl>
+            </div>
+          </article>
         ))}
       </div>
+      <p class="center" style="margin-top:22px"><a class="link-arrow" href="/projects/">More of our work<Icon name="arrowRight" size={16} /></a></p>
     </div>
   </section>
 
-  <section class="section section-soft" aria-labelledby="how-title">
+  <section class="section section-soft" aria-labelledby="site-title">
     <div class="wrap">
-      <div class="shead-row">
-        <SectionHead eyebrow="How it works" title="From survey to a charger you can trust" id="how-title" />
-        <a class="link-arrow" href="/services/ev-charger-installation/">How installation works<Icon name="arrowRight" size={16} /></a>
-      </div>
-      <ol class="how" role="list">
-        {how.map((h, i) => (
-          <li>
-            <span class="how-icon"><Icon name={h.icon} size={22} /></span>
-            <h3><span class="how-n">{i + 1}</span>{h.title}</h3>
-            <p>{h.text}</p>
-          </li>
-        ))}
+      <SectionHead eyebrow="What happens on site" title="From survey to the first charge" id="site-title" />
+      <ol class="onsite" role="list">
+        {onSite.map((s, i) => <li><span class="onsite-n">{i + 1}</span><h3>{s.title}</h3><p>{s.text}</p></li>)}
       </ol>
+      <p style="margin-top:20px"><a class="link-arrow" href="/services/ev-charger-installation/">How installation works<Icon name="arrowRight" size={16} /></a></p>
     </div>
   </section>
 
-  <section class="section" aria-labelledby="faq-title">
+  <section class="section" aria-labelledby="b2b-title">
+    <div class="wrap">
+      <SectionHead eyebrow="For brands and station operators" title="Installation partner and charging software" id="b2b-title" />
+      <div class="b2b">
+        <div class="b2b-card">
+          <h3>Installation partnership for charger brands</h3>
+          <p>We install and commission the chargers your customers buy, to your manual and your checklist, and send a handover report with test readings and photos for every site.</p>
+          <a class="btn btn-outline" href="/for/charger-brands/">Discuss an installation partnership<Icon name="arrowRight" size={18} /></a>
+        </div>
+        <div class="b2b-card">
+          <h3>Proline CMS for charging stations</h3>
+          <p>Software to run chargers of many brands in your own brand. No Proline commission on charging payments and no monthly fee per charger; other costs are explained in the proposal.</p>
+          <a class="btn btn-outline" href="/cms/demo/">Request a CMS demo<Icon name="arrowRight" size={18} /></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft" aria-labelledby="faq-title">
     <div class="wrap-narrow">
-      <SectionHead eyebrow="FAQ" title="Questions we are often asked" center id="faq-title" />
+      <SectionHead eyebrow="Common questions" title="Before you buy a charger" center id="faq-title" />
       <Faqs items={faqs} />
-      <p class="center" style="margin-top:20px"><a class="link-arrow" href="/faq/">More answers<Icon name="arrowRight" size={16} /></a></p>
     </div>
   </section>
 
-  <CtaBand />
+  <CtaBand title="Start with your vehicle and site" lead="Send your vehicle model, city and parking. We reply with suitable chargers and the work your site needs." variant="quote" waText={waText} />
 </Base>
 
 <style>
-  .hero-why { margin: 22px 0 0; padding: 0; color: #DCE6F2; font-size: 16px; line-height: 1.45; }
-  .hero-why li::before { background-color: rgba(19, 178, 107, .18); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2313B26B' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E"); }
-  .hero-ways { flex-wrap: wrap; }
-  .hero-wa { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--white); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, .35); text-underline-offset: 4px; }
-  .hero-wa :global(svg) { color: var(--green); }
-  .hero-wa:hover { text-decoration-color: var(--green); color: var(--white); }
-  .hero-ways .btn { gap: 8px; }
-  .hero-shelf { background: var(--soft); border-radius: var(--radius-xl); padding: 20px 20px 18px; color: var(--body); }
-  .shelf-title { margin: 0 0 14px; font-family: var(--font-head); font-weight: 700; font-size: 17px; color: var(--ink); }
-  .shelf { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .shelf a { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; padding: 10px 8px 12px; background: var(--white); border: 1px solid var(--line); border-radius: 14px; color: var(--ink); text-decoration: none; text-align: center; transition: border-color .15s, box-shadow .15s; }
-  .shelf a:hover { border-color: var(--green); box-shadow: 0 6px 18px rgba(11, 37, 69, .10); color: var(--ink); }
-  .shelf a :global(svg.charger-art) { width: 100%; max-width: 128px; }
-  .shelf-tag { font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--green-text); background: var(--green-50); border-radius: 999px; padding: 3px 9px; }
+  .home-hero { background: var(--page); border-bottom: 1px solid var(--line); }
+  .home-hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "text photo" "routes routes"; gap: 28px 48px; padding-top: 44px; padding-bottom: 40px; align-items: center; }
+  .hero-text { grid-area: text; }
+  .hero-photo { grid-area: photo; margin: 0; }
+  .routes { grid-area: routes; }
+  .hero-kicker { font-size: 15px; font-weight: 600; color: var(--green-text); margin-bottom: 14px; }
+  .home-hero h1 { font-size: clamp(30px, 3.3vw, 42px); }
+  .hero-lead { margin-top: 16px; font-size: 17px; line-height: 1.6; color: var(--body); max-width: 600px; }
+  .hero-actions { margin-top: 24px; }
+  .hero-note { margin-top: 14px; font-size: 14.5px; color: var(--muted); }
+  .hero-photo :global(img) { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-xl); background: var(--soft); }
+  .hero-photo figcaption, .proof-photo figcaption { margin-top: 8px; font-size: 14px; color: var(--muted); }
+
+  .routes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  .routes a { display: flex; gap: 12px; height: 100%; padding: 16px; background: var(--white); border: 1px solid var(--line-strong); border-radius: var(--radius-lg); text-decoration: none; color: var(--body); transition: border-color .15s; }
+  .routes a:hover { border-color: var(--green-text); color: var(--body); }
+  .route-icon { flex: none; display: inline-flex; width: 40px; height: 40px; align-items: center; justify-content: center; border-radius: 6px; background: var(--green-50); color: var(--green-text); }
+  .route-text { display: flex; flex-direction: column; gap: 2px; }
+  .route-text strong { color: var(--ink); font-size: 16.5px; }
+  .route-text > span { font-size: 14.5px; color: var(--muted); }
+  .route-text em { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-style: normal; font-weight: 600; font-size: 14.5px; color: var(--green-text); }
+
+  .proof-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 40px; align-items: center; }
+  .proof-photo { margin: 0; }
+  .proof-photo :global(img) { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-xl); }
+  .proof-clients { margin-top: 14px; font-size: 16.5px; }
+  .proof-clients strong { color: var(--ink); }
+  .proof-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px; margin: 22px 0 0; }
+  .proof-stats div { border-left: 3px solid var(--green-text); padding-left: 14px; }
+  .proof-stats dt { font-weight: 700; font-size: 26px; line-height: 1.15; color: var(--ink); }
+  .proof-stats dd { margin: 2px 0 0; font-size: 14.5px; color: var(--muted); }
+  .proof-more { margin-top: 20px; }
+
+  .checks-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+  .checks-grid li { display: flex; gap: 12px; padding: 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  .check-icon { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 6px; background: var(--green-50); color: var(--green-text); }
+  .checks-grid h3 { font-size: 16.5px; }
+  .checks-grid p { margin-top: 2px; font-size: 14.5px; color: var(--muted); }
+  .quote-box { margin-top: 24px; padding: 22px 24px; background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--green-text); border-radius: var(--radius-lg); }
+  .quote-box h3 { font-size: 19px; }
+  .quote-box > p { margin-top: 8px; color: var(--body); }
+  .quote-box .ticks { margin-top: 14px; }
+  .shelf-wrap { margin-top: 32px; }
+  .shelf-title { font-size: 19px; margin-bottom: 14px; }
+  .shelf { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+  .shelf a { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; padding: 10px 8px 12px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); color: var(--ink); text-decoration: none; text-align: center; }
+  .shelf a:hover { border-color: var(--green-text); color: var(--ink); }
+  .shelf a :global(svg.charger-art) { width: 100%; max-width: 120px; }
+  .shelf-tag { font-size: 12.5px; font-weight: 700; color: var(--green-text); background: var(--green-50); border-radius: 999px; padding: 2px 9px; }
   .shelf-name { font-size: 13.5px; font-weight: 600; line-height: 1.3; }
-  .shelf-all { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; font-weight: 600; font-size: 15px; color: var(--green-text); text-decoration: none; }
-  .shelf-all:hover { text-decoration: underline; }
+  .shelf-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 16px; }
+  .shelf-cars { font-size: 14.5px; color: var(--muted); }
+  .shelf-cars a { color: var(--ink); font-weight: 600; }
 
-  .home-cars { padding-bottom: 8px; }
-  .car-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
-  .car-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 18px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--white); color: var(--ink); font-weight: 600; text-decoration: none; white-space: nowrap; transition: border-color .15s, background .15s; }
-  .car-chip :global(svg) { color: var(--green-text); }
-  .car-chip:hover { border-color: var(--green); background: var(--green-50); color: var(--ink); }
-  .car-chip-all { background: var(--navy); border-color: var(--navy); color: var(--white); }
-  .car-chip-all :global(svg) { color: var(--green); }
-  .car-chip-all:hover { background: var(--navy-700); border-color: var(--navy-700); color: var(--white); }
+  .jobs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .job { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column; }
+  .job :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+  .job-body { padding: 18px 20px 22px; }
+  .job-kind { font-size: 14px; font-weight: 600; color: var(--green-text); }
+  .job h3 { margin-top: 4px; font-size: 19px; }
+  .job-facts { margin-top: 6px; font-size: 14px; color: var(--muted); }
+  .job dl { margin: 14px 0 0; display: grid; gap: 4px; }
+  .job dt { font-weight: 600; color: var(--ink); font-size: 15px; margin-top: 8px; }
+  .job dd { margin: 0; font-size: 15px; }
 
-  .proof-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 28px; margin: 0; }
-  .proof-stats div { border-left: 3px solid var(--green); padding-left: 14px; }
-  .proof-stats dt { font-family: var(--font-head); font-weight: 800; font-size: clamp(24px, 2.6vw, 32px); line-height: 1.1; color: var(--ink); }
-  .proof-stats dd { margin: 4px 0 0; font-size: 14px; line-height: 1.4; color: var(--muted); }
-  .proof-clients { margin: 18px 0 0; font-size: 15px; color: var(--muted); }
-  .proof-clients b { color: var(--ink); }
-  .job-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
-  .job { margin: 0; border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; background: var(--white); }
-  .job :global(img) { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: var(--navy-50); }
-  .job figcaption { padding: 10px 14px 14px; font-size: 14px; line-height: 1.45; color: var(--body); }
+  .onsite { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .onsite li { padding: 18px 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  .onsite-n { display: inline-flex; width: 30px; height: 30px; align-items: center; justify-content: center; border-radius: 6px; background: var(--navy); color: var(--white); font-weight: 700; font-size: 15px; }
+  .onsite h3 { margin-top: 10px; font-size: 16.5px; }
+  .onsite p { margin-top: 4px; font-size: 14.5px; color: var(--muted); }
 
-  .how { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-  .how li { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 20px 20px 22px; }
-  .how-icon { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 12px; background: var(--green-50); color: var(--green-text); }
-  .how h3 { display: flex; align-items: baseline; gap: 6px; margin: 12px 0 0; font-size: 16.5px; }
-  .how-n { color: var(--green-text); font-size: 14px; }
-  .how-n::after { content: "."; }
-  .how p { margin: 6px 0 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+  .b2b { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+  .b2b-card { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 24px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); }
+  .b2b-card h3 { font-size: 19px; }
+  .b2b-card .btn { margin-top: auto; }
 
+  @media (max-width: 1100px) {
+    .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .onsite { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
   @media (max-width: 900px) {
-    /* Phones: the chargers come straight after the heading, then the buttons, then the reasons */
-    .hero-wrap { gap: 0; }
-    .hero-copy { display: contents; }
-    .hero-copy > .eyebrow { order: 0; justify-self: start; }
-    .hero-copy > h1 { order: 1; }
-    .hero-copy > .lead { order: 2; }
-    .hero-shelf { order: 3; margin: 20px 0 0; padding: 14px 14px 12px; }
-    .hero-ways { order: 4; }
-    .hero-wa { order: 5; justify-self: start; }
-    .hero-why { order: 6; }
-    .shelf-title { font-size: 15px; margin-bottom: 10px; }
-    .shelf { display: flex; overflow-x: auto; gap: 8px; margin: 0 -14px; padding: 0 14px 4px; scrollbar-width: none; scroll-snap-type: x proximity; }
-    .shelf::-webkit-scrollbar { display: none; }
-    .shelf li { flex: 0 0 112px; scroll-snap-align: start; }
-    .shelf a { padding: 8px 6px 10px; }
-    .shelf a :global(svg.charger-art) { max-width: 82px; }
-    .shelf-name { font-size: 12.5px; }
-    .shelf-all { margin-top: 10px; font-size: 14px; }
-    .hero-copy .hero-ways { grid-template-columns: 1fr; }
-    .hero-ways .btn { justify-content: space-between; }
+    /* Phones and tablets: the four routes come before the photo (plan: don't let a photo push them down) */
+    .home-hero-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "routes" "photo"; gap: 22px; padding-top: 26px; padding-bottom: 28px; }
+    .proof-grid, .jobs, .b2b { grid-template-columns: minmax(0, 1fr); }
+    .proof-grid { gap: 24px; }
   }
   @media (max-width: 760px) {
-    .car-chips { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; scroll-snap-type: x proximity; }
-    .car-chips::-webkit-scrollbar { display: none; }
-    .car-chips li { flex: none; scroll-snap-align: start; }
-    .proof-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .job-strip { display: flex; margin-top: 22px; }
-    .how { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .how li { padding: 14px 12px; }
-    .how p { font-size: 13.5px; }
+    .hero-actions { display: grid; grid-template-columns: 1fr; }
+    .hero-actions .btn { width: 100%; }
+    .routes { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+    .routes a { padding: 14px; }
+    .shelf { display: flex; overflow-x: auto; gap: 10px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 4px; scrollbar-width: none; }
+    .shelf::-webkit-scrollbar { display: none; }
+    .shelf li { flex: 0 0 132px; }
+    .onsite { grid-template-columns: minmax(0, 1fr); }
+    .quote-box { padding: 18px; }
   }
 </style>

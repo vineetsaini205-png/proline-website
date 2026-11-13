@@ -39,7 +39,7 @@ faqs:
     a: It depends on the model's features and warranty, and on the installation your site needs, such as the cable run, DB box and earthing. Send us your car model and photos of your meter and parking spot, and we give one quote for the charger and its installation.
 related:
   - /services/home-ev-charger-installation/
-  - /tools/charger-finder/
+  - /chargers/#help-me-choose
   - /chargers/dc-fast-chargers/
   - /services/ev-charger-db-box/
   - /for/housing-societies/
@@ -107,4 +107,4 @@ A 7.4 kW charger draws 32 A for hours at a time, so the work behind it matters a
 
 [Home EV charger installation](/services/home-ev-charger-installation/) explains how the job runs at a house or in a housing society.
 
-Not sure which size suits your car and supply? The [charger finder](/tools/charger-finder/) suggests a charger type and power in a minute, or send us your car model and a photo of your meter on WhatsApp.
+Not sure which size suits your car and supply? The [charger finder](/chargers/#help-me-choose) suggests a charger type and power in a minute, or send us your car model and a photo of your meter on WhatsApp.

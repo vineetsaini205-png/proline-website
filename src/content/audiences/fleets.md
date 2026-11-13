@@ -40,14 +40,13 @@ faqs:
   - q: Can you supply batteries for our e-rickshaws or scooters?
     a: "Yes. We supply e-rickshaw and 2-wheeler batteries of different brands, and battery storage (BESS) for depots and charging hubs. Tell us the vehicle model, the battery voltage and how many packs you need; see [batteries](/batteries/)."
   - q: What does an e-bus depot need?
-    a: "High-power DC chargers, usually on an HT connection with its own transformer, and bays laid out for bus lengths and turning. The Ministry of Power's 2024 guidelines ask e-bus depots to install chargers of at least 240 kW ([guidelines, Sep 2024](https://beeindia.gov.in/WriteReadData/L45218/2841453721548450.pdf)). See [bus and truck chargers](/chargers/bus-truck-chargers/)."
+    a: "High-power DC chargers, usually on an HT connection with its own transformer, and bays laid out for bus lengths and turning. The Ministry of Power's 2024 guidelines ask e-bus depots to install chargers of at least 240 kW ([guidelines, Sep 2024](https://beeindia.gov.in/WriteReadData/L45218/2841453721548450.pdf)). See [bus and truck chargers](/for/fleets/)."
 related:
-  - /tools/charger-finder/
-  - /chargers/bus-truck-chargers/
+  - /chargers/#help-me-choose
   - /batteries/
   - /chargers/2w-3w-chargers/
   - /services/dc-fast-charger-installation/
-  - /cms/features/
+  - /cms/
 updated: 2026-10-24
 ---
 
@@ -85,7 +84,7 @@ Energy at your own depot is billed at your connection's tariff, while drivers pa
 | Vans and light trucks | Overnight and between trips | 30–60 kW DC, or AC where vehicles stand all night |
 | E-buses and heavy trucks | At the depot, overnight and between trips | High-power DC on HT supply; at least 240 kW per charger at e-bus depots under the 2024 guidelines |
 
-Light EVs use IS 17017-2-6 "Type 6" connectors for DC charging, and IS 17017-2-7 "Type 7" (LECCS), which takes both AC and DC charging through one inlet. Lead-acid e-rickshaw batteries give off hydrogen while charging, so a hub that charges them needs good ventilation, with socket points on their own circuits, RCD protection and a sound earth. See [2W and 3W chargers](/chargers/2w-3w-chargers/) and [bus and truck chargers](/chargers/bus-truck-chargers/).
+Light EVs use IS 17017-2-6 "Type 6" connectors for DC charging, and IS 17017-2-7 "Type 7" (LECCS), which takes both AC and DC charging through one inlet. Lead-acid e-rickshaw batteries give off hydrogen while charging, so a hub that charges them needs good ventilation, with socket points on their own circuits, RCD protection and a sound earth. See [2W and 3W chargers](/chargers/2w-3w-chargers/) and [bus and truck chargers](/for/fleets/).
 
 ## Power for the depot
 
@@ -96,6 +95,42 @@ Light EVs use IS 17017-2-6 "Type 6" connectors for DC charging, and IS 17017-2-7
 - **Room to grow.** Spare ducts in every trench, spare ways in the panel and a transformer sized for the next phase cost far less now than digging up the depot later.
 
 The connection or load increase is taken in your name; we work out the load to apply for and tell you what to prepare.
+
+## Bus and truck depots
+
+### What an electric bus charger does
+
+A bus charger is a DC fast charger built for big batteries and long sessions. A 12 m city bus planned to run all day on one charge typically carries more than 300 kWh of battery ([WRI India, 2023](https://wri-india.org/perspectives/how-should-indian-cities-plan-their-charging-infrastructure-and-electric-bus)), several times a car's. So depots use chargers of 120 to 240 kW, usually with CCS2 guns, and larger depots use systems that share power across many guns.
+
+Charging time is the energy a bus needs divided by the power it takes. A bus that needs 240 kWh overnight takes about two hours on a 120 kW gun at full power, and longer as charging slows near full. Some buses have two charging inlets, so a dual-gun charger can feed one bus through both and roughly halve the time ([Autocar Professional, Jan 2026](https://www.autocarpro.in/opinion-column/high-power-charging-infrastructure-for-e-buses-and-e-trucks-in-the-indian-context-130647)).
+
+| How vehicles charge | Power | Where | Suits |
+|---|---|---|---|
+| Depot charging by cable | 120–240 kW per charger, CCS2 | At the depot, overnight and between shifts | Most city buses, and trucks that return to base |
+| Power cabinet with dispensers | Shared across many guns | Large depots | Many vehicles charging at once on one connection |
+| Opportunity charging | High power for a few minutes, often by pantograph | Route ends and terminals | Long routes, with buses built for it |
+
+Opportunity charging tops a bus up during layovers, often through a pantograph that connects from the roof or a mast instead of a cable. It lets buses run longer routes, but it needs buses built for it and chargers at the terminals, so it is planned with the bus maker and the transport operator. For most fleets, depot charging by cable is simpler.
+
+### Transformer and HT supply
+
+Add up the input power of every charger: ten 240 kW chargers need about 2.5 MW at full load, before lights and workshops. The central guidelines let charging stations take an LT connection only up to 150 kW ([Lok Sabha answer, Dec 2024](https://eparlib.sansad.in/bitstream/123456789/2985666/1/AS254_WdMGkS.pdf)), so most depots need an HT connection, usually at 11 kV or more, with:
+
+- **its own transformer,** or two, so one can keep essential charging going if the other fails
+- **HT switchgear** and the DISCOM's metering
+- **LT panels** with a breaker for each charger
+- **space for the transformer yard,** with a plinth, fencing and earthing
+
+The connection is taken in the depot owner's name, and the DISCOM may need to upgrade its line or substation, so apply early. We tell you the load to apply for and what to prepare.
+
+A battery can help. A BESS supplies part of the peak, so the depot needs a smaller contract demand, and it can store power from solar on depot roofs and canopies. Delhi's EV Policy 2026 says DISCOMs will explore energy storage at electric bus depots ([Daily Pioneer, 2 Jul 2026](https://www.dailypioneer.com/news/slug-lite/delhi-notifies-ev-policy-2026-subsidies-within-60-days?year=2026)). See [BESS for charging stations](/batteries/bess-for-ev-charging/).
+
+### Electric trucks
+
+- **Small electric cargo vehicles** charge much like cars, on AC or on 30–60 kW DC chargers. See [DC fast chargers](/chargers/dc-fast-chargers/).
+- **Heavy electric trucks** carry large batteries and charge on high-power DC chargers, like buses, at depots and at hubs on their routes.
+- **Charging while loading.** At warehouses and factories, chargers beside the loading bays top trucks up while they load and unload.
+- **Megawatt charging.** The Megawatt Charging System (MCS) for the largest trucks is emerging abroad, but India has no standard for it yet ([Autocar Professional, Jan 2026](https://www.autocarpro.in/opinion-column/high-power-charging-infrastructure-for-e-buses-and-e-trucks-in-the-indian-context-130647)).
 
 ## Batteries for e-rickshaws, scooters and depots
 
@@ -124,7 +159,7 @@ It suits a fleet that bills partner fleets or drivers on leased vehicles at its 
 
 ## Why Proline
 
-We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians, so depots in different states can follow one design. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
+We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians, so depots in different states can follow one design. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 ## What to send us
 
@@ -137,4 +172,4 @@ On [WhatsApp](https://wa.me/917303887364), by email to Sales@prolineelectricalwo
 5. Chargers and batteries you already use, and your current software
 6. Other depots or cities in your plan
 
-Not sure which chargers suit your vehicles? The [charger finder](/tools/charger-finder/) suggests a charger type and power for a depot in a minute.
+Not sure which chargers suit your vehicles? The [charger finder](/chargers/#help-me-choose) suggests a charger type and power for a depot in a minute.

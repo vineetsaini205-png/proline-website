@@ -56,7 +56,7 @@ related:
   - /services/ev-charger-commissioning/
   - /services/ev-charger-earthing/
   - /cms/
-  - /for/charge-point-operators/
+  - /start-an-ev-charging-station/
   - /for/housing-societies/
   - /tools/installation-checklist/
 updated: 2026-10-24
@@ -121,7 +121,7 @@ Each contract is agreed with you, and what it includes is written into it:
 
 ## Who our AMC is for
 
-- **Charge point operators** with many sites across states: one checklist and one report format in every city, so charging station maintenance is done the same way at every site. See [charge point operators](/for/charge-point-operators/).
+- **Charge point operators** with many sites across states: one checklist and one report format in every city, so charging station maintenance is done the same way at every site. See [charge point operators](/start-an-ev-charging-station/).
 - **Businesses:** offices, hotels, malls, hospitals and fuel stations with chargers for staff, guests or the public.
 - **Housing societies:** shared chargers in common parking, with a report the managing committee can keep on record. See [housing societies](/for/housing-societies/).
 - **Fleets:** depot chargers for cabs, delivery vehicles, e-rickshaws and buses.
@@ -141,6 +141,6 @@ If your chargers run on [Proline CMS](/cms/), it shows the live status of every 
 
 ## Where we work
 
-We are based in Delhi and maintain chargers in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA, and our network has grown to 200+ technicians.
+We are based in Delhi and maintain chargers in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower, and our network has grown to 200+ technicians.
 
 For a quote, send your list of chargers and sites through the form below, or send photos of the chargers and DB boxes on WhatsApp. Adding new chargers too? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work they need in a minute.

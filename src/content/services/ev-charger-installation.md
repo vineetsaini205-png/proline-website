@@ -90,11 +90,11 @@ In practice that means:
 - **Homes:** a wall box in your parking, with its own DB box and earthing. See [home EV charger installation](/services/home-ev-charger-installation/).
 - **Housing societies:** shared or private chargers in common parking, with the society's NOC and fair billing. See [housing societies](/for/housing-societies/).
 - **Businesses:** offices, hotels, malls, hospitals and fuel stations that want chargers for staff, guests or the public. See [businesses](/for/businesses/).
-- **Charge point operators and charger brands:** crews that install and commission to your checklist, in many cities. See [charge point operators](/for/charge-point-operators/) and [charger brands](/for/charger-brands/).
+- **Charge point operators and charger brands:** crews that install and commission to your checklist, in many cities. See [charge point operators](/start-an-ev-charging-station/) and [charger brands](/for/charger-brands/).
 - **Fleets:** depot charging for cabs, delivery vehicles, e-rickshaws and buses. See [fleets](/for/fleets/).
 
 ## Where we install
 
-We are based in Delhi and install chargers in Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
+We are based in Delhi and install chargers in Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Not sure what your installation needs? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work for your charger and site in a minute.

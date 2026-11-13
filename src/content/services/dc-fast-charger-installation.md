@@ -41,10 +41,9 @@ faqs:
     a: It depends on your vehicles, how long they stop and your power supply. 30–60 kW suits city sites, fleets and dealerships; 120–240 kW suits highways and depots where vehicles need a quick top-up. We work with many brands and help you choose for free; see [DC fast chargers](/chargers/dc-fast-chargers/).
 related:
   - /chargers/dc-fast-chargers/
-  - /services/ev-charging-station-setup/
+  - /start-an-ev-charging-station/
   - /services/ev-charging-civil-work/
   - /tools/ev-charging-station-earnings-calculator/
-  - /for/charge-point-operators/
   - /services/ev-charger-commissioning/
 updated: 2026-10-24
 ---
@@ -106,6 +105,6 @@ Once the power is on, we commission the charger: insulation and earth tests, pro
 
 ## Where we install DC chargers
 
-We are based in Delhi and install DC chargers in all 10 states we work in, for charge point operators, fleets, dealerships and businesses. We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA. Operators rolling out many sites can see how we work with them on [charge point operators](/for/charge-point-operators/).
+We are based in Delhi and install DC chargers in all 10 states we work in, for charge point operators, fleets, dealerships and businesses. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. Operators rolling out many sites can see how we work with them on [charge point operators](/start-an-ev-charging-station/).
 
 Planning a DC charger as a business? The [earnings calculator](/tools/ev-charging-station-earnings-calculator/) shows what it could earn at your state's EV tariff.

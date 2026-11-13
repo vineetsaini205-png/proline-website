@@ -38,14 +38,14 @@ faqs:
   - q: Can you connect the charger to our CMS?
     a: "Yes. We set up the charger's network and its OCPP connection with the backend URL, charge point ID and security details you give us, then check that a test session, its energy and the charger's status show up in your CMS. If you don't run one yet, [Proline CMS](/cms/) is our own."
   - q: Do you commission to our checklist and handover format?
-    a: "Yes. For charge point operators and charger brands we follow your checklist, take the photos you ask for and fill in your handover format, in many cities. See [charge point operators](/for/charge-point-operators/) and [charger brands](/for/charger-brands/)."
+    a: "Yes. For charge point operators and charger brands we follow your checklist, take the photos you ask for and fill in your handover format, in many cities. See [charge point operators](/start-an-ev-charging-station/) and [charger brands](/for/charger-brands/)."
   - q: What is in the handover pack?
     a: "The test results with the measured values, photos of the installation, the charger's settings, such as its network, OCPP details, firmware version and current limit, and the maker's manual and warranty papers. The people who will use the charger also get a short session on using it safely."
   - q: Why won't my new charger start a charge?
     a: "Common causes are an earth fault or a high neutral-to-earth voltage, low voltage at the end of a long cable run, a missing phase or the wrong phase sequence on a three-phase charger, or a charger waiting for authorisation from an app, RFID card or CMS it isn't connected to. The car can be the cause too, if a charging schedule or charge limit is set. Commissioning checks each of these before handover."
 related:
   - /cms/
-  - /for/charge-point-operators/
+  - /start-an-ev-charging-station/
   - /for/charger-brands/
   - /services/ev-charger-earthing/
   - /services/ev-charger-installation/
@@ -122,10 +122,10 @@ Operators and brands need the same result on every site, whoever does the work. 
 - your OCPP settings, with your operations team bringing each charger online in your CMS
 - your handover format, signed off on site
 
-The job is done when the charger shows online in your CMS and a test session has completed. For brands, every unit your customers buy is commissioned and documented the same way, which helps when a warranty claim comes in later. See [charge point operators](/for/charge-point-operators/) and [charger brands](/for/charger-brands/).
+The job is done when the charger shows online in your CMS and a test session has completed. For brands, every unit your customers buy is commissioned and documented the same way, which helps when a warranty claim comes in later. See [charge point operators](/start-an-ev-charging-station/) and [charger brands](/for/charger-brands/).
 
 After handover, an [EV charger AMC](/services/ev-charger-amc/) repeats the key tests on planned visits and records them, so faults are caught early.
 
-We are based in Delhi and commission chargers in all 10 states we work in. We have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
+We are based in Delhi and commission chargers in all 10 states we work in. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Planning the installation too? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work your charger needs in a minute.

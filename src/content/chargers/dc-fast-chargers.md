@@ -42,8 +42,7 @@ related:
   - /services/dc-fast-charger-installation/
   - /tools/ev-charging-station-earnings-calculator/
   - /start-an-ev-charging-station/
-  - /chargers/bus-truck-chargers/
-  - /for/charge-point-operators/
+  - /for/fleets/
   - /cms/
 updated: 2026-10-24
 ---
@@ -78,7 +77,7 @@ A DC charger is built from power modules, usually of 20 to 40 kW each: a 60 kW c
 - **Single gun:** all the power goes to one car. Simple, and right where one car at a time is the norm.
 - **Dual gun, equal sharing:** one car can take the full output; with two cars, each gets up to half.
 - **Dual gun, dynamic sharing:** modules move to whichever car can use them, so when one car slows down, the other speeds up. Ask which kind you are buying, and whether both guns can charge at once.
-- **Power cabinet with dispensers:** at large sites, one cabinet feeds several dispensers at the bays and shares its modules among them, and you add dispensers as demand grows. This is common at depots; see [bus and truck chargers](/chargers/bus-truck-chargers/).
+- **Power cabinet with dispensers:** at large sites, one cabinet feeds several dispensers at the bays and shares its modules among them, and you add dispensers as demand grows. This is common at depots; see [bus and truck chargers](/for/fleets/).
 
 ## Guns, cables and cooling
 

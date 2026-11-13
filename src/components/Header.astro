@@ -1,25 +1,22 @@
 ---
 import site from '../data/site.json';
-import { mainNav, cms, tools, resources, company } from '../data/nav';
+import { mainNav, tools, resources, company } from '../data/nav';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import { waLink } from '../lib/text';
 
 interface Props { cta?: { label: string; href: string }; waText?: string }
-const { cta = { label: 'Get a quote', href: '#quote' }, waText } = Astro.props;
+const { waText } = Astro.props;
 const path = Astro.url.pathname;
-// On phones under 400 px the header button gets a short label, so it fits beside the logo.
-const shortLabels: Record<string, string> = {
-  'Plan your station': 'Get a quote', 'Partner with us': 'Contact us', 'Become a brand partner': 'Contact us',
-  'Ask your question': 'Ask us', 'Book a site survey': 'Book survey', 'Book a survey': 'Book survey', 'Book a demo': 'Book demo',
-};
-const short = shortLabels[cta.label];
+// Header: Call and WhatsApp stay visible outside the menu (strategy plan). `cta` is still accepted from pages but not shown here.
 
 const menuNotes: Record<string, string> = {
-  Chargers: 'Brand-neutral advice on any charger brand.',
+  'Choose a charger': 'We compare brands around your vehicle and site.',
+  'Commercial charging': 'Start with the site, the costs and expected usage.',
   Installation: 'Not sure what you need? Start with a site survey.',
-  Stations: 'From survey and power supply to go-live.',
-  Partners: 'One team for every kind of site.',
+  'For charger brands': 'Agreed checklists, site reports, commissioning.',
+  'Proline CMS': 'No Proline commission on charging payments.',
+  'Our work': 'We visit your site. No showroom or walk-in office.',
 };
 const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(href);
 ---
@@ -27,7 +24,7 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
 <div class="offer">
   <div class="wrap">
     <p><span class="dot" aria-hidden="true"></span>{site.offerStrip}</p>
-    <p class="offer-hours"><a href={`tel:${site.phoneE164}`}>{site.callHours}</a> · <a href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank">{site.whatsappHours}</a></p>
+    <p class="offer-hours"><a href={`tel:${site.phoneE164}`}>Call {site.phoneDisplay}</a> ({site.callHours.replace(/^Calls\s*/i, '')}) · <a href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank">{site.whatsappHours}</a></p>
   </div>
 </div>
 <header class="site-header">
@@ -55,8 +52,8 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
       </ul>
     </nav>
     <div class="header-actions">
-      <a class="hdr-phone" href={`tel:${site.phoneE164}`} title={site.callHours}><Icon name="phone" size={18} /><span>{site.phoneDisplay}</span></a>
-      <a class="btn btn-primary" href={cta.href}>{short ? <><span class="cta-long">{cta.label}</span><span class="cta-short">{short}</span></> : cta.label}</a>
+      <a class="btn btn-outline hdr-call" href={`tel:${site.phoneE164}`} title={`${site.phoneDisplay} · ${site.callHours}`}><Icon name="phone" size={18} />Call</a>
+      <a class="btn btn-primary hdr-wa" href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={18} />WhatsApp</a>
       <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="mnav" aria-label="Open menu"><Icon name="menu" size={22} /></button>
     </div>
   </div>
@@ -78,12 +75,8 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
       </details>
     ))}
     <details>
-      <summary><span style="display:flex;align-items:center;gap:8px"><span class="dot"></span>Proline CMS</span><Icon name="chevronDown" size={18} class="chev" /></summary>
-      <ul>{cms.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
-    </details>
-    <details>
-      <summary>Tools<Icon name="chevronDown" size={18} class="chev" /></summary>
-      <ul>{tools.map((l) => <li><a href={l.href}>{l.label}</a></li>)}<li><a href="/tools/"><strong>All tools →</strong></a></li></ul>
+      <summary>Calculators and checklists<Icon name="chevronDown" size={18} class="chev" /></summary>
+      <ul>{tools.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
     </details>
     <details>
       <summary>Guides and help<Icon name="chevronDown" size={18} class="chev" /></summary>
@@ -94,8 +87,7 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
       <ul>{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
     </details>
     <div class="mnav-cta">
-      <a class="btn btn-primary btn-lg" href={cta.href} data-close-menu-link>{cta.label}</a>
-      <a class="btn btn-outline btn-lg" href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />WhatsApp (any time)</a>
+      <a class="btn btn-primary btn-lg" href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />WhatsApp (any time)</a>
       <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call {site.phoneDisplay}</a>
       <p class="small muted center">{site.callHours} · {site.whatsappHours} · {site.city}</p>
     </div>

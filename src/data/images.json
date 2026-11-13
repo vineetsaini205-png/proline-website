@@ -184,8 +184,8 @@
   "blurred": 0
  },
  "job-dc-station": {
-  "alt": "DC fast charger at a public charging station at dusk",
-  "caption": "A public DC charging station at dusk",
+  "alt": "Reliable Charge DC fast-charging station at dusk, with a 120 kW charger under the canopy",
+  "caption": "DC charging station for Reliable Charge, one of our clients",
   "job": true,
   "sizes": {
    "1600": [
@@ -197,7 +197,7 @@
     587
    ]
   },
-  "blurred": 7
+  "blurred": 0
  },
  "job-basement-row": {
   "alt": "Row of shielded charging points along a stack-parking basement",

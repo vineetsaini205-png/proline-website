@@ -56,7 +56,6 @@ related:
   - /chargers/dc-fast-chargers/
   - /start-an-ev-charging-station/
   - /tools/ev-charging-station-earnings-calculator/
-  - /services/ev-charging-station-setup/
 updated: 2026-10-24
 ---
 
@@ -128,6 +127,6 @@ Ask your DISCOM and your state's electrical inspector which approvals a battery 
 
 ## How Proline helps
 
-We supply BESS from the brands we work with and install it with your chargers, LT panel and solar: the site survey, sizing in kW and kWh, the plinth and bollards, cabling, protection and earthing, and commissioning. We have installed more than 500 chargers and DB boxes, AC and DC, in 10 states, including work for TATA, ThunderPlus, Bolt.Earth and KIA. [DC fast chargers](/chargers/dc-fast-chargers/) covers the chargers a battery usually supports.
+We supply BESS from the brands we work with and install it with your chargers, LT panel and solar: the site survey, sizing in kW and kWh, the plinth and bollards, cabling, protection and earthing, and commissioning. We have installed more than 500 chargers and DB boxes, AC and DC, in 10 states, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. [DC fast chargers](/chargers/dc-fast-chargers/) covers the chargers a battery usually supports.
 
 Before you size a battery, check what your station could earn in the [earnings calculator](/tools/ev-charging-station-earnings-calculator/), then send us your site details for a plan, options and a quote.

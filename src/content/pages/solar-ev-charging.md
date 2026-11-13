@@ -118,6 +118,6 @@ Sending surplus power to the grid needs your DISCOM's approval for solar, such a
 
 ## How Proline helps
 
-We plan solar EV charging as one system rather than two separate jobs: the survey, panel and inverter sizing, carport foundations and structure, chargers of any brand, battery storage where it pays, cabling, earthing and commissioning. See [solar installation](/services/solar-installation/) for how we handle the solar side. We are based in Delhi, work in 10 states, and have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA.
+We plan solar EV charging as one system rather than two separate jobs: the survey, panel and inverter sizing, carport foundations and structure, chargers of any brand, battery storage where it pays, cabling, earthing and commissioning. See [solar installation](/services/solar-installation/) for how we handle the solar side. We are based in Delhi, work in 10 states, and have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Planning a public station with solar? The [earnings calculator](/tools/ev-charging-station-earnings-calculator/) includes time-of-day tariffs, so you can see what the station could earn; then send us your site location for a plan and a quote.

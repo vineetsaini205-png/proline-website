@@ -51,11 +51,10 @@ faqs:
     a: "Yes, in the 10 states we work in: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We plan the sites together, so chargers, protection and handover packs follow one standard, and our 200+ technicians install them. See [coverage](/coverage/)."
 related:
   - /tools/ev-charging-station-earnings-calculator/
-  - /services/ev-charging-station-setup/
+  - /start-an-ev-charging-station/
   - /chargers/dc-fast-chargers/
   - /solar-ev-charging/
   - /cms/
-  - /start-an-ev-charging-station/
 updated: 2026-10-24
 ---
 
@@ -92,7 +91,7 @@ Decide this early, because it changes the chargers and the software.
 
 - **Free for guests or staff.** The simplest set-up. RFID cards or an app login keep outsiders off the chargers, and chargers with a built-in meter record the energy each session uses.
 - **Paid charging.** You set a price per unit and drivers pay. That needs networked chargers that support OCPP, and software: an app platform that takes a commission, or your own charge management system (CMS).
-- **Hosting a charging network.** Some charging networks put their own chargers at host sites and pay rent or a share of revenue. We install for operators too; see [charge point operators](/for/charge-point-operators/).
+- **Hosting a charging network.** Some charging networks put their own chargers at host sites and pay rent or a share of revenue. We install for operators too; see [charge point operators](/start-an-ev-charging-station/).
 
 [Proline CMS](/cms/) is our own charge management software. Your brand goes on the QR codes and receipts, drivers pay by UPI into your own account, unused money is refunded automatically and GST documents are issued for you. Staff can get their own price, or chargers only they can use. There is no commission on your charging payments, and you run it on your own server or we host it on servers in India, with 24/7 support for the CMS.
 
@@ -137,11 +136,11 @@ One team does the whole job, under one quote:
 - **Solar, if you want it.** A solar carport over the charging bays, sized for your load. See [solar EV charging](/solar-ev-charging/).
 - **Commissioning.** Tests, a test charge, and the chargers connected to your app platform or Proline CMS, with a handover pack.
 
-The [charging station setup](/services/ev-charging-station-setup/) page walks through each stage.
+The [charging station setup](/start-an-ev-charging-station/) page walks through each stage.
 
 ## Why Proline
 
-We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for TATA, ThunderPlus, Bolt.Earth and KIA. We don't make chargers, so our advice on brands starts from your site and your vehicles, not from one catalogue.
+We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. We don't make chargers, so our advice on brands starts from your site and your vehicles, not from one catalogue.
 
 ## What to send us
 

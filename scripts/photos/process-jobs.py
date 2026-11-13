@@ -4,8 +4,8 @@ Rules (PROGRESS.md 11 and the build plan):
 - GPS stamps show a customer's house to within a few metres: crop them off, or blur the
   map, plus code and coordinates when the stamp itself is the point (geotagged proof).
 - Number plates and handwritten labels are blurred.
-- Client brands that are not cleared are blurred by default. Bolt.Earth, TATA, ThunderPlus
-  and KIA are cleared names (rule 5), so their marks stay.
+- Client brands that are not cleared are blurred by default. All seven clients in rule 5 are cleared
+  (owner, 13 Nov), so their marks stay.
 - Originals are WhatsApp copies and stay out of git (they carry the GPS stamps).
 
 Run:  python3 scripts/photos/process-jobs.py <folder with the WhatsApp images>
@@ -22,16 +22,9 @@ JOBS = {
  "job-canopy-install": ("WhatsApp Image 2026-10-30 at 3.09.57 PM (1).jpeg", None, [],
      "Charging canopy and power panel during installation, with the DC charger still in its wrapping",
      "A DC charging canopy going up, with the power panel in place"),
- "job-dc-station": ("WhatsApp Image 2026-10-30 at 3.11.19 PM (1).jpeg", None, [
-     (330, 92, 506, 130),    # network name on the canopy
-     (335, 158, 488, 202),   # network slogan
-     (436, 200, 492, 312),   # large logo on the backdrop
-     (378, 210, 428, 248),   # logo on the charger head
-     (368, 315, 446, 366),   # labels on the charger body
-     (20, 192, 84, 338),     # left poster
-     (698, 202, 770, 348)],  # right poster
-     "DC fast charger at a public charging station at dusk",
-     "A public DC charging station at dusk"),
+ "job-dc-station": ("WhatsApp Image 2026-10-30 at 3.11.19 PM (1).jpeg", None, [],  # owner, 13 Nov: Reliable Charge may be named and shown
+     "Reliable Charge DC fast-charging station at dusk, with a 120 kW charger under the canopy",
+     "DC charging station for Reliable Charge, one of our clients"),
  "job-basement-row": ("WhatsApp Image 2026-10-30 at 3.08.40 PM (2).jpeg", None, [],
      "Row of shielded charging points along a stack-parking basement",
      "Charging points along a stack-parking basement"),

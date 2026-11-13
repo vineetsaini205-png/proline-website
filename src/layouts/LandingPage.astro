@@ -38,7 +38,7 @@ if (d.faqs.length) schema.push(faqNode(path, d.faqs));
 const ogImage = d.photo ?? (d.image ? `/images/og/${d.image}.jpg` : undefined);
 if (d.guide) schema.push(articleNode(path, { title: d.h1, description: d.description, date: d.updated, updated: d.updated, image: d.photo ?? (d.image ? `/images/${d.image}.webp` : undefined) }));
 const toc = headings.filter((h) => h.depth === 2);
-const tool = d.related.find((r) => r.startsWith('/tools/'));
+const tool = d.related.find((r) => r.startsWith('/chargers/#help-me-choose'));
 const toolInfo = tool ? linkInfo(tool) : undefined;
 const wa = `Hello Proline, I am looking at ${d.label} on your website. Can you help?`;
 // Hero shows the first sentence of the intro; the rest opens the page text, word for word (owner, 25 Oct).

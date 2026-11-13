@@ -38,5 +38,5 @@ export const chargerTypes: ChargerType[] = [
   { kind: 'dc-120', tag: '120 kW DC', name: '120 kW DC fast charger', size: 'About 2 m tall, floor cabinet', heightCm: 205, mount: 'Floor',
     suits: 'Highways and busy stations: quicker stops for cars that accept high DC power, with heavy cables held on arms.', href: '/chargers/dc-fast-chargers/' },
   { kind: 'dc-240', tag: '240 kW DC', name: '240 kW DC for bus and truck depots', size: 'Cabinet about 2.2 m tall, plus dispensers', heightCm: 220, mount: 'Floor',
-    suits: 'Bus and truck depots and large hubs. A separate power cabinet feeds one or more slim dispensers at the bays.', href: '/chargers/bus-truck-chargers/' },
+    suits: 'Bus and truck depots and large hubs. A separate power cabinet feeds one or more slim dispensers at the bays.', href: '/for/fleets/' },
 ];

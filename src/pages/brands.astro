@@ -5,37 +5,50 @@ import Icon from '../components/Icon.astro';
 import site from '../data/site.json';
 ---
 <SimplePage
-  title="Brands We Work With: Clients and Chargers | Proline"
-  description="Proline has installed EV chargers for TATA, ThunderPlus, Bolt.Earth and KIA, and works with many charger brands to give brand-neutral advice."
-  h1="Brands we work with"
-  eyebrow="Clients and brands"
-  crumb="Brands we work with"
-  lead="We have installed chargers for TATA, ThunderPlus, Bolt.Earth and KIA, and we work with many charger makers so that we can suggest the charger that fits each site."
+  title="Compare EV Charger Brands for Your Site | Proline"
+  description="Compare suitability, service support, warranty and complete installation scope before choosing a charger brand."
+  h1="Compare charger brands for your site"
+  eyebrow="Charger brands"
+  crumb="Charger brands"
+  lead="We work with several charger makers, so we compare options for your vehicle and site on suitability, build quality, local service support, warranty and the complete installed scope, then give you our tie-up quote for the one that fits."
   cta={{ title: 'Ask for charger options', lead: 'Tell us your vehicles, site and supply, and we send options from up to three brands, compared on features, warranty and service.', need: 'Help choosing a charger (any brand)' }}>
   <section class="section" aria-labelledby="clients-title">
     <div class="wrap">
-      <SectionHead eyebrow="Installed for" title="Companies we have installed chargers for" id="clients-title" />
+      <SectionHead eyebrow="Installed for" title="Clients we have done installation work for" id="clients-title" />
       <div class="grid grid-4">
-        {site.clients.map((c) => <div class="card" style="align-items:center;justify-content:center;min-height:120px"><p style="font-family:var(--font-head);font-weight:800;font-size:24px;color:var(--ink)">{c}</p></div>)}
+        {site.clients.map((c) => <div class="card" style="align-items:center;justify-content:center;min-height:120px"><p style="font-family:var(--font-head);font-weight:700;font-size:24px;color:var(--ink)">{c}</p></div>)}
       </div>
       <p class="small muted" style="margin-top:14px">Brand names belong to their owners. Listing a client does not mean that company endorses Proline.</p>
     </div>
   </section>
   <section class="section section-soft" aria-labelledby="chargers-title">
-    <div class="wrap split top">
-      <SectionHead eyebrow="Charger brands" title="Many brands, one honest recommendation" lead="We are tied up with several charger makers for AC, DC and 2W/3W chargers, and we install chargers of any brand. Ask us and we compare the options that fit your site." id="chargers-title" />
-      <ul class="ticks">
-        <li>Options from up to three brands for your vehicles, site and budget.</li>
-        <li>Compared on power, connectors, software (app or OCPP), warranty and who services it.</li>
-        <li>Installation and commissioning by our technicians, whichever brand you choose.</li>
-        <li>White-label chargers for companies that want their own brand.</li>
-      </ul>
+    <div class="wrap">
+      <SectionHead eyebrow="How we compare" title="How we choose between charger brands" lead="We start from your vehicle, site and supply, not from a catalogue. Then we compare the chargers that fit on the same points." id="chargers-title" />
+      <div class="grid grid-2" style="gap:28px;margin-top:8px">
+        <div>
+          <h3>What we compare</h3>
+          <ul class="ticks" style="margin-top:12px">
+            <li><strong>Suitability.</strong> The power your vehicle accepts, the connector, single or three phase, indoor or outdoor.</li>
+            <li><strong>Build quality.</strong> Enclosure rating, cable and connector quality, protection built into the charger.</li>
+            <li><strong>Software.</strong> App control, OCPP for a CMS, load management and payments where you need them.</li>
+            <li><strong>Local service support.</strong> Whether the maker has service people and spares where you are.</li>
+            <li><strong>Warranty terms.</strong> What is covered, for how long, and who visits when something fails.</li>
+            <li><strong>Complete installed cost.</strong> The charger together with cable, protection, earthing and any civil work.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>What our tie-ups mean</h3>
+          <p style="margin-top:12px">Proline has supply tie-ups with several charger makers. That is how we can quote for the charger and its installation together, in one tie-up quote. Our recommendation follows your requirements: if a charger from another brand suits your site better, we say so, and we also install chargers you buy elsewhere.</p>
+          <h3 style="margin-top:22px">What you receive</h3>
+          <p style="margin-top:12px">Up to three suitable options, each with its power, connector, software, warranty terms and local service support, and the full installation scope for your site, so you can compare like with like.</p>
+        </div>
+      </div>
     </div>
   </section>
   <section class="section" aria-labelledby="partner-title">
     <div class="wrap split">
-      <SectionHead eyebrow="For charger brands" title="Want more buyers in India?" lead="If you make or import chargers and want buyers, installation and service in our 10 states, see how brand partners work with Proline." id="partner-title" />
-      <p><a class="btn btn-primary btn-lg" href="/brand-partners/">Become a brand partner<Icon name="arrowRight" size={18} /></a></p>
+      <SectionHead eyebrow="For charger brands" title="Are you a charger brand?" lead="If you make or import chargers and need installation and commissioning for your customers, or want buyers in the states we cover, see how we work with charger brands." id="partner-title" />
+      <p><a class="btn btn-primary btn-lg" href="/for/charger-brands/">Discuss an installation partnership<Icon name="arrowRight" size={18} /></a></p>
     </div>
   </section>
 </SimplePage>

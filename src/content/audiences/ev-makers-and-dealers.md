@@ -38,16 +38,16 @@ faqs:
   - q: What does the dealer get after each home installation?
     a: "A handover report with the test results and photos of the charger, the DB box, the earth and the cable route, in the format you ask for. The buyer gets a test charge with their car and a short session on using the charger."
   - q: Which chargers suit a dealership?
-    a: "7.4 or 11 kW AC chargers keep display and stock cars charged, since many cars sold in India take 7.2 kW on AC and some take 11 kW. A 30–60 kW DC charger suits workshops and quick top-ups, and two- and three-wheeler dealers need light-EV chargers. Our advice on brands is free; see the [charger finder](/tools/charger-finder/)."
+    a: "7.4 or 11 kW AC chargers keep display and stock cars charged, since many cars sold in India take 7.2 kW on AC and some take 11 kW. A 30–60 kW DC charger suits workshops and quick top-ups, and two- and three-wheeler dealers need light-EV chargers. Our advice on brands is free; see the [charger finder](/chargers/#help-me-choose)."
   - q: Can the public station at a dealer take payments?
     a: "Yes, through charging software. We commission the chargers onto the app or CMS you use, over OCPP, or onto [Proline CMS](/cms/), where drivers scan a QR code and pay by UPI into your own account."
 related:
   - /services/home-ev-charger-installation/
   - /services/dc-fast-charger-installation/
-  - /services/ev-charging-station-setup/
+  - /start-an-ev-charging-station/
   - /chargers/2w-3w-chargers/
   - /cms/
-  - /tools/charger-finder/
+  - /chargers/#help-me-choose
 updated: 2026-10-24
 ---
 
@@ -63,7 +63,7 @@ Doing all of this with a different local electrician in every city leads to unev
 - **Buyers in housing societies.** We give the buyer the technical details their society asks for before a charger goes into common parking: the charger model, the cable route and the safety measures.
 - **Showrooms.** AC chargers that keep display, demo and stock vehicles charged without a large load.
 - **Workshops.** AC chargers for service bays, and a DC fast charger where customers want a quick top-up. See [DC fast charger installation](/services/dc-fast-charger-installation/).
-- **Public stations at dealerships.** Survey, power planning, chargers, civil work and commissioning, with software that lets the public start a session and pay. See [charging station setup](/services/ev-charging-station-setup/).
+- **Public stations at dealerships.** Survey, power planning, chargers, civil work and commissioning, with software that lets the public start a session and pay. See [charging station setup](/start-an-ev-charging-station/).
 - **Two- and three-wheeler dealers.** Light-EV chargers and socket points for scooters, motorcycles, e-rickshaws and e-autos. See [2W and 3W chargers](/chargers/2w-3w-chargers/).
 
 ## Delhi EV Policy 2026: a public station at every dealer
@@ -90,7 +90,7 @@ Our advice on charger brands is free. If you supply your own chargers, we instal
 
 ## Our record
 
-We have installed chargers for KIA, and for TATA, ThunderPlus and Bolt.Earth. In two years we have installed more than 500 chargers and DB boxes, AC and DC, and our 200+ technicians work in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We are based in Delhi, where the dealer rule applies.
+We have done installation work for carmakers Tata Motors and KIA, and for Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. In two years we have installed more than 500 chargers and DB boxes, AC and DC, and our 200+ technicians work in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We are based in Delhi, where the dealer rule applies.
 
 ## What to send us to get started
 
@@ -101,4 +101,4 @@ We have installed chargers for KIA, and for TATA, ThunderPlus and Bolt.Earth. In
 - For each dealer site: photos of the parking and the main panel, and the sanctioned load from a recent bill
 - A contact in your network or after-sales team
 
-Send these through the form below or to Sales@prolineelectricalworks.com, and we reply with how we would run it. To match chargers to each kind of site, try the [charger finder](/tools/charger-finder/).
+Send these through the form below or to Sales@prolineelectricalworks.com, and we reply with how we would run it. To match chargers to each kind of site, try the [charger finder](/chargers/#help-me-choose).

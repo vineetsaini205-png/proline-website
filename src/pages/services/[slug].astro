@@ -7,4 +7,4 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props;
 ---
-<LandingPage entry={entry} crumbs={[{ label: 'Services', href: '/services/' }, { label: entry.data.label }]} />
+<LandingPage entry={entry} crumbs={entry.id === 'ev-charger-installation' ? [{ label: entry.data.label }] : [{ label: 'Installation', href: '/services/ev-charger-installation/' }, { label: entry.data.label }]} />

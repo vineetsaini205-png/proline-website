@@ -53,7 +53,7 @@ related:
   - /for/fleets/
   - /batteries/2-wheeler-batteries/
   - /services/ev-charger-installation/
-  - /tools/charger-finder/
+  - /chargers/#help-me-choose
 updated: 2026-10-24
 ---
 
@@ -122,4 +122,4 @@ We don't make batteries. We supply lithium and lead-acid batteries of different 
 
 For hubs and depots, we install the charging points, DB boxes, earthing and cabling, in 10 states across North, South and West India. See [EV charger installation](/services/ev-charger-installation/).
 
-Planning charging for a fleet or a hub? The [charger finder](/tools/charger-finder/) suggests charging points for e-rickshaws in a minute, or send us your e-rickshaw model and a photo of the battery label on WhatsApp for pack options and a quote.
+Planning charging for a fleet or a hub? The [charger finder](/chargers/#help-me-choose) suggests charging points for e-rickshaws in a minute, or send us your e-rickshaw model and a photo of the battery label on WhatsApp for pack options and a quote.
