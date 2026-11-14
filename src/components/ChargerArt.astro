@@ -3,8 +3,8 @@
 // type looks like). Generic shapes based on typical chargers sold in India, not any one brand's design.
 // All drawings share one 200 x 240 frame, one line weight and the brand colours.
 import type { ChargerKind } from '../data/charger-types';
-interface Props { kind: ChargerKind; label: string; class?: string }
-const { kind, label, class: cls } = Astro.props;
+interface Props { kind: ChargerKind; label: string; class?: string; bare?: boolean } // bare: no wall tile or floor shadow, for scenes
+const { kind, label, class: cls, bare = false } = Astro.props;
 
 const N = '#0B2545';      // navy outline
 const N7 = '#12325A';     // dark panels
@@ -18,10 +18,10 @@ const RED = '#D93B3B';
 const s = { stroke: N, 'stroke-width': 2, 'stroke-linejoin': 'round' } as const;
 ---
 <svg class:list={['charger-art', cls]} viewBox="0 0 200 240" role="img" aria-label={label} xmlns="http://www.w3.org/2000/svg">
-  {(['home-socket', 'portable', 'wallbox-7', 'wallbox-11', 'lev-ac', 'lev-dc'] as string[]).includes(kind) && kind !== 'portable' && (
+  {!bare && (['home-socket', 'portable', 'wallbox-7', 'wallbox-11', 'lev-ac', 'lev-dc'] as string[]).includes(kind) && kind !== 'portable' && (
     <rect x="18" y="14" width="164" height="206" rx="14" fill="#F3F7FB" />
   )}
-  {kind !== 'home-socket' && kind !== 'wallbox-7' && kind !== 'wallbox-11' && kind !== 'lev-ac' && kind !== 'lev-dc' && (
+  {!bare && kind !== 'home-socket' && kind !== 'wallbox-7' && kind !== 'wallbox-11' && kind !== 'lev-ac' && kind !== 'lev-dc' && (
     <ellipse cx="100" cy="226" rx="78" ry="6" fill="#0B2545" opacity="0.08" />
   )}
 

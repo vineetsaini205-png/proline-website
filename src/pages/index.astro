@@ -13,6 +13,7 @@ import SectionHead from '../components/SectionHead.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
 import ChargerArt from '../components/ChargerArt.astro';
+import HeroChargers from '../components/HeroChargers.astro';
 import site from '../data/site.json';
 import images from '../data/images.json';
 import { cars } from '../data/nav';
@@ -103,10 +104,7 @@ const faqs = [
           <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call us</a>
         </div>
       </div>
-      <figure class="hero-photo">
-        <Photo name="job-dc-station" eager sizes="(max-width: 900px) 100vw, 540px" />
-        <figcaption>{meta['job-dc-station'].caption}</figcaption>
-      </figure>
+      <div class="hero-photo"><HeroChargers /></div>
       <ul class="routes" role="list" aria-label="What do you need?">
         {routes.map((r) => (
           <li>
