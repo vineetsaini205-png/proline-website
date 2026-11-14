@@ -257,3 +257,4 @@ Company
 - 13 Nov 2026 (18:07 IST): owner said "make it live fully": `redesign` merged into `main` (fast-forward) and deployed to www.prolineelectricalworks.com, with the 301 redirects.
 - 15 Nov 2026 (02:13 IST): owner asked to hide the phone number in the header strip and make its line "Connect with us for the best deal". Done and live; the number stays in the footer and behind the Call buttons.
 - 15 Nov 2026 (02:16 IST): home hero text, as the owner asked: "Connect with us for the charger that best fits your vehicle, site and budget" and "We help you save money … give you our best quote". Live.
+- 15 Nov 2026 (02:19 IST): home hero call button now reads "Call us" (no number shown), and the "We visit your site. There is no showroom…" line under the buttons is removed (owner). Live.
