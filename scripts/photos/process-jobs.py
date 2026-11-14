@@ -8,7 +8,8 @@ Rules (PROGRESS.md 11 and the build plan):
   (owner, 13 Nov), so their marks stay.
 - Originals are WhatsApp copies and stay out of git (they carry the GPS stamps).
 
-Run:  python3 scripts/photos/process-jobs.py <folder with the WhatsApp images>
+Run:  python3 scripts/photos/process-jobs.py <folder with the WhatsApp images> [key ...]
+      (with keys, only those photos are processed, so a new photo does not need the whole set)
 """
 import json, os, sys
 from PIL import Image, ImageFilter
@@ -52,6 +53,10 @@ JOBS = {
      (255, 935, 740, 960)],  # latitude and longitude (date stays readable)
      "Finished earth chamber with its cover and conduit, with a geotagged photo stamp",
      "Finished earth chamber, photographed with a geotag stamp"),
+ "job-uv-station": ("WhatsApp Image 2026-10-30 at 3.07.10 PM (1).jpeg", (205, 200, 1086, 860), [],  # owner, 15 Nov: real site photo
+     # the crop leaves out another firm's "manufacturer & installer" kiosk on the left
+     "Ultraviolette DC fast charger with two cables on a raised plinth, with marked parking bays and wheel stops",
+     "DC fast charger at an Ultraviolette charging station"),
  "job-socket-test": ("WhatsApp Image 2026-11-10 at 11.04.35 PM (14).jpeg", (0, 0, 780, 785), [],
      "Technician testing a charging socket with a multimeter after installation",
      "Testing the socket with a multimeter before handover"),
@@ -68,7 +73,10 @@ def hide(im, box):
 
 def main():
     manifest = json.load(open(MANIFEST))
+    only = set(sys.argv[2:])
     for name, (fname, crop, boxes, alt, caption) in JOBS.items():
+        if only and name not in only:
+            continue
         im = Image.open(SRC + fname).convert("RGB")   # convert() drops EXIF
         for b in boxes:
             hide(im, b)

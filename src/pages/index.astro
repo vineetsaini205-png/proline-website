@@ -36,7 +36,7 @@ const meta = images as Record<string, { alt: string; caption?: string }>;
 // Proof photos (owner, 15 Nov: CPOs, parking areas and homes). Real job photos only.
 const proofPhotos = [
   { key: 'job-dc-station', who: 'CPO', caption: 'DC charging station for Reliable Charge' },
-  { key: 'job-basement-points', who: 'Parking area', caption: 'Bolt.Earth charging points in a basement car park' },
+  { key: 'job-wallbox-stand', who: 'Parking area', caption: 'Shielded AC charging point on a steel stand in a basement car park' },
   { key: 'job-home-db-box', who: 'Home', caption: '3.3 kW charging point with its DB box, Maharashtra' },
 ];
 
@@ -61,14 +61,15 @@ const quoteIncludes = [
 ];
 
 
-const jobs = [
+// Owner, 15 Nov: the Ultraviolette station replaces the home job here (the home job stays on /projects/).
+// Its card says only what the photo shows until the owner sends the job details.
+type Job = { photo: string; kind: string; title: string; facts: string; about?: string; need?: string; did?: string; handover?: string };
+const jobs: Job[] = [
   {
-    photo: 'job-socket-test', kind: 'Home installation',
-    title: '3.3 kW home charging point in a Maharashtra village',
-    facts: 'Jambhulni, Maharashtra · 18 May 2026 · 3.3 kW DB box and socket',
-    need: 'A safe, dedicated charging point at a house, with an earth good enough for daily charging.',
-    did: 'Mounted the DB box with its socket and protection, dug and finished an earth pit with a chamber, then tested the socket three times.',
-    handover: 'The car charged from the new point the same evening. Every step was photographed, geotagged and time-stamped by our field team.',
+    photo: 'job-uv-station', kind: 'Charging station',
+    title: 'DC fast charger at an Ultraviolette charging station',
+    facts: 'Ultraviolette · floor-standing DC fast charger with two cables',
+    about: 'A floor-standing DC charger on a raised plinth, with marked parking bays, wheel stops and station signage.',
   },
   {
     photo: 'job-basement-row', kind: 'Commercial installation',
@@ -166,7 +167,7 @@ const faqs = [
 
   <section class="section" aria-labelledby="jobs-title">
     <div class="wrap">
-      <SectionHead eyebrow="Two jobs" title="One home installation and one commercial job" id="jobs-title" />
+      <SectionHead eyebrow="Two jobs" title="A DC charging station and a basement charging network" id="jobs-title" />
       <div class="jobs">
         {jobs.map((j) => (
           <article class="job">
@@ -175,11 +176,14 @@ const faqs = [
               <p class="job-kind">{j.kind}</p>
               <h3>{j.title}</h3>
               <p class="job-facts">{j.facts}</p>
-              <dl>
-                <dt>What the site needed</dt><dd>{j.need}</dd>
-                <dt>What Proline did</dt><dd>{j.did}</dd>
-                <dt>Handover</dt><dd>{j.handover}</dd>
-              </dl>
+              {j.about && <p class="job-about">{j.about}</p>}
+              {j.need && (
+                <dl>
+                  <dt>What the site needed</dt><dd>{j.need}</dd>
+                  {j.did && <><dt>What Proline did</dt><dd>{j.did}</dd></>}
+                  {j.handover && <><dt>Handover</dt><dd>{j.handover}</dd></>}
+                </dl>
+              )}
             </div>
           </article>
         ))}
@@ -291,6 +295,7 @@ const faqs = [
   .job dl { margin: 14px 0 0; display: grid; gap: 4px; }
   .job dt { font-weight: 600; color: var(--ink); font-size: 15px; margin-top: 8px; }
   .job dd { margin: 0; font-size: 15px; }
+  .job-about { margin-top: 14px; font-size: 15px; }
 
   .onsite { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
   .onsite li { padding: 18px 16px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); }

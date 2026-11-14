@@ -326,5 +326,21 @@
    ]
   },
   "blurred": 0
+ },
+ "job-uv-station": {
+  "alt": "Ultraviolette DC fast charger with two cables on a raised plinth, with marked parking bays and wheel stops",
+  "caption": "DC fast charger at an Ultraviolette charging station",
+  "job": true,
+  "sizes": {
+   "1600": [
+    881,
+    660
+   ],
+   "800": [
+    800,
+    599
+   ]
+  },
+  "blurred": 0
  }
 }
