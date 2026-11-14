@@ -258,11 +258,19 @@ const faqs = [
       return { lat: +hit.lat, lon: +hit.lon, pin: a.postcode || null, state, label: `Around ${parts.slice(0, 3).join(', ')}${state && !parts.slice(0, 3).includes(state) ? `, ${state}` : ''}` };
     }
 
-    const ENDPOINTS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
+    // Public Overpass servers, tried in turn (15 Nov 2026: overpass-api.de was "at capacity" and answered without
+    // CORS headers; OSM France answered in ~7 s with India data). Stop after ~55 s in all.
+    const ENDPOINTS: [string, number][] = [
+      ['https://overpass.openstreetmap.fr/api/interpreter', 20000],
+      ['https://overpass-api.de/api/interpreter', 15000],
+      ['https://maps.mail.ru/osm/tools/overpass/api/interpreter', 10000],
+      ['https://overpass.private.coffee/api/interpreter', 10000],
+    ];
     async function nearby(lat: number, lon: number) {
       const body = new URLSearchParams({ data: overpassQuery(lat, lon) });
-      for (const ep of ENDPOINTS) {
-        try { return parseOverpass(await getJson(ep, { method: 'POST', body }, 20000), lat, lon); }
+      for (const [i, [ep, ms]] of ENDPOINTS.entries()) {
+        if (i > 0) say('Counting chargers and busy places nearby… the free map servers are busy, trying another one.', 'busy');
+        try { return parseOverpass(await getJson(ep, { method: 'POST', body }, ms), lat, lon); }
         catch { /* busy or timed out: try the next server */ }
       }
       return null;
