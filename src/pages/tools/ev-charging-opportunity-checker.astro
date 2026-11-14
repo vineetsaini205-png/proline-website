@@ -11,13 +11,19 @@ import Icon from '../../components/Icon.astro';
 import ev from '../../data/ev-states.json';
 import tariffs from '../../data/tariffs.json';
 import site from '../../data/site.json';
-import { FACTORS, POIS, ROADS, RATINGS, RADIUS } from '../../lib/opportunity';
+import { FACTORS, POIS, ROADS, RATINGS, RADIUS, growthPct, type StateRow } from '../../lib/opportunity';
 import { formatDate } from '../../lib/text';
 
 const s = ev.sources;
 const counted = formatDate(new Date(s.vahan.counted));
 const answered = formatDate(new Date(s.stations.answered));
-const cfg = { calcStates: tariffs.states.map((t) => t.state), wa: site.whatsapp, counted };
+const cfg = { calcStates: tariffs.states.map((t) => t.state), wa: site.whatsapp, counted, endpoint: site.formEndpoint };
+// State table for the page (searches like "EV charging station business in <state>"): biggest EV markets first.
+const rows = (ev.states as StateRow[]).map((r) => ({ ...r, growth: growthPct(r) })).sort((a, b) => b.ev26 - a.ev26);
+const fastest = rows.filter((r) => r.growth != null && r.ev25 >= 10000).sort((a, b) => b.growth! - a.growth!).slice(0, 4);
+const biggest = rows.slice(0, 4);
+const list = (r: { state: string }[]) => r.map((x) => x.state).join(', ').replace(/, ([^,]*)$/, ' and $1');
+const growthText = (g: number) => (g >= 100 ? `${(g / 100 + 1).toFixed(1)} times` : `+${g}%`);
 const n = (v: number) => v.toLocaleString('en-IN');
 const bandText = (f: (typeof FACTORS)[keyof typeof FACTORS]) => f.bands.map(([t, p], i) => {
   if (f.kind === 'max') return t === Infinity ? `more: ${p}` : t === 0 ? `none: ${p}` : `up to ${t}: ${p}`;
@@ -25,20 +31,24 @@ const bandText = (f: (typeof FACTORS)[keyof typeof FACTORS]) => f.bands.map(([t,
 }).join(' · ');
 
 const faqs = [
+  { q: 'Is my location good for an EV charging station?', a: 'Enter its pincode, or the area and city, in the checker at the top of this page. You see the places nearby that bring vehicles, the public chargers already there, how fast EVs are growing in your state and a Low, Medium or High rating, with every number behind it. A good location usually has vehicles that stop for 30 minutes or more (a mall, hotel, hospital, office or highway stop), easy entry, few fast chargers close by and enough electricity supply. Our team then checks the power and access on site.' },
+  { q: 'How much can I earn from an EV charging station at my location?', a: 'It depends on how many hours a day your chargers are used, the price drivers pay, your EV tariff and your site costs. The location sets the usage, which is why it comes first. Once the checker shows the opportunity, put your own numbers into the [earnings calculator](/tools/ev-charging-station-earnings-calculator/): it shows revenue, operating surplus and payback for low, base and high usage. Usage at a new station typically builds over 6–12 months ([Bolt.Earth](https://bolt.earth/franchise)).' },
+  { q: 'Which is the best location for an EV charging station in India?', a: `There is no single best city: the best site is one where vehicles already stop and stay, with power available and few fast chargers nearby. By state, the biggest EV markets in January–October 2026 were ${list(biggest)}, and among the larger markets EV registrations grew fastest in ${list(fastest)}. See the state table on this page, then check your own pincode.` },
+  { q: 'Is an EV charging station business profitable in India?', a: 'It can be, when the chargers are used enough hours a day to cover the electricity, rent or revenue share, staff, maintenance and the loan. Busy, well-placed stations do far better than quiet ones, so check the location first, then the numbers in the [earnings calculator](/tools/ev-charging-station-earnings-calculator/), then the site itself. Proline does not promise earnings: they depend on usage, price and costs at your site.' },
   { q: 'Where does the data come from?', a: `The location comes from India Post’s pincode data (through the free Postal PIN Code API) and OpenStreetMap. Nearby chargers and busy places come from OpenStreetMap, read live when you search. State figures: EV registrations from the Vahan dashboard of the Ministry of Road Transport and Highways (state totals compiled by Solentra, counted ${counted}), NITI Aayog’s India Electric Mobility Index 2025, and the public charging stations listed in a Lok Sabha reply of ${answered}.` },
   { q: 'Is the EV growth figure for my pincode?', a: 'No. Vahan reports registrations by state and by RTO, not by pincode, and it has no public data feed. The checker uses your state’s figures for growth and EV share, and the busy places around your pincode for local demand.' },
   { q: 'Why does it show fewer chargers than the charging apps?', a: 'OpenStreetMap is mapped by volunteers and misses many chargers, especially new ones and those inside private premises. Check the charging apps and maps for your area too. Many chargers on the map is a sure sign of competition; none on the map is not proof that there are none.' },
   { q: 'What does it count as footfall?', a: 'It does not count people. It counts places that bring vehicles: fuel stations, malls and supermarkets, hotels, restaurants and cafés, hospitals, colleges, railway, metro and bus stations, offices and car parks within 2 km, plus a national highway or main road close by. Places that are not on OpenStreetMap are not counted, so small towns can score lower than they should.' },
   { q: 'Does a High rating mean a station will earn well?', a: 'No. It is a first screen, not a promise of earnings. What a station earns also depends on the power available at the site, how easy it is to see and reach, the price drivers pay, uptime and how soon drivers find it. Put your numbers into the [earnings calculator](/tools/ev-charging-station-earnings-calculator/) and have the site checked before you invest.' },
-  { q: 'What happens to the pincode I type?', a: 'Your browser sends it to the Postal PIN Code API and to OpenStreetMap’s servers to find the location and the places around it. Proline does not store it unless you send us the result with the form or on WhatsApp. See our [privacy policy](/privacy-policy/).' },
+  { q: 'What happens to the pincode and number I enter?', a: 'Your browser sends the pincode or place to the Postal PIN Code API and to OpenStreetMap’s servers to find the location and the places around it. When you enter your phone number or email to see the full report, we receive it with the location and its result, and our sales person contacts you about that location. See our [privacy policy](/privacy-policy/).' },
 ];
 ---
 <ToolPage
-  title="EV Charging Opportunity Checker by Pincode | Proline"
-  description="Enter a pincode or city to see public chargers and busy places nearby, your state’s EV growth and a Low, Medium or High rating for a charging station."
-  h1="EV charging station opportunity checker"
-  label="Opportunity checker"
-  intro="Planning a charging station? Enter a pincode, area or city. The checker counts public chargers and busy places nearby on OpenStreetMap, adds your state’s EV growth from Vahan registrations and NITI Aayog’s EV index, and rates the opportunity Low, Medium or High, with every number behind it. Use it as a first screen, then work out the earnings and get the site checked."
+  title="EV Charging Station Location & Earning Potential Check"
+  description="Is your location good for an EV charging station? Enter any pincode or city in India to check footfall, nearby chargers, EV growth and earning potential."
+  h1="Is this a good location for an EV charging station?"
+  label="EV charging location checker"
+  intro="Thinking of an EV charging station business? Enter a pincode, area or city anywhere in India. In about ten seconds you see the footfall around it, the public chargers nearby, how fast EVs are growing in your state, and a Low, Medium or High rating for the location, with every number behind it. Then work out the earning potential, and our team checks the site."
   faqs={faqs}
   related={['/tools/ev-charging-station-earnings-calculator/', '/start-an-ev-charging-station/', '/services/site-survey/', '/chargers/dc-fast-chargers/']}
   form="station" need="DC fast charger or charging station"
@@ -69,7 +79,26 @@ const faqs = [
         <p class="opp-why" id="o-why"></p>
         <p class="opp-warn" id="o-warn" hidden></p>
       </div>
-      <div class="opp-body">
+      <form class="opp-gate" id="o-gate" novalidate hidden>
+        <h3 id="o-gate-title">See the full report for this location</h3>
+        <p>Enter your phone number or email to see every factor, the chargers nearby, the busy places and your state’s numbers. <strong>Our sales person will connect with you</strong> about this location.</p>
+        <div class="opp-gate-row">
+          <div class="field">
+            <label for="o-contact">Phone number or email</label>
+            <input id="o-contact" name="contact" type="text" maxlength="80" autocomplete="tel" inputmode="email" required aria-describedby="o-contact-err" />
+            <p class="err" id="o-contact-err">Enter a 10-digit mobile number or an email address.</p>
+          </div>
+          <div class="field">
+            <label for="o-name">Name <span class="opt">(optional)</span></label>
+            <input id="o-name" name="name" type="text" maxlength="60" autocomplete="name" />
+          </div>
+          <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label></div>
+          <button class="btn btn-primary" type="submit" id="o-gate-go">Show full report</button>
+        </div>
+        <p class="opp-gate-note">We use these details only to talk to you about this location. <a href="/privacy-policy/">Privacy policy</a></p>
+      </form>
+      <p class="opp-thanks" id="o-thanks" role="status" hidden></p>
+      <div class="opp-body" id="o-body" hidden>
         <ul class="opp-factors" id="o-factors" role="list"></ul>
         <div class="opp-cols">
           <section aria-labelledby="o-ch-title">
@@ -100,16 +129,53 @@ const faqs = [
   </div>
 
   <div slot="method">
+    <h2 id="good-location">What makes a good location for an EV charging station</h2>
+    <p>A charging station earns from the hours its chargers are in use, so the location decides most of the result. Before you invest, check these:</p>
+    <ul>
+      <li><strong>Vehicles that stop and stay.</strong> Malls, hotels, hospitals, offices, restaurants and highway stops, where drivers park for 30 minutes or more, or fleets and taxis that need a quick top-up.</li>
+      <li><strong>Easy to see and reach.</strong> Entry from the main road, space to turn, and a place that is open when drivers need it.</li>
+      <li><strong>Room for one more.</strong> Few fast chargers within 2–3 km, or so much demand nearby that the existing ones stay busy.</li>
+      <li><strong>Power.</strong> Enough sanctioned load, or a transformer close enough for a new connection. DC fast chargers need far more than a shop or home connection.</li>
+      <li><strong>Space and a fair deal.</strong> Parking for at least two vehicles with the cable route clear, and a rent or revenue share the numbers can carry.</li>
+      <li><strong>EVs in your area.</strong> How many EVs are registered in your state and how fast that number grows.</li>
+    </ul>
+    <p>The checker above covers the busy places, the chargers nearby and your state’s EV growth. A <a href="/services/site-survey/">site survey</a> covers the power, access and space.</p>
+
+    <h2 id="earning-potential">The earning potential at your location</h2>
+    <p>What a station earns each month comes down to the units it sells: the charger’s power × the hours a day it is used × the days it is open. Revenue is units × the price drivers pay; from that come the electricity bill, fixed charges, rent or revenue share, staff, maintenance, software and any loan. A busier location means more hours a day, which is why the opportunity check comes first. Put your own figures into the <a href="/tools/ev-charging-station-earnings-calculator/">EV charging station earnings calculator</a> to see revenue, operating surplus and payback for low, base and high usage.</p>
+
+    <h2 id="by-state">EV charging opportunity by state</h2>
+    <p>EVs registered in each state and union territory in January–October 2026, how that compares with the same months of 2025, how many of every 100 new vehicles were electric, the public charging stations in a Lok Sabha reply of {answered}, and each state’s score in NITI Aayog’s India Electric Mobility Index 2025. The biggest EV markets were {list(biggest)}; among the larger markets, registrations grew fastest in {list(fastest)}.</p>
+    <div class="table-wrap">
+      <table class="data-table opp-states">
+        <thead><tr><th scope="col">State or UT</th><th scope="col">EVs registered, Jan–Oct 2026</th><th scope="col">Change on 2025</th><th scope="col">EVs per 100 new vehicles</th><th scope="col">Public charging stations</th><th scope="col">NITI Aayog EV index</th></tr></thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr>
+              <th scope="row">{r.state}</th>
+              <td>{n(r.ev26)}</td>
+              <td>{r.growth != null ? growthText(r.growth) : r.noGrowth ? 'Not comparable*' : 'Too few to compare'}</td>
+              <td>{r.per100Text ?? r.per100}</td>
+              <td>{n(r.stations)}</td>
+              <td>{r.iemi}</td>
+            </tr>
+          ))}
+          <tr><th scope="row">India</th><td>{n(ev.india.ev26)}</td><td>{growthText(Math.round((ev.india.ev26 / ev.india.ev25 - 1) * 100))}</td><td>{ev.india.per100}</td><td>{n(ev.india.stations)}</td><td>–</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">Battery electric vehicles of all kinds on Vahan, counted {counted} (state totals compiled by Solentra from the Vahan dashboard). Change is shown only where the same months of 2025 had at least 500 EVs. *Telangana moved onto central Vahan in February–March 2026, so its 2025 months are incomplete. Charging stations: Lok Sabha Unstarred Question 2567, answered {answered}. Sources are listed at the end of this page.</p>
+
     <h2 id="method-title">How the rating works</h2>
     <p>The checker adds up four factors to a score out of 100: {RATINGS[0].label} at {RATINGS[0].min} or more, {RATINGS[1].label} from {RATINGS[1].min} to {RATINGS[0].min - 1}, {RATINGS[2].label} below {RATINGS[1].min}. Every number it uses is shown with the result, so you can check it.</p>
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr><th scope="col">Factor</th><th scope="col">Points</th><th scope="col">What it measures, and the points for each level</th></tr></thead>
         <tbody>
-          <tr><td>{FACTORS.footfall.label}</td><td>up to {FACTORS.footfall.max}</td><td>A footfall index from the places within {RADIUS.pois / 1000} km that bring vehicles (weights below). Index {bandText(FACTORS.footfall)}.</td></tr>
-          <tr><td>{FACTORS.gap.label}</td><td>up to {FACTORS.gap.max}</td><td>Public chargers on OpenStreetMap within {RADIUS.gap / 1000} km. Fewer chargers leave more room for yours: {bandText(FACTORS.gap)}.</td></tr>
-          <tr><td>{FACTORS.growth.label}</td><td>up to {FACTORS.growth.max}</td><td>How many more EVs were registered in the state in January–October 2026 than in the same months of 2025. Percent growth {bandText(FACTORS.growth)}. {FACTORS.growth.missing} points when growth cannot be worked out.</td></tr>
-          <tr><td>{FACTORS.share.label}</td><td>up to {FACTORS.share.max}</td><td>EVs per 100 new vehicles registered in the state in 2026 (India: {ev.india.per100}). {bandText(FACTORS.share)}.</td></tr>
+          <tr><td>{FACTORS.footfall.label}</td><td data-label="Points">up to {FACTORS.footfall.max}</td><td data-label="What it measures">A footfall index from the places within {RADIUS.pois / 1000} km that bring vehicles (weights below). Index {bandText(FACTORS.footfall)}.</td></tr>
+          <tr><td>{FACTORS.gap.label}</td><td data-label="Points">up to {FACTORS.gap.max}</td><td data-label="What it measures">Public chargers on OpenStreetMap within {RADIUS.gap / 1000} km. Fewer chargers leave more room for yours: {bandText(FACTORS.gap)}.</td></tr>
+          <tr><td>{FACTORS.growth.label}</td><td data-label="Points">up to {FACTORS.growth.max}</td><td data-label="What it measures">How many more EVs were registered in the state in January–October 2026 than in the same months of 2025. Percent growth {bandText(FACTORS.growth)}. {FACTORS.growth.missing} points when growth cannot be worked out.</td></tr>
+          <tr><td>{FACTORS.share.label}</td><td data-label="Points">up to {FACTORS.share.max}</td><td data-label="What it measures">EVs per 100 new vehicles registered in the state in 2026 (India: {ev.india.per100}). {bandText(FACTORS.share)}.</td></tr>
         </tbody>
       </table>
     </div>
@@ -119,9 +185,9 @@ const faqs = [
       <table class="data-table">
         <thead><tr><th scope="col">Place</th><th scope="col">Weight</th><th scope="col">Counted up to</th></tr></thead>
         <tbody>
-          {POIS.map((p) => <tr><td>{p.label}</td><td>{p.weight}</td><td>{p.cap}</td></tr>)}
-          <tr><td>{ROADS.highway.label}</td><td colspan="2">adds {ROADS.highway.bonus}</td></tr>
-          <tr><td>{ROADS.main.label}</td><td colspan="2">adds {ROADS.main.bonus}</td></tr>
+          {POIS.map((p) => <tr><td>{p.label}</td><td data-label="Weight">{p.weight}</td><td data-label="Counted up to">{p.cap}</td></tr>)}
+          <tr><td>{ROADS.highway.label}</td><td colspan="2" data-label="Footfall index">adds {ROADS.highway.bonus}</td></tr>
+          <tr><td>{ROADS.main.label}</td><td colspan="2" data-label="Footfall index">adds {ROADS.main.bonus}</td></tr>
         </tbody>
       </table>
     </div>
@@ -187,6 +253,30 @@ const faqs = [
   .opp-next { padding: 18px 20px; background: var(--soft); border-radius: var(--radius-lg); }
   .opp-next p { margin: 0 0 14px; font-size: 15px; }
   .opp-src { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .opp-gate[hidden], .opp-body[hidden], .opp-thanks[hidden], .opp-out[hidden] { display: none; }
+  .opp-gate { padding: 22px 28px 20px; background: var(--green-50); border-bottom: 1px solid var(--line); display: grid; gap: 10px; }
+  .opp-gate h3 { font-size: 19px; }
+  .opp-gate > p { font-size: 15px; max-width: 760px; }
+  .opp-gate-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) auto; gap: 12px; align-items: start; margin-top: 4px; }
+  .opp-gate-row .btn { margin-top: 26px; min-height: 48px; }
+  .opp-gate-note { font-size: 13px; color: var(--muted); }
+  .opp-gate-note a { color: var(--muted); }
+  .opp-thanks { margin: 0; padding: 12px 28px; background: var(--green-50); border-bottom: 1px solid var(--line); font-size: 14.5px; color: var(--green-text); font-weight: 600; }
+  .opp-thanks.is-warn { color: #8A5A00; background: #FFF6E0; font-weight: 500; }
+  .opp-thanks a { color: inherit; }
+  .opp-states th[scope="row"] { text-align: left; font-weight: 600; white-space: nowrap; }
+  @media (max-width: 620px) {
+    .prose table.opp-states { display: table; min-width: 560px; font-size: 13.5px; }
+    .prose .opp-states thead { display: table-header-group; }
+    .prose .opp-states tbody { display: table-row-group; }
+    .prose .opp-states tr { display: table-row; border: 0; padding: 0; background: none; }
+    .prose .opp-states tr + tr { margin-top: 0; }
+    .prose .opp-states th, .prose .opp-states td { display: table-cell; padding: 8px 10px; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+    .prose .opp-states td:first-child { font-weight: 400; font-size: 13.5px; color: inherit; }
+    .prose .opp-states th[scope="row"] { position: sticky; left: 0; z-index: 1; background: var(--white); white-space: normal; width: 128px; min-width: 128px; }
+    .prose .opp-states thead th { font-size: 12.5px; }
+  }
+  .opp-states td { font-variant-numeric: tabular-nums; }
   .opp-src a { color: var(--muted); }
 
   @media (max-width: 980px) { .opp-cols { grid-template-columns: minmax(0, 1fr); } }
@@ -195,17 +285,21 @@ const faqs = [
     .opp-row { flex-direction: column; }
     .opp-row .btn { width: 100%; }
     .opp-factors { grid-template-columns: minmax(0, 1fr); }
+    .opp-gate, .opp-thanks { padding-left: 18px; padding-right: 18px; }
+    .opp-gate-row { grid-template-columns: minmax(0, 1fr); }
+    .opp-gate-row .btn { margin-top: 0; width: 100%; }
     .opp-next .btn-row { display: grid; grid-template-columns: minmax(0, 1fr); }
   }
 </style>
 
 <script>
   import data from '../../data/ev-states.json';
+  import { validEmail, validPhone, cleanPhone, newRef, sendLead } from '../../lib/lead';
   import { findState, growthPct, score, overpassQuery, parseOverpass, footfallIndex, POIS, FACTORS, RADIUS, type StateRow, type Poi, type Charger } from '../../lib/opportunity';
 
   const root = document.getElementById('opp');
   if (root) {
-    const cfg = JSON.parse(root.dataset.cfg || '{}') as { calcStates: string[]; wa: string; counted: string };
+    const cfg = JSON.parse(root.dataset.cfg || '{}') as { calcStates: string[]; wa: string; counted: string; endpoint: string };
     const rows = data.states as StateRow[];
     const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
     const form = $<HTMLFormElement>('opp-form'), input = $<HTMLInputElement>('opp-q'), go = $<HTMLButtonElement>('opp-go');
@@ -313,8 +407,10 @@ const faqs = [
       } finally { go.disabled = false; }
     }
 
+    let lastPlace: Place | null = null, lastState = '';
     function render(place: Place, near: { poi: Poi; chargers: Charger[] } | null) {
       const st = findState(rows, place.state);
+      lastPlace = place; lastState = st?.state ?? place.state ?? '';
       const growth = growthPct(st);
       // Overpass also returns stations whose outline touches the circle; keep the list to the radius it names.
       if (near) near.chargers = near.chargers.filter((c) => c.km <= RADIUS.chargers / 1000);
@@ -369,11 +465,63 @@ const faqs = [
       if (city && !city.value) city.value = (place.pin ? `${place.pin}, ` : '') + (st?.state ?? '');
       root!.dataset.summary = summary;
 
+      showReport(unlocked());
       out.hidden = false;
       out.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     }
 
-    form.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); });
+    // Phone-or-email step (owner, 15 Nov 2026): the rating shows straight away; the full report opens after the
+    // visitor leaves a phone number or email, which goes to the enquiry Sheet so a sales person can call.
+    // Once given, later checks in the same browser open in full.
+    const KEY = 'pew-opp-lead';
+    const unlocked = () => { try { return !!localStorage.getItem(KEY); } catch { return false; } };
+    function showReport(open: boolean) {
+      $('o-gate').hidden = open;
+      $('o-body').hidden = !open;
+    }
+    const gate = $<HTMLFormElement>('o-gate');
+    const contact = $<HTMLInputElement>('o-contact');
+    const okContact = (v: string) => validPhone(v) || validEmail(v);
+    const mark = (bad: boolean) => { contact.setAttribute('aria-invalid', String(bad)); contact.closest('.field')?.classList.toggle('invalid', bad); };
+    contact.addEventListener('input', () => { if (contact.getAttribute('aria-invalid') === 'true' && okContact(contact.value)) mark(false); });
+    gate.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const v = contact.value.trim();
+      if (!okContact(v)) { mark(true); contact.focus(); return; }
+      mark(false);
+      const btn = $<HTMLButtonElement>('o-gate-go');
+      const ref = newRef();
+      const name = $<HTMLInputElement>('o-name').value.trim();
+      const data: Record<string, string> = {
+        form: 'station', name, phone: validEmail(v) ? v : cleanPhone(v),
+        city: lastPlace ? (lastPlace.pin ? `${lastPlace.pin}, ` : '') + lastState : '', state: lastState,
+        need: 'Charging station location check', message: 'Wants a call about this location (opportunity checker).',
+        extra: `Ref: ${ref} · ${root!.dataset.summary || ''}`, page: location.pathname, time: new Date().toISOString(),
+      };
+      const thanks = $('o-thanks');
+      const hp = gate.querySelector<HTMLInputElement>('[name="company_website"]');
+      let saved = true;
+      if (!hp?.value) {
+        btn.disabled = true; btn.textContent = 'Opening…';
+        saved = cfg.endpoint ? await sendLead(cfg.endpoint, data) : false;
+        btn.disabled = false; btn.textContent = 'Show full report';
+      }
+      try { localStorage.setItem(KEY, ref); } catch { /* private window: ask again next time */ }
+      if (saved) {
+        window.dispatchEvent(new CustomEvent('proline:lead', { detail: { form: 'opportunity', mode: 'sent' } }));
+        thanks.className = 'opp-thanks';
+        thanks.textContent = `Thank you${name ? ', ' + name.split(' ')[0] : ''}. Our sales person will contact you about this location. Your reference: ${ref}.`;
+      } else {
+        const wa = `https://wa.me/${cfg.wa}?text=${encodeURIComponent(`Hello Proline, please call me about this location. ${v}. ${root!.dataset.summary || ''}`)}`;
+        thanks.className = 'opp-thanks is-warn';
+        thanks.innerHTML = `We could not save your details just now. Here is your full report; to talk to our sales team, <a href="${wa}" rel="noopener" target="_blank">send it to us on WhatsApp</a>.`;
+      }
+      thanks.hidden = false;
+      showReport(true);
+      $('o-factors').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    });
+
+    form.addEventListener('submit', (e) => { e.preventDefault(); $('o-thanks').hidden = true; run(input.value); });
     $('o-quote').addEventListener('click', () => (window as any).prolineFill?.('#quote-form', root.dataset.summary || '', 'DC fast charger or charging station'));
     const q0 = new URLSearchParams(location.search).get('q');
     if (q0) { input.value = q0.slice(0, 80); run(input.value); }

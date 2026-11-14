@@ -23,6 +23,7 @@ faqs:
     a: "No. These are worked examples from public tariffs, public charging prices and the calculator's assumptions. Real earnings depend on your site, competition, pricing, uptime and how quickly drivers find you."
 related:
   - /tools/ev-charging-station-earnings-calculator/
+  - /tools/ev-charging-opportunity-checker/
   - /start-an-ev-charging-station/
   - /chargers/dc-fast-chargers/
   - /coverage/
@@ -136,4 +137,4 @@ Before you open the calculator, gather your EV tariff and fixed charge from your
 
 With your own charge management software there is no app commission, though you handle payments and driver support yourself; [Proline CMS](/cms/) takes no commission on charging payments. When the numbers work, see [charging station setup](/start-an-ev-charging-station/) for how we build a station from survey to first charge.
 
-Start with the [EV charging station earnings calculator](/tools/ev-charging-station-earnings-calculator/): pick your state and chargers, and compare a quiet, likely and busy month before you commit.
+Start by checking the location in the [EV charging location checker](/tools/ev-charging-opportunity-checker/), then use the [EV charging station earnings calculator](/tools/ev-charging-station-earnings-calculator/): pick your state and chargers, and compare a quiet, likely and busy month before you commit.

@@ -121,4 +121,4 @@ A 60 kW charger draws roughly 90–100 A per phase while a car takes full power,
 
 [DC fast charger installation](/services/dc-fast-charger-installation/) explains how the job runs, from the power check to the test charge.
 
-See inside a DC charger below: tap each part, from the grid supply to the car's battery, to see what it does. Planning a station as a business? The [earnings calculator](/tools/ev-charging-station-earnings-calculator/) shows what a DC charger could earn at your state's EV tariff.
+See inside a DC charger below: tap each part, from the grid supply to the car's battery, to see what it does. Planning a station as a business? Check your location's footfall and nearby chargers in the [location checker](/tools/ev-charging-opportunity-checker/); the [earnings calculator](/tools/ev-charging-station-earnings-calculator/) shows what a DC charger could earn at your state's EV tariff.

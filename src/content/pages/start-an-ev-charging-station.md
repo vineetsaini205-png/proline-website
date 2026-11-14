@@ -60,6 +60,7 @@ related:
   - /for/businesses/
   - /solar-ev-charging/
   - /tools/ev-charging-station-earnings-calculator/
+  - /tools/ev-charging-opportunity-checker/
 updated: 2026-10-24
 ---
 
@@ -88,7 +89,7 @@ Out of what drivers pay, you meet:
 - **Software:** an app platform's commission, or the cost of running your own system.
 - **Running costs:** internet, cleaning, security, maintenance and, on larger sites, staff.
 
-Work out your own numbers in the [earnings calculator](/tools/ev-charging-station-earnings-calculator/): choose your state, chargers and price, and it shows a quiet, likely and busy month, with the payback once you enter your own quote. Our article on [what a charging station earns](/blog/ev-charging-station-earnings/) explains the method.
+Not sure the site is right? Check it first in the [EV charging location checker](/tools/ev-charging-opportunity-checker/): enter the pincode to see the footfall, chargers nearby and EV growth in your state. Then work out your own numbers in the [earnings calculator](/tools/ev-charging-station-earnings-calculator/): choose your state, chargers and price, and it shows a quiet, likely and busy month, with the payback once you enter your own quote. Our article on [what a charging station earns](/blog/ev-charging-station-earnings/) explains the method.
 
 ## Choose the location first
 

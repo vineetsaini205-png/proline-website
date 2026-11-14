@@ -1,55 +1,229 @@
 ---
-// Grid of charger types: drawing, typical size, who it suits, and a WhatsApp quote button.
-// Owner (13 Nov): no prices; the customer calls or messages and Proline suggests the right brand and model.
-import ChargerArt from './ChargerArt.astro';
-import Icon from './Icon.astro';
+// Charger types (owner's "proline-charger-range.html" design, 15 Nov 2026): eleven animated drawings with the
+// power, a category line, typical size, a one-line use and "Where it fits", plus All / Home & AC / DC filters.
+// Copy and links come from src/data/charger-types.ts. No prices (owner, 13 Nov): "Get a quote" opens WhatsApp.
+// Classes and drawing ids carry a "cr-" prefix; lights move only while a card is on screen, and never for
+// visitors who ask for reduced motion.
 import site from '../data/site.json';
 import { waLink } from '../lib/text';
 import { chargerTypes, type ChargerType } from '../data/charger-types';
-interface Props { only?: string[]; headingLevel?: 'h2' | 'h3'; compact?: boolean }
-const { only, headingLevel = 'h3', compact = false } = Astro.props;
+// strip: on phones the cards scroll sideways instead of stacking (used on the home page to keep it short).
+interface Props { only?: string[]; headingLevel?: 'h2' | 'h3'; compact?: boolean; intro?: boolean; strip?: boolean }
+const { only, headingLevel = 'h3', compact = false, intro = false, strip = false } = Astro.props;
 const list: ChargerType[] = only ? only.map((k) => chargerTypes.find((t) => t.kind === k)!).filter(Boolean) : chargerTypes;
 const H = headingLevel;
+const C = intro ? (headingLevel === 'h2' ? 'h3' : 'h4') : headingLevel; // card headings sit under the intro heading
+const nAc = list.filter((t) => !t.dc).length, nDc = list.length - nAc;
+const filters = nAc > 0 && nDc > 0 && list.length > 4;
 const msg = (t: ChargerType) => `Hello Proline, I found you on your website. I would like a quote for: ${t.name} (${t.tag}).`;
+const num = (i: number) => String(chargerTypes.indexOf(list[i]) + 1).padStart(2, '0');
 ---
-<ul class:list={['ctypes', { 'ctypes-compact': compact }]} role="list">
-  {list.map((t) => (
-    <li class="ctype">
-      <div class="ctype-art"><ChargerArt kind={t.kind} label={`Drawing of a typical ${t.name.toLowerCase()}`} /></div>
-      <div class="ctype-body">
-        <span class="ctype-tag">{t.tag}</span>
-        <H class="ctype-name"><a href={t.href}>{t.name}</a></H>
-        <p class="ctype-size"><Icon name="ruler" size={16} />{t.size}</p>
-        {!compact && <p class="ctype-suits">{t.suits}</p>}
-        <a class="btn btn-primary btn-sm" href={waLink(site.whatsapp, msg(t))} rel="noopener" target="_blank"><Icon name="whatsapp" size={18} />Get a quote</a>
+<div class:list={['cr', { 'cr-compact': compact, 'cr-strip': strip }]} data-cr>
+  <svg class="cr-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><defs>
+<linearGradient id="cr-case" x2="1" y2=".2"><stop stop-color="#fff"/><stop offset=".6" stop-color="#f6faf5"/><stop offset="1" stop-color="#d3e1db"/></linearGradient>
+<linearGradient id="cr-navy" x2="1" y2=".5"><stop stop-color="#365364"/><stop offset=".5" stop-color="#18374b"/><stop offset="1" stop-color="#102b40"/></linearGradient>
+<linearGradient id="cr-metal" x2="1" y2="0"><stop stop-color="#a1b8b3"/><stop offset=".35" stop-color="#e6efdf"/><stop offset="1" stop-color="#a9c1b6"/></linearGradient>
+<linearGradient id="cr-screen-bg" x2=".6" y2="1"><stop stop-color="#284e55"/><stop offset="1" stop-color="#0e2f43"/></linearGradient>
+<g id="cr-screen"><rect width="49" height="34" rx="4" fill="url(#cr-screen-bg)" stroke="#6c8b91" stroke-width=".8"/><rect x="7" y="8" width="34" height="5" rx="2" fill="#3dd59b" class="cr-fill"/><path d="M7 20h29M7 25h20" stroke="#91b2ac" stroke-width="2" stroke-linecap="round"/></g>
+<g id="cr-socket"><circle r="12" fill="#fafcf6" stroke="#49697a" stroke-width="1.2"/><circle cy="-4" r="2.1" fill="#2d5063"/><path d="M-5 1v4M5 1v4" stroke="#2d5063" stroke-width="2.3" stroke-linecap="round"/></g>
+<g id="cr-plug"><path d="M-5-8h10v12Q5 9 0 9t-5-5Z" fill="#1c3c50"/><path d="M-2-11v4M2-11v4" stroke="#a7b9c0" stroke-width="2"/><path d="M-2 8v5" stroke="#233f51" stroke-width="3"/></g>
+<g id="cr-ground"><ellipse cx="110" cy="166" rx="66" ry="4" fill="#cddacf" opacity=".6"/><path d="M58 166h104" stroke="#fff" stroke-width="1" opacity=".65"/></g>
+<symbol id="cr-ruler" viewBox="0 0 16 16"><path d="m2 11 9-9 3 3-9 9Zm3-3 2 2m1-5 2 2m1-5 2 2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/></symbol>
+<symbol id="cr-home-socket" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="m110 123 9 1v40h-9Z" fill="url(#cr-metal)" stroke="#7a959a" stroke-width=".8"/><path d="m80 30 8-5 58 2v96l-8 5H80Z" fill="#afc3c2"/><rect x="78" y="30" width="61" height="98" rx="9" fill="url(#cr-case)" stroke="#436478" stroke-width="1.2"/><path d="M84 37h49" stroke="#dde9e2"/><g fill="#edf3ed" stroke="#7a919b" stroke-width=".8"><rect x="85" y="44" width="13" height="30" rx="2"/><rect x="102" y="44" width="13" height="30" rx="2"/><rect x="119" y="44" width="13" height="30" rx="2"/></g><g fill="#184358"><rect x="89" y="53" width="5" height="14" rx="1"/><rect x="106" y="53" width="5" height="14" rx="1"/><rect x="123" y="53" width="5" height="14" rx="1"/></g><g fill="#24b983"><rect class="cr-led" x="88" y="47" width="7" height="3" rx="1"/><rect class="cr-led cr-late" x="105" y="47" width="7" height="3" rx="1"/><rect class="cr-led cr-later" x="122" y="47" width="7" height="3" rx="1"/></g><use href="#cr-socket" transform="translate(109 99)"/><circle cx="109" cy="119" r="1.6" fill="#a3b5b5"/></g></symbol>
+<symbol id="cr-portable" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="M91 93C63 96 50 121 61 137S156 151 166 132 159 109 145 107" fill="none" stroke="#385465" stroke-width="4" stroke-linecap="round"/><ellipse cx="112" cy="137" rx="52" ry="15" fill="none" stroke="#6b848d" stroke-width="2.5"/><path d="M91 96 72 80M149 94 163 74" fill="none" stroke="#29485a" stroke-width="4"/><rect x="86" y="79" width="62" height="32" rx="12" fill="#102b40" transform="rotate(-5 117 95)"/><rect x="90" y="81" width="56" height="26" rx="10" fill="url(#cr-navy)" transform="rotate(-5 117 95)"/><rect class="cr-fill" x="101" y="91" width="26" height="4" rx="2" fill="#27c58f"/><circle cx="136" cy="93" r="2" fill="#35dba0" class="cr-led"/><use href="#cr-plug" transform="translate(69 76) rotate(-35) scale(1.2)"/><use href="#cr-plug" transform="translate(165 69) rotate(25)"/><circle class="cr-dot" cx="64" cy="124" r="2" fill="#4cc69b"/><circle class="cr-dot cr-led cr-late" cx="109" cy="150" r="2" fill="#4cc69b"/></g></symbol>
+<symbol id="cr-wallbox" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="M111 118c-2 18-20 27-13 40 7 11 27 3 22-10-5-12-17-8-13 0" fill="none" stroke="#426173" stroke-width="3"/><path d="M137 58h11v29" fill="none" stroke="#385366" stroke-width="2.6"/><use href="#cr-plug" transform="translate(148 80) scale(.7)"/><rect x="81" y="23" width="59" height="96" rx="12" fill="#c3d6ce"/><rect x="76" y="26" width="60" height="93" rx="12" fill="url(#cr-case)" stroke="#385a70" stroke-width="1.2"/><rect x="83" y="33" width="46" height="74" rx="8" fill="url(#cr-navy)"/><use href="#cr-screen" transform="translate(88 45) scale(.75)"/><path d="m105 78-6 10h5l-2 8 9-12h-5l2-6Z" fill="#bddfd3"/><rect class="cr-led" x="92" y="100" width="28" height="2.6" rx="1" fill="#36d19a"/></g></symbol>
+<symbol id="cr-wallbox-three" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="M119 115v49h12v-49" fill="url(#cr-metal)" stroke="#6f8d94" stroke-width="1"/><path d="M80 115c-7 18-15 28-5 34 10 7 16-1 12-8" fill="none" stroke="#405b6c" stroke-width="3.3"/><path d="m60 50 6-5 96 3v68l-7 5H60Z" fill="#719099"/><rect x="58" y="50" width="98" height="71" rx="9" fill="url(#cr-navy)" stroke="#304d63" stroke-width="1"/><rect x="65" y="57" width="84" height="49" rx="5" fill="#142f43"/><use href="#cr-screen" transform="translate(82 63) scale(1.04)"/><circle class="cr-led" cx="143" cy="113" r="2.2" fill="#3cd49a"/><path d="M72 116h18" stroke="#829ca1" stroke-width="1"/></g></symbol>
+<symbol id="cr-ac-post" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="m89 161 40 2 8-4v6l-8 3-40-2Z" fill="#90aba1"/><path d="m95 18 7-4 32 2v146l-6 3-33-2Z" fill="#7e999c"/><rect x="92" y="18" width="37" height="144" rx="8" fill="url(#cr-case)" stroke="#385c72" stroke-width="1.1"/><rect x="97" y="23" width="27" height="133" rx="5" fill="url(#cr-navy)"/><use href="#cr-screen" transform="translate(100 33) scale(.42)"/><rect x="102" y="59" width="17" height="13" rx="2" fill="#718d98"/><circle cx="104" cy="89" r="4.1" fill="#eef5e9"/><circle cx="117" cy="89" r="4.1" fill="#eef5e9"/><circle cx="104" cy="89" r="1.7" fill="#29506c"/><circle cx="117" cy="89" r="1.7" fill="#29506c"/><rect class="cr-led" x="125" y="32" width="2" height="113" rx="1" fill="#23ba83"/></g></symbol>
+<symbol id="cr-smart-socket" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="m84 35 6-4h53v103l-6 4-53-3Z" fill="#acc3bb"/><rect x="80" y="35" width="58" height="103" rx="9" fill="url(#cr-case)" stroke="#4d6d7d" stroke-width="1.1"/><path d="M80 44q0-9 9-9h40q9 0 9 9v10H80Z" fill="#16ac75"/><rect x="88" y="61" width="17" height="25" rx="2" fill="#e1eee6" stroke="#8aa39f" stroke-width=".7"/><rect x="111" y="61" width="17" height="25" rx="2" fill="#e1eee6" stroke="#8aa39f" stroke-width=".7"/><path d="M96 68v10m23-10v10" stroke="#2e5369" stroke-width="3.4" stroke-linecap="round"/><use href="#cr-socket" transform="translate(109 108)"/><rect class="cr-led" x="92" y="45" width="34" height="3" rx="1.5" fill="#c1ffe4"/><circle cx="109" cy="129" r="1.5" fill="#87a39d"/></g></symbol>
+<symbol id="cr-compact-dc" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="M77 90c-18-9-24 26-12 47M148 91c20-4 22 36 6 55" fill="none" stroke="#385567" stroke-width="3.8" stroke-linecap="round"/><use href="#cr-plug" transform="translate(65 82) scale(.9)"/><use href="#cr-plug" transform="translate(160 86) scale(.9)"/><path d="m78 43 7-4 65 3v95l-7 5H78Z" fill="#89a79e"/><rect x="74" y="43" width="70" height="99" rx="9" fill="url(#cr-case)" stroke="#37596d" stroke-width="1.5"/><rect x="81" y="50" width="56" height="83" rx="5" fill="#e1f1e8"/><use href="#cr-screen" transform="translate(86 59) scale(.95)"/><circle cx="109" cy="115" r="4.3" fill="#173b4f"/><circle cx="109" cy="115" r="2.9" fill="#dc7b67"/><rect x="91" y="128" width="35" height="2" rx="1" fill="#22b980" class="cr-led"/></g></symbol>
+<symbol id="cr-dc-thirty" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="m114 110 14 1v49l-14 3Z" fill="url(#cr-metal)" stroke="#6b8993" stroke-width=".8"/><path d="m102 161 34 1 8-5v7l-34 4-8-2Z" fill="#c3d3c6" stroke="#8ba7a0" stroke-width=".8"/><path d="M156 63c25-2 21 76-1 78" fill="none" stroke="#375567" stroke-width="4"/><path d="M75 108c-15 20-12 41 1 40" fill="none" stroke="#375567" stroke-width="3.5"/><use href="#cr-plug" transform="translate(73 142) rotate(12)"/><path d="m69 40 8-5 83 3v75l-7 4H69Z" fill="#809b9c"/><rect x="66" y="40" width="89" height="77" rx="8" fill="url(#cr-navy)" stroke="#183b54" stroke-width="1"/><use href="#cr-screen" transform="translate(80 50) scale(1.2)"/><circle cx="143" cy="104" r="3.2" fill="#d27562"/><rect class="cr-led" x="79" y="103" width="42" height="2.4" rx="1" fill="#2ac78d"/></g></symbol>
+<symbol id="cr-dc-sixty" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="M78 63c-27-17-24 86-1 89M144 60c28-15 28 81 5 96" fill="none" stroke="#365467" stroke-width="4.2"/><use href="#cr-plug" transform="translate(62 74) scale(1.05)"/><use href="#cr-plug" transform="translate(164 75) scale(1.05)"/><path d="m77 24 8-6 65 3v137l-8 5-65-3Z" fill="#6f9293"/><rect x="73" y="24" width="70" height="139" rx="10" fill="url(#cr-case)" stroke="#426577" stroke-width="1.1"/><path d="M77 45v102" stroke="#16bc80" stroke-width="3" class="cr-led"/><use href="#cr-screen" transform="translate(85 39) scale(.95)"/><circle cx="109" cy="94" r="5" fill="#173e50"/><circle cx="109" cy="94" r="3.4" fill="#db7968"/><path d="M89 127h39m-39 6h39m-39 6h39m-39 6h39" stroke="#abc1b6" stroke-width="1.4"/><path d="m66 160 78 3 12-5v7l-12 4-78-3Z" fill="#c4d8ca" stroke="#8fa9a0" stroke-width="1"/></g></symbol>
+<symbol id="cr-dc-one-twenty" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="M77 41C35-3 36 70 57 105M150 39c39-42 42 25 17 66" fill="none" stroke="#526a77" stroke-width="5.8" stroke-linecap="round"/><path d="M77 41C35-3 36 70 57 105M150 39c39-42 42 25 17 66" fill="none" stroke="#8aa0a2" stroke-width="1.1"/><path d="m76 28 9-7 71 3v134l-9 6-71-3Z" fill="#81999b"/><rect x="72" y="28" width="76" height="135" rx="11" fill="url(#cr-navy)" stroke="#26495d" stroke-width="1.1"/><use href="#cr-screen" transform="translate(83 40) scale(1.1)"/><circle cx="110" cy="96" r="5" fill="#082d43"/><circle cx="110" cy="96" r="3.5" fill="#df7c67"/><path d="M74 112h72" stroke="#92abb1" stroke-width="2"/><path d="M81 119h58v35H81Z" fill="#284758"/><use href="#cr-plug" transform="translate(57 107) scale(1.5)"/><use href="#cr-plug" transform="translate(167 107) scale(1.5)"/><rect x="85" y="84" width="50" height="2.2" rx="1" fill="#2ccf94" class="cr-led"/><path d="m63 161 85 2 12-5v7l-12 5-85-3Z" fill="#bccfc4" stroke="#819d99" stroke-width="1"/></g></symbol>
+<symbol id="cr-dc-two-forty" viewBox="0 0 220 180"><use href="#cr-ground"/><g class="cr-hw"><path d="m47 20 8-7 84 2v146l-8 5-84-3Z" fill="#7d9c9e"/><rect x="43" y="20" width="89" height="144" rx="3" fill="url(#cr-case)" stroke="#688895" stroke-width="1.1"/><path d="M87 22v139" stroke="#8da6ad" stroke-width="1"/><path d="M50 30h30m-30 5h30m-30 5h30m-30 5h30m-30 5h30m-30 5h30m15-25h29m-29 5h29m-29 5h29m-29 5h29m-29 5h29m-29 5h29M50 139h30m-30 5h30m-30 5h30m15-10h29m-29 5h29m-29 5h29" stroke="#9fb5bb" stroke-width="1"/><path d="M80 94v12m14-12v12" stroke="#385b6d" stroke-width="2.6" stroke-linecap="round"/><rect x="53" y="67" width="26" height="3" rx="1" fill="#20bc87" class="cr-led"/><path d="M134 153h13" stroke="#536f7c" stroke-width="3"/><path d="m152 74 6-4 26 3v86l-6 3-26-2Z" fill="#7f9c9e"/><rect x="148" y="75" width="31" height="87" rx="6" fill="url(#cr-case)" stroke="#577888" stroke-width="1"/><use href="#cr-screen" transform="translate(152 82) scale(.47)"/><rect x="156" y="105" width="14" height="2.4" rx="1" fill="#23c98c" class="cr-led cr-late"/><path d="M180 95c25-8 27 48 11 60" fill="none" stroke="#355365" stroke-width="3.6"/><use href="#cr-plug" transform="translate(189 99) scale(.8)"/></g></symbol>
+</defs></defs></svg>
+  {intro && (
+    <div class="cr-intro">
+      <div>
+        <p class="cr-eyebrow">Explore the range</p>
+        <H class="cr-h">A charger for every space.</H>
+        <p class="cr-lead">From a home socket to a commercial DC cabinet. Compare charger types, typical sizes and where they fit.</p>
       </div>
-    </li>
-  ))}
-</ul>
-<p class="ctypes-note">Drawings show a typical charger of each type. After a call we suggest the exact brand and model for your vehicle, supply and budget.</p>
+      <p class="cr-count"><strong>{list.length}</strong>charger types, one place.</p>
+    </div>
+  )}
+  {(filters || list.length > 2) && (
+    <div class="cr-toolbar">
+      {filters ? (
+        <div class="cr-filters" role="group" aria-label="Filter charger types">
+          <button class="cr-filter" type="button" data-filter="all" aria-pressed="true">All chargers <span class="cr-fc">{list.length}</span></button>
+          <button class="cr-filter" type="button" data-filter="ac" aria-pressed="false">Home &amp; AC <span class="cr-fc">{nAc}</span></button>
+          <button class="cr-filter" type="button" data-filter="dc" aria-pressed="false">DC charging <span class="cr-fc">{nDc}</span></button>
+        </div>
+      ) : <span />}
+      <button class="cr-motion" type="button" data-cr-motion aria-label="Pause animation"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-cr-motion-icon><path d="M4 3h3v10H4zm5 0h3v10H9z"/></svg><span class="cr-motion-label" data-cr-motion-label>Pause motion</span></button>
+    </div>
+  )}
+  <div class="cr-grid" role="list">
+    {list.map((t, i) => (
+      <article class="cr-card" role="listitem" data-type={t.dc ? 'dc' : 'ac'}>
+        <div class:list={['cr-art', { 'cr-art-dc': t.dc }]}>
+          <span class="cr-num" aria-hidden="true">{num(i)}</span>
+          <span class="cr-power">{t.tag}</span>
+          <svg viewBox="0 0 220 180" role="img" aria-label={`Drawing of a typical ${t.name.toLowerCase()}`}><use href={`#cr-${t.art}`} /></svg>
+        </div>
+        <div class="cr-content">
+          <p class="cr-cat">{t.category}</p>
+          <C class="cr-name"><a href={t.href}>{t.short}</a></C>
+          <p class="cr-size"><svg aria-hidden="true"><use href="#cr-ruler" /></svg>{t.size}</p>
+          <p class="cr-use">{t.use}</p>
+          {!compact && (
+            <details class="cr-details">
+              <summary><span>Where it fits</span><span aria-hidden="true">+</span></summary>
+              <p>{t.fits}</p>
+            </details>
+          )}
+          <a class="cr-quote" href={waLink(site.whatsapp, msg(t))} rel="noopener" target="_blank">Get a quote<span class="cr-q-long"> on WhatsApp</span><span aria-hidden="true">&nbsp;→</span></a>
+        </div>
+      </article>
+    ))}
+  </div>
+  <div class="cr-foot">
+    <p>Illustrations and sizes are indicative. We suggest the exact brand and model, and confirm its size and output, for your vehicle, electrical supply and site.</p>
+    <span class="cr-tag"><span class="cr-dot-live"></span>Selected for your site.</span>
+  </div>
+  <p class="cr-sr" aria-live="polite" data-cr-status></p>
+</div>
 
-<style>
-  .ctypes { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
-  .ctype { display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); overflow: hidden; }
-  .ctype-art { background: var(--white); padding: 12px 24px 0; }
-  .ctype-art :global(svg) { max-height: 220px; margin: 0 auto; }
-  .ctype-body { display: flex; flex-direction: column; gap: 6px; padding: 12px 18px 18px; flex: 1; }
-  .ctype-tag { align-self: flex-start; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; color: var(--green-text); background: var(--green-50); border-radius: 999px; padding: 3px 10px; }
-  .ctype-name { font-size: 1.05rem; line-height: 1.3; margin: 2px 0 0; }
-  .ctype-name a { color: var(--ink); text-decoration: none; }
-  .ctype-name a:hover { text-decoration: underline; }
-  .ctype-size { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 0.875rem; color: var(--muted); }
-  .ctype-suits { margin: 0; font-size: 0.9rem; color: var(--body); }
-  .ctype .btn { margin-top: auto; align-self: flex-start; }
-  .ctype-body > .btn { margin-top: 10px; }
-  .ctypes-compact .ctype-art :global(svg) { max-height: 180px; }
-  .ctypes-note { margin: 14px 0 0; font-size: 0.875rem; color: var(--muted); }
-  @media (max-width: 560px) {
-    .ctypes { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .ctype-art { padding: 8px 10px 0; }
-    .ctype-body { padding: 10px 12px 14px; }
-    .ctype-name { font-size: 0.95rem; }
-    .ctype-suits { display: none; }
-    .ctype .btn { width: 100%; justify-content: center; }
+<style is:global>
+  .cr { --cr-green: var(--green-text); }
+  .cr-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .cr-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+  .cr-eyebrow { display: flex; align-items: center; gap: 8px; color: var(--cr-green); font-size: 12px; letter-spacing: .14em; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+  .cr-eyebrow::before { content: ""; width: 19px; height: 1px; background: currentColor; }
+  .cr-h { font-size: clamp(24px, 2.8vw, 34px); line-height: 1.15; letter-spacing: -0.02em; font-weight: 700; }
+  .cr-lead { margin-top: 10px; font-size: 15.5px; line-height: 1.6; color: var(--muted); max-width: 580px; }
+  .cr-count { text-align: right; white-space: nowrap; font-size: 13px; line-height: 1.6; color: var(--muted); padding-bottom: 3px; }
+  .cr-count strong { display: block; font-weight: 600; font-size: 28px; letter-spacing: -0.02em; color: var(--navy); }
+  .cr-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+  .cr-filters { display: flex; gap: 4px; padding: 4px; background: #e8e6df; border-radius: 9px; }
+  .cr-filter { border: 0; background: none; color: #4f6058; border-radius: 6px; font-size: 13px; font-weight: 600; padding: 9px 14px; min-height: 40px; }
+  .cr-filter[aria-pressed="true"] { background: var(--white); color: var(--navy); box-shadow: 0 1px 4px #173a3314; }
+  .cr-filter:hover { color: var(--cr-green); }
+  .cr-fc { font-size: 11px; margin-left: 4px; color: #6f7f77; }
+  .cr-motion { display: flex; align-items: center; gap: 7px; background: transparent; border: 1px solid var(--line-strong); border-radius: 22px; color: #3f5f52; font-size: 12px; padding: 8px 12px; min-height: 40px; flex: none; }
+  .cr-motion svg { width: 11px; height: 11px; }
+  .cr-motion:hover { background: var(--soft); }
+  .cr-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .cr-card { --cr-motion: paused; min-width: 0; display: flex; flex-direction: column; background: var(--white); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
+  .cr-card.is-visible { --cr-motion: running; }
+  .cr.is-paused .cr-card { --cr-motion: paused; }
+  .cr-card[hidden] { display: none; }
+  .cr-card:hover { border-color: #aacbbb; box-shadow: 0 9px 24px -18px #0d513d55; }
+  .cr-art { position: relative; height: 176px; margin: 9px 9px 0; border-radius: 10px; background: linear-gradient(145deg, #fafcf9, #eff4ec); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .cr-art::before { content: ""; position: absolute; inset: 29px 44px 17px; border-radius: 50%; background: #e3eee431; }
+  .cr-art-dc { background: linear-gradient(145deg, #f4f8f7, #e9f0ed); }
+  .cr-art svg { position: relative; width: 206px; height: 170px; max-width: 100%; overflow: visible; }
+  .cr-num { position: absolute; left: 12px; top: 12px; z-index: 1; font-size: 11px; letter-spacing: .08em; color: #7d8d82; }
+  .cr-power { position: absolute; right: 10px; top: 10px; z-index: 1; background: #fffefa; border: 1px solid #e1e9de; border-radius: 5px; padding: 4px 7px; color: var(--cr-green); font-size: 11px; font-weight: 700; }
+  .cr-content { flex: 1; display: flex; flex-direction: column; padding: 16px 16px 14px; }
+  .cr-cat { font-size: 11px; letter-spacing: .1em; color: var(--cr-green); font-weight: 700; text-transform: uppercase; margin-bottom: 6px; }
+  .cr-name { font-size: 17px; line-height: 1.3; font-weight: 600; margin-bottom: 8px; }
+  .cr-name a { color: var(--navy); text-decoration: none; }
+  .cr-name a:hover { color: var(--cr-green); text-decoration: underline; }
+  .cr-size { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 1.45; color: var(--muted); margin-bottom: 10px; }
+  .cr-size svg { width: 14px; height: 14px; flex: none; margin-top: 2px; color: #7e958a; }
+  .cr-use { font-size: 14px; line-height: 1.55; color: var(--body); margin-bottom: 12px; }
+  .cr-details { margin-top: auto; border-top: 1px solid #edf0ea; }
+  .cr-details summary { display: flex; justify-content: space-between; align-items: center; gap: 10px; list-style: none; cursor: pointer; color: var(--cr-green); font-size: 13.5px; font-weight: 600; min-height: 44px; }
+  .cr-details summary::-webkit-details-marker { display: none; }
+  .cr-details summary span:last-child { font-size: 18px; font-weight: 400; line-height: 1; transition: transform .2s; }
+  .cr-details[open] summary span:last-child { transform: rotate(45deg); }
+  .cr-details p { font-size: 13.5px; line-height: 1.6; color: var(--muted); margin: 0 0 8px; }
+  .cr-quote { align-self: flex-start; margin-top: 4px; font-size: 13.5px; font-weight: 700; color: var(--navy); text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+  .cr-compact .cr-quote { margin-top: auto; }
+  .cr-quote:hover { color: var(--cr-green); text-decoration: underline; }
+  .cr-foot { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .cr-foot p { font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 680px; }
+  .cr-tag { font-size: 11px; color: #6f7f74; letter-spacing: .1em; white-space: nowrap; text-transform: uppercase; }
+  .cr-dot-live { display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: #15a16c; vertical-align: 1px; }
+  .cr-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+  .cr-hw { transition: transform .3s ease; transform-origin: center bottom; }
+  .cr-led { animation: cr-led 3.6s ease-in-out infinite; animation-play-state: var(--cr-motion, paused); }
+  .cr-late { animation-delay: -1.2s; }
+  .cr-later { animation-delay: -2.4s; }
+  .cr-fill { transform-box: fill-box; transform-origin: left center; animation: cr-charge 5s ease-in-out infinite; animation-play-state: var(--cr-motion, paused); }
+  .cr-dot { animation: cr-led 3.6s ease-in-out infinite; animation-play-state: var(--cr-motion, paused); }
+  @keyframes cr-led { 0%, 100% { opacity: .38; } 50% { opacity: 1; } }
+  @keyframes cr-charge { 0%, 12% { transform: scaleX(.2); opacity: .65; } 65%, 85% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(.2); opacity: .65; } }
+  @media (prefers-reduced-motion: reduce) {
+    .cr-led, .cr-fill, .cr-dot { animation: none; }
+    .cr-card, .cr-details summary span:last-child { transition: none; }
+  }
+
+  @media (max-width: 1000px) { .cr-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .cr-count { display: none; } }
+  @media (max-width: 730px) {
+    .cr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .cr-art { height: 160px; }
+    .cr-art svg { width: 186px; height: 154px; }
+    .cr-name { font-size: 16px; }
+    .cr-foot { flex-direction: column; gap: 10px; }
+  }
+  @media (max-width: 430px) {
+    .cr-toolbar { gap: 8px; }
+    .cr-filters { gap: 1px; padding: 3px; }
+    .cr-filter { font-size: 12px; padding: 8px 9px; }
+    .cr-fc { display: none; }
+    .cr-motion-label { display: none; }
+    .cr-motion { min-width: 40px; justify-content: center; padding: 8px; }
+    .cr-grid { gap: 10px; }
+    .cr-art { height: 136px; margin: 6px 6px 0; border-radius: 8px; }
+    .cr-art svg { width: 160px; height: 132px; }
+    .cr-power { font-size: 10px; padding: 3px 5px; top: 7px; right: 7px; }
+    .cr-num { left: 9px; top: 9px; font-size: 10px; }
+    .cr-content { padding: 12px 11px 10px; }
+    .cr-card { border-radius: 12px; }
+    .cr-cat { font-size: 10px; letter-spacing: .06em; }
+    .cr-name { font-size: 15px; }
+    .cr-size { font-size: 12px; }
+    .cr-use { font-size: 13px; }
+    .cr-details summary, .cr-quote { font-size: 12.5px; }
+    .cr-q-long { display: none; }
+  }
+  @media (max-width: 730px) {
+    .cr-strip .cr-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 6px; scrollbar-width: thin; }
+    .cr-strip .cr-card { flex: 0 0 min(250px, 74%); scroll-snap-align: start; }
   }
 </style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-cr]').forEach((root) => {
+    const cards = [...root.querySelectorAll<HTMLElement>('.cr-card')];
+    const filters = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const btn = root.querySelector<HTMLButtonElement>('[data-cr-motion]');
+    const mq = matchMedia('(prefers-reduced-motion: reduce)');
+    let paused = mq.matches;
+    const sync = () => {
+      root.classList.toggle('is-paused', paused || document.hidden);
+      if (!btn) return;
+      btn.setAttribute('aria-label', paused ? 'Play animation' : 'Pause animation');
+      root.querySelector('[data-cr-motion-label]')!.textContent = paused ? 'Play motion' : 'Pause motion';
+      root.querySelector('[data-cr-motion-icon]')!.innerHTML = paused ? '<path d="m5 2 9 6-9 6Z"/>' : '<path d="M4 3h3v10H4zm5 0h3v10H9z"/>';
+    };
+    btn?.addEventListener('click', () => { paused = !paused; sync(); });
+    document.addEventListener('visibilitychange', sync);
+    mq.addEventListener('change', (e) => { paused = e.matches; sync(); });
+    filters.forEach((f) => f.addEventListener('click', () => {
+      const type = f.dataset.filter;
+      let n = 0;
+      filters.forEach((b) => b.setAttribute('aria-pressed', String(b === f)));
+      cards.forEach((c) => { c.hidden = type !== 'all' && c.dataset.type !== type; if (!c.hidden) n++; });
+      root.querySelector('[data-cr-status]')!.textContent = `${n} charger types shown.`;
+    }));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle('is-visible', e.isIntersecting)), { threshold: 0.05 });
+      cards.forEach((c) => io.observe(c));
+    } else cards.forEach((c) => c.classList.add('is-visible'));
+    sync();
+  });
+</script>

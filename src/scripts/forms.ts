@@ -3,6 +3,8 @@
 // web app answers {ok: true}; otherwise the visitor is told it was not saved and gets WhatsApp and Call,
 // with the details ready. Extra fields (x_*) and the reference travel in the Details column.
 
+import { validEmail, cleanPhone, validPhone, newRef } from '../lib/lead';
+
 const LABELS: Record<string, string> = {
   name: 'Name', phone: 'Phone', company: 'Company', city: 'City', state: 'State', need: 'Need',
   site_type: 'Site', sanctioned_load: 'Sanctioned load', chargers: 'Chargers', sites_per_month: 'Sites a month',
@@ -14,15 +16,6 @@ const TITLES: Record<string, string> = {
   b2b: 'Partnership enquiry', brand: 'Brand partner enquiry', technician: 'Technician application', ask: 'Question for an expert',
 };
 
-const validEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim());
-const newRef = () => {
-  const d = new Date();
-  const p2 = (n: number) => String(n).padStart(2, '0');
-  const rnd = Array.from(crypto.getRandomValues(new Uint8Array(4))).map((b) => 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[b % 31]).join('');
-  return `PEW-${String(d.getFullYear()).slice(2)}${p2(d.getMonth() + 1)}${p2(d.getDate())}-${rnd}`;
-};
-const cleanPhone = (v: string) => v.replace(/[\s\-()]/g, '').replace(/^(\+91|0091|91(?=\d{10}$)|0(?=\d{10}$))/, '');
-const validPhone = (v: string) => /^[6-9]\d{9}$/.test(cleanPhone(v));
 
 function waText(form: HTMLFormElement, data: Record<string, string>): string {
   const lines = [`Hello Proline, ${(TITLES[data.form] ?? 'Website enquiry').toLowerCase()} from your website:`];

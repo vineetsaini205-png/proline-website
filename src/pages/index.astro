@@ -12,12 +12,11 @@ import Photo from '../components/Photo.astro';
 import SectionHead from '../components/SectionHead.astro';
 import Faqs from '../components/Faqs.astro';
 import CtaBand from '../components/CtaBand.astro';
-import ChargerArt from '../components/ChargerArt.astro';
-import HeroChargers from '../components/HeroChargers.astro';
+import ChargerTypes from '../components/ChargerTypes.astro';
+import HeroAnimation from '../components/HeroAnimation.astro';
 import site from '../data/site.json';
 import images from '../data/images.json';
 import { cars } from '../data/nav';
-import { chargerTypes } from '../data/charger-types';
 import { faqNode } from '../lib/schema';
 import { waLink } from '../lib/text';
 
@@ -50,7 +49,7 @@ const checks = [
   { icon: 'shield', title: 'Warranty', text: 'What the maker covers, and who handles warranty calls and site visits.' },
   { icon: 'clipboard', title: 'Complete installed cost', text: 'Charger, cable, protection, earthing and civil work together, not the charger alone.' },
   { icon: 'chart', title: 'Earning opportunity', text: 'For a commercial site: footfall around it, chargers nearby, EV growth in your state and the earnings you want, worked out from public data before you invest.',
-    href: '/tools/ev-charging-opportunity-checker/', cta: 'Check your pincode' },
+    href: '/tools/ev-charging-opportunity-checker/', cta: 'Is your location good for a station? Check it' },
 ];
 
 const quoteIncludes = [
@@ -61,8 +60,6 @@ const quoteIncludes = [
   'What is not included, written down, so you can compare quotes on the same scope',
 ];
 
-const shelfKinds = ['wallbox-7', 'wallbox-11', 'ac-post-22', 'lev-dc', 'dc-60', 'dc-120'] as const;
-const shelf = shelfKinds.map((k) => chargerTypes.find((t) => t.kind === k)!);
 
 const jobs = [
   {
@@ -113,7 +110,7 @@ const faqs = [
           <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call us</a>
         </div>
       </div>
-      <div class="hero-photo"><HeroChargers /></div>
+      <div class="hero-photo"><HeroAnimation /></div>
       <ul class="routes" role="list" aria-label="What do you need?">
         {routes.map((r) => (
           <li>
@@ -158,20 +155,9 @@ const faqs = [
         <ul class="ticks">{quoteIncludes.map((q) => <li>{q}</li>)}</ul>
       </div>
       <div class="shelf-wrap">
-        <h3 class="shelf-title">What the chargers look like</h3>
-        <ul class="shelf" role="list">
-          {shelf.map((t) => (
-            <li>
-              <a href={t.href}>
-                <ChargerArt kind={t.kind} label={`Drawing of a typical ${t.name.toLowerCase()}`} />
-                <span class="shelf-tag">{t.tag}</span>
-                <span class="shelf-name">{t.name}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        <ChargerTypes intro strip />
         <p class="shelf-links">
-          <a class="link-arrow" href="/chargers/#types">All 11 charger types and sizes<Icon name="arrowRight" size={16} /></a>
+          <a class="link-arrow" href="/chargers/#types">Compare charger types and sizes<Icon name="arrowRight" size={16} /></a>
           <span class="shelf-cars">Your car: {cars.map((c, i) => <>{i > 0 && ' · '}<a href={c.href}>{c.label.replace(/ charger$/, '')}</a></>)}</span>
         </p>
       </div>
@@ -290,13 +276,6 @@ const faqs = [
   .quote-box > p { margin-top: 8px; color: var(--body); }
   .quote-box .ticks { margin-top: 14px; }
   .shelf-wrap { margin-top: 32px; }
-  .shelf-title { font-size: 19px; margin-bottom: 14px; }
-  .shelf { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-  .shelf a { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; padding: 10px 8px 12px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius-lg); color: var(--ink); text-decoration: none; text-align: center; }
-  .shelf a:hover { border-color: var(--green-text); color: var(--ink); }
-  .shelf a :global(svg.charger-art) { width: 100%; max-width: 120px; }
-  .shelf-tag { font-size: 12.5px; font-weight: 700; color: var(--green-text); background: var(--green-50); border-radius: 999px; padding: 2px 9px; }
-  .shelf-name { font-size: 13.5px; font-weight: 600; line-height: 1.3; }
   .shelf-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-top: 16px; }
   .shelf-cars { font-size: 14.5px; color: var(--muted); }
   .shelf-cars a { color: var(--ink); font-weight: 600; }
@@ -325,7 +304,6 @@ const faqs = [
 
   @media (max-width: 1100px) {
     .routes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .shelf { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .onsite { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   @media (max-width: 900px) {
@@ -339,9 +317,6 @@ const faqs = [
     .hero-actions .btn { width: 100%; }
     .routes { grid-template-columns: minmax(0, 1fr); gap: 10px; }
     .routes a { padding: 14px; }
-    .shelf { display: flex; overflow-x: auto; gap: 10px; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter) 4px; scrollbar-width: none; }
-    .shelf::-webkit-scrollbar { display: none; }
-    .shelf li { flex: 0 0 132px; }
     .onsite { grid-template-columns: minmax(0, 1fr); }
     .quote-box { padding: 18px; }
     .proof-photos { display: flex; overflow-x: auto; gap: 12px; margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 0 var(--gutter) 4px; scrollbar-width: none; }

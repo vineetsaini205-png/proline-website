@@ -51,6 +51,7 @@ faqs:
     a: "Yes, in the 10 states we work in: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We plan the sites together, so chargers, protection and handover packs follow one standard, and our 200+ technicians install them. See [coverage](/coverage/)."
 related:
   - /tools/ev-charging-station-earnings-calculator/
+  - /tools/ev-charging-opportunity-checker/
   - /start-an-ev-charging-station/
   - /chargers/dc-fast-chargers/
   - /solar-ev-charging/
@@ -105,7 +106,7 @@ A paid charger earns the gap between what drivers pay for each unit and what tha
 
 What decides profit is utilisation: how many hours a day vehicles actually charge. Usage at a new station typically builds over 6–12 months ([Bolt.Earth](https://bolt.earth/franchise)), so plan for quiet early months.
 
-The [earnings calculator](/tools/ev-charging-station-earnings-calculator/) takes your state, chargers and price, and shows a quiet, likely and busy month. Enter your own quote to see the payback.
+Is your property a good location for a charging station? Enter its pincode in the [location checker](/tools/ev-charging-opportunity-checker/) to see the busy places and chargers around it. The [earnings calculator](/tools/ev-charging-station-earnings-calculator/) then takes your state, chargers and price, and shows a quiet, likely and busy month. Enter your own quote to see the payback.
 
 ## Power supply and permissions
 
