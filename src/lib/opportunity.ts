@@ -33,7 +33,7 @@ export const POIS: { key: PoiKey; label: string; weight: number; cap: number; qu
   { key: 'retail', label: 'Malls and supermarkets', weight: 3, cap: 20, query: 'nwr["shop"~"^(mall|supermarket|department_store)$"]' },
   { key: 'hotels', label: 'Hotels and guest houses', weight: 2, cap: 30, query: 'nwr["tourism"~"^(hotel|motel|guest_house)$"]' },
   { key: 'food', label: 'Restaurants and cafés', weight: 1, cap: 80, query: 'nwr["amenity"~"^(restaurant|cafe|fast_food|food_court)$"]' },
-  { key: 'hospitals', label: 'Hospitals', weight: 3, cap: 10, query: 'nwr["amenity"="hospital"]' },
+  { key: 'hospitals', label: 'Hospitals', weight: 2, cap: 8, query: 'nwr["amenity"="hospital"]' },
   { key: 'colleges', label: 'Colleges and universities', weight: 2, cap: 10, query: 'nwr["amenity"~"^(college|university)$"]' },
   { key: 'transit', label: 'Railway, metro and bus stations', weight: 3, cap: 10, query: '' }, // union, built below
   { key: 'offices', label: 'Offices', weight: 1, cap: 60, query: 'nwr["office"]' },
@@ -51,17 +51,19 @@ export const footfallIndex = (p: Poi) =>
 // "max" bands when it is at most the threshold. First match wins.
 type Band = [number, number];
 export const FACTORS = {
-  footfall: { label: 'Busy places nearby', max: 40, kind: 'min' as const, unit: 'footfall index',
-    bands: [[200, 40], [120, 34], [60, 27], [25, 19], [8, 11], [0, 4]] as Band[] },
-  gap: { label: 'Room for a new charger', max: 20, kind: 'max' as const, unit: 'public chargers within 3 km',
-    bands: [[0, 20], [2, 15], [5, 10], [10, 6], [Infinity, 3]] as Band[] },
+  // Local footfall weighs most. Fewer chargers on the map counts for less, because the map misses many.
+  // Growth and share bands sit around the India figures (Jan–Oct 2026: +51%, 10.7 per 100).
+  footfall: { label: 'Busy places nearby', max: 45, kind: 'min' as const, unit: 'footfall index',
+    bands: [[200, 45], [120, 38], [60, 30], [25, 21], [8, 12], [0, 4]] as Band[] },
+  gap: { label: 'Room for a new charger', max: 15, kind: 'max' as const, unit: 'public chargers within 3 km',
+    bands: [[0, 15], [2, 12], [5, 9], [10, 6], [Infinity, 3]] as Band[] },
   growth: { label: 'EV growth in your state', max: 20, kind: 'min' as const, unit: '% more EVs registered', missing: 10,
-    bands: [[75, 20], [50, 17], [35, 14], [20, 11], [5, 7], [-Infinity, 4]] as Band[] },
-  share: { label: 'EVs among new vehicles in your state', max: 20, kind: 'min' as const, unit: 'EVs per 100 new vehicles', missing: 3,
-    bands: [[14, 20], [12, 17], [10, 14], [7, 10], [4, 6], [-Infinity, 3]] as Band[] },
+    bands: [[75, 20], [50, 15], [30, 11], [15, 7], [0, 4], [-Infinity, 2]] as Band[] },
+  share: { label: 'EVs among new vehicles in your state', max: 20, kind: 'min' as const, unit: 'EVs per 100 new vehicles', missing: 2,
+    bands: [[14, 20], [12, 16], [10, 13], [7, 9], [4, 5], [-Infinity, 2]] as Band[] },
 };
 export type FactorKey = keyof typeof FACTORS;
-export const RATINGS: { min: number; label: 'High' | 'Medium' | 'Low' }[] = [{ min: 70, label: 'High' }, { min: 50, label: 'Medium' }, { min: 0, label: 'Low' }];
+export const RATINGS: { min: number; label: 'High' | 'Medium' | 'Low' }[] = [{ min: 75, label: 'High' }, { min: 55, label: 'Medium' }, { min: 0, label: 'Low' }];
 
 const band = (f: (typeof FACTORS)[FactorKey], v: number) =>
   (f.bands.find(([t]) => (f.kind === 'min' ? v >= t : v <= t)) ?? f.bands[f.bands.length - 1])[1];
@@ -69,10 +71,10 @@ const band = (f: (typeof FACTORS)[FactorKey], v: number) =>
 export type Scored = { key: FactorKey; label: string; pts: number | null; max: number };
 export function score(i: { poi: Poi | null; chargersNear: number | null; growth: number | null; per100: number | null; stateKnown: boolean }) {
   const parts: Scored[] = [
-    { key: 'footfall', label: FACTORS.footfall.label, max: 40, pts: i.poi ? band(FACTORS.footfall, footfallIndex(i.poi)) : null },
-    { key: 'gap', label: FACTORS.gap.label, max: 20, pts: i.chargersNear == null ? null : band(FACTORS.gap, i.chargersNear) },
-    { key: 'growth', label: FACTORS.growth.label, max: 20, pts: !i.stateKnown ? null : i.growth == null ? FACTORS.growth.missing : band(FACTORS.growth, i.growth) },
-    { key: 'share', label: FACTORS.share.label, max: 20, pts: !i.stateKnown ? null : i.per100 == null ? FACTORS.share.missing : band(FACTORS.share, i.per100) },
+    { key: 'footfall', label: FACTORS.footfall.label, max: FACTORS.footfall.max, pts: i.poi ? band(FACTORS.footfall, footfallIndex(i.poi)) : null },
+    { key: 'gap', label: FACTORS.gap.label, max: FACTORS.gap.max, pts: i.chargersNear == null ? null : band(FACTORS.gap, i.chargersNear) },
+    { key: 'growth', label: FACTORS.growth.label, max: FACTORS.growth.max, pts: !i.stateKnown ? null : i.growth == null ? FACTORS.growth.missing : band(FACTORS.growth, i.growth) },
+    { key: 'share', label: FACTORS.share.label, max: FACTORS.share.max, pts: !i.stateKnown ? null : i.per100 == null ? FACTORS.share.missing : band(FACTORS.share, i.per100) },
   ];
   const complete = parts.every((p) => p.pts != null);
   const total = parts.reduce((s, p) => s + (p.pts ?? 0), 0);

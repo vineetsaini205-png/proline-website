@@ -21,7 +21,7 @@ const cfg = { calcStates: tariffs.states.map((t) => t.state), wa: site.whatsapp,
 const n = (v: number) => v.toLocaleString('en-IN');
 const bandText = (f: (typeof FACTORS)[keyof typeof FACTORS]) => f.bands.map(([t, p], i) => {
   if (f.kind === 'max') return t === Infinity ? `more: ${p}` : t === 0 ? `none: ${p}` : `up to ${t}: ${p}`;
-  return t === -Infinity || (t === 0 && i === f.bands.length - 1) ? `lower: ${p}` : `${t}+: ${p}`;
+  return t === -Infinity || (t === 0 && i === f.bands.length - 1) ? `below ${f.bands[i - 1][0]}: ${p}` : `${t}+: ${p}`;
 }).join(' · ');
 
 const faqs = [
@@ -54,7 +54,7 @@ const faqs = [
           <input id="opp-q" name="q" type="text" maxlength="80" autocomplete="off" spellcheck="false" placeholder="e.g. 110037 or Mahipalpur, Delhi" required />
           <button class="btn btn-primary" type="submit" id="opp-go"><Icon name="search" size={20} />Check opportunity</button>
         </div>
-        <p class="hint">A six-digit pincode works best. For a city, add the state, like “Kharar, Punjab”.</p>
+        <p class="hint">A pincode gives the area around its centre. For a particular site, type the area or a landmark with the city, like “Sector 62, Noida”.</p>
       </div>
       <p class="opp-status" id="opp-status" role="status" aria-live="polite"></p>
     </form>
