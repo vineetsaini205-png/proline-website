@@ -41,11 +41,22 @@ export const moreProducts: NavLink[] = [
 
 // One page per popular car model (owner, 13 Nov): which home charger suits it and how we install it.
 export const cars: NavLink[] = [
+  // Owner, 15 Nov: more of the popular EVs (2026 sales), grouped by maker.
   { label: 'Tata Nexon.ev charger', href: '/chargers/for/tata-nexon-ev/', note: '7.2–7.4 kW wall box' },
   { label: 'Tata Punch.ev charger', href: '/chargers/for/tata-punch-ev/', note: '3.3 or 7.2 kW at home' },
-  { label: 'MG Windsor charger', href: '/chargers/for/mg-windsor-ev/', note: '7.4 kW wall box' },
+  { label: 'Tata Curvv.ev charger', href: '/chargers/for/tata-curvv-ev/', note: '7.2–7.4 kW wall box' },
+  { label: 'Tata Tiago.ev charger', href: '/chargers/for/tata-tiago-ev/', note: '3.3 or 7.2 kW at home' },
+  { label: 'Tata Harrier.ev charger', href: '/chargers/for/tata-harrier-ev/', note: '7.2 kW wall box' },
+  { label: 'Mahindra XEV 9S charger', href: '/chargers/for/mahindra-xev-9s/', note: '11.2 or 7.2 kW wall box' },
+  { label: 'Mahindra XEV 9e charger', href: '/chargers/for/mahindra-xev-9e/', note: '7.2 or 11.2 kW wall box' },
   { label: 'Mahindra BE 6 charger', href: '/chargers/for/mahindra-be-6/', note: '7.2 or 11.2 kW wall box' },
+  { label: 'MG Windsor charger', href: '/chargers/for/mg-windsor-ev/', note: '7.4 kW wall box' },
+  { label: 'MG ZS EV charger', href: '/chargers/for/mg-zs-ev/', note: '7.4 kW wall box' },
+  { label: 'MG Comet EV charger', href: '/chargers/for/mg-comet-ev/', note: '3.3 or 7.4 kW at home' },
+  { label: 'Maruti e Vitara charger', href: '/chargers/for/maruti-suzuki-e-vitara/', note: '7.4 kW wall box' },
   { label: 'Hyundai Creta Electric charger', href: '/chargers/for/hyundai-creta-electric/', note: '7.4 or 11 kW wall box' },
+  { label: 'Kia Carens Clavis EV charger', href: '/chargers/for/kia-carens-clavis-ev/', note: '11 or 7.4 kW wall box' },
+  { label: 'VinFast VF6 charger', href: '/chargers/for/vinfast-vf6/', note: '7.2–7.4 kW wall box' },
 ];
 
 export const audiences: NavLink[] = [
