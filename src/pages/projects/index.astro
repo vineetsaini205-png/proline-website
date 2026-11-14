@@ -46,8 +46,8 @@ const jobs = [
   waText="Hello Proline, I saw your work on the website and would like to discuss a similar job.">
   <section class="section" aria-labelledby="clients-title">
     <div class="wrap">
-      <SectionHead eyebrow="Who we have worked for" title="Installation work for networks, carmakers and homes" id="clients-title" />
-      <p class="clients-line">We have done installation work for <strong>{site.clients.slice(0, -1).join(', ')} and {site.clients.at(-1)}</strong>, as well as for home owners, housing societies and businesses.</p>
+      <SectionHead eyebrow="Who we have worked for" title="Installation work for CPOs, parking areas and homes" id="clients-title" />
+      <p class="clients-line">We have done installation work for charging point operators (CPOs), carmakers and charger brands, including <strong>{site.clients.slice(0, -1).join(', ')} and {site.clients.at(-1)}</strong>, as well as for parking areas, housing societies, businesses and homes.</p>
       <dl class="work-stats">{site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}</dl>
     </div>
   </section>

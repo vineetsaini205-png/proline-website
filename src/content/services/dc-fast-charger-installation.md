@@ -105,6 +105,6 @@ Once the power is on, we commission the charger: insulation and earth tests, pro
 
 ## Where we install DC chargers
 
-We are based in Delhi and install DC chargers in all 10 states we work in, for charge point operators, fleets, dealerships and businesses. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. Operators rolling out many sites can see how we work with them on [charge point operators](/start-an-ev-charging-station/).
+We are based in Delhi and install DC chargers in all 10 states we work in, for charge point operators, fleets, dealerships and businesses. We have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. Operators rolling out many sites can see how we work with them on [charge point operators](/start-an-ev-charging-station/).
 
 Planning a DC charger as a business? The [earnings calculator](/tools/ev-charging-station-earnings-calculator/) shows what it could earn at your state's EV tariff.

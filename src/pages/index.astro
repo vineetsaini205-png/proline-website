@@ -34,6 +34,13 @@ const routes = [
 
 const meta = images as Record<string, { alt: string; caption?: string }>;
 
+// Proof photos (owner, 15 Nov: CPOs, parking areas and homes). Real job photos only.
+const proofPhotos = [
+  { key: 'job-dc-station', who: 'CPO', caption: 'DC charging station for Reliable Charge' },
+  { key: 'job-basement-points', who: 'Parking area', caption: 'Bolt.Earth charging points in a basement car park' },
+  { key: 'job-home-db-box', who: 'Home', caption: '3.3 kW charging point with its DB box, Maharashtra' },
+];
+
 const checks = [
   { icon: 'car', title: 'Your vehicle', text: 'The most AC power it accepts, its connector, and whether a charger came with it.' },
   { icon: 'gauge', title: 'Available power', text: 'Single or three phase, and how much of your sanctioned load is free.' },
@@ -57,7 +64,7 @@ const shelf = shelfKinds.map((k) => chargerTypes.find((t) => t.kind === k)!);
 
 const jobs = [
   {
-    photo: 'job-home-db-box', kind: 'Home installation',
+    photo: 'job-socket-test', kind: 'Home installation',
     title: '3.3 kW home charging point in a Maharashtra village',
     facts: 'Jambhulni, Maharashtra · 18 May 2026 · 3.3 kW DB box and socket',
     need: 'A safe, dedicated charging point at a house, with an earth good enough for daily charging.',
@@ -119,19 +126,21 @@ const faqs = [
   </section>
 
   <section class="section home-proof" aria-labelledby="proof-title">
-    <div class="wrap proof-grid">
-      <figure class="proof-photo">
-        <Photo name="job-basement-points" sizes="(max-width: 900px) 100vw, 420px" />
-        <figcaption>{meta['job-basement-points'].caption} · Bolt.Earth chargers installed by Proline</figcaption>
-      </figure>
-      <div>
-        <SectionHead eyebrow="Proof of our work" title="Installation work for networks, carmakers and homes" id="proof-title" />
-        <p class="proof-clients">We have done installation work for <strong>{site.clients.slice(0, -1).join(', ')} and {site.clients.at(-1)}</strong>.</p>
-        <dl class="proof-stats">
-          {site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
-        </dl>
-        <p class="proof-more"><a class="link-arrow" href="/projects/">See our work<Icon name="arrowRight" size={16} /></a></p>
+    <div class="wrap">
+      <SectionHead eyebrow="Proof of our work" title="Installation work for CPOs, parking areas and homes" id="proof-title" />
+      <p class="proof-clients">We have done installation work for charging point operators (CPOs), carmakers and charger brands, including <strong>{site.clients.slice(0, -1).join(', ')} and {site.clients.at(-1)}</strong>, as well as for parking areas, housing societies and homes.</p>
+      <dl class="proof-stats">
+        {site.stats.map((st) => <div><dt>{st.value}</dt><dd>{st.label}</dd></div>)}
+      </dl>
+      <div class="proof-photos">
+        {proofPhotos.map((p) => (
+          <figure>
+            <Photo name={p.key} sizes="(max-width: 760px) 86vw, 380px" />
+            <figcaption><strong>{p.who}</strong> · {p.caption}</figcaption>
+          </figure>
+        ))}
       </div>
+      <p class="proof-more"><a class="link-arrow" href="/projects/">See our work<Icon name="arrowRight" size={16} /></a></p>
     </div>
   </section>
 
@@ -252,15 +261,17 @@ const faqs = [
   .route-text > span { font-size: 14.5px; color: var(--muted); }
   .route-text em { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-style: normal; font-weight: 600; font-size: 14.5px; color: var(--green-text); }
 
-  .proof-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 40px; align-items: center; }
-  .proof-photo { margin: 0; }
-  .proof-photo :global(img) { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-xl); }
-  .proof-clients { margin-top: 14px; font-size: 16.5px; }
+  .proof-clients { margin-top: 14px; font-size: 16.5px; max-width: 900px; }
   .proof-clients strong { color: var(--ink); }
-  .proof-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 28px; margin: 22px 0 0; }
+  .proof-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px 28px; margin: 24px 0 0; }
   .proof-stats div { border-left: 3px solid var(--green-text); padding-left: 14px; }
-  .proof-stats dt { font-weight: 700; font-size: 26px; line-height: 1.15; color: var(--ink); }
+  .proof-stats dt { font-weight: 700; font-size: 28px; line-height: 1.15; color: var(--ink); }
   .proof-stats dd { margin: 2px 0 0; font-size: 14.5px; color: var(--muted); }
+  .proof-photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+  .proof-photos figure { margin: 0; }
+  .proof-photos :global(img) { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-lg); background: var(--soft); }
+  .proof-photos figcaption { margin-top: 8px; font-size: 14px; color: var(--muted); }
+  .proof-photos figcaption strong { color: var(--green-text); }
   .proof-more { margin-top: 20px; }
 
   .checks-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
@@ -314,8 +325,8 @@ const faqs = [
   @media (max-width: 900px) {
     /* Phones and tablets: the four routes come before the photo (plan: don't let a photo push them down) */
     .home-hero-grid { grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "routes" "photo"; gap: 22px; padding-top: 26px; padding-bottom: 28px; }
-    .proof-grid, .jobs, .b2b { grid-template-columns: minmax(0, 1fr); }
-    .proof-grid { gap: 24px; }
+    .jobs, .b2b { grid-template-columns: minmax(0, 1fr); }
+    .proof-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 760px) {
     .hero-actions { display: grid; grid-template-columns: 1fr; }
@@ -327,5 +338,7 @@ const faqs = [
     .shelf li { flex: 0 0 132px; }
     .onsite { grid-template-columns: minmax(0, 1fr); }
     .quote-box { padding: 18px; }
+    .proof-photos { display: flex; overflow-x: auto; gap: 12px; margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding: 0 var(--gutter) 4px; scrollbar-width: none; }
+    .proof-photos figure { flex: 0 0 82%; }
   }
 </style>

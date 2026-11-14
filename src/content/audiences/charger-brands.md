@@ -84,7 +84,7 @@ We are based in Delhi, and our technicians travel to your buyers' sites in 10 st
 
 ## Our record
 
-In two years we have installed more than 500 chargers and DB boxes, AC and DC, and our network has grown to 200+ technicians. We have installed chargers for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
+In two years we have installed more than 1,000 chargers, AC and DC, and our network has grown to 200+ technicians. We have installed chargers for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 ## Hand us your installations
 

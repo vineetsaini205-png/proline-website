@@ -142,6 +142,6 @@ We supply DB boxes and switchgear of different brands, chosen for your charger, 
 - test insulation resistance, trip-test each RCD and record its trip time, and check the SPD
 - label every device and leave a circuit chart inside the door
 
-The results go into your handover pack at [commissioning](/services/ev-charger-commissioning/). We are based in Delhi, work in 10 states and have installed more than 500 chargers and DB boxes, AC and DC.
+The results go into your handover pack at [commissioning](/services/ev-charger-commissioning/). We are based in Delhi, work in 10 states and have installed more than 1,000 chargers, AC and DC.
 
 Not sure what your charger needs? The [installation checklist](/tools/installation-checklist/) lists the DB box, cable, earthing and civil work for your charger and site in a minute.

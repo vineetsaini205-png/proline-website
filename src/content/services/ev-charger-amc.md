@@ -141,6 +141,6 @@ If your chargers run on [Proline CMS](/cms/), it shows the live status of every 
 
 ## Where we work
 
-We are based in Delhi and maintain chargers in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower, and our network has grown to 200+ technicians.
+We are based in Delhi and maintain chargers in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower, and our network has grown to 200+ technicians.
 
 For a quote, send your list of chargers and sites through the form below, or send photos of the chargers and DB boxes on WhatsApp. Adding new chargers too? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work they need in a minute.

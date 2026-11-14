@@ -248,6 +248,6 @@ We are a Delhi-based EV charging company working in 10 states across North, Sout
 - **Solar and storage.** Panels and batteries if you want part of your power from the sun. See [solar EV charging](/solar-ev-charging/).
 - **Proline CMS** to run the station in your own brand.
 
-We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
+We have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Before you commit to a site, run it through the [earnings calculator](/tools/ev-charging-station-earnings-calculator/) for quiet, likely and busy months, then send us the location for a quote.

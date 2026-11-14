@@ -102,7 +102,7 @@ On tenders like these, we work with the charger maker or the main contractor tha
 
 ## Our record
 
-Proline has installed more than 500 chargers and DB boxes, AC and DC, in two years, and works with 200+ technicians across 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed chargers for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. See [coverage](/coverage/).
+Proline has installed more than 1,000 chargers, AC and DC, in two years, and works with 200+ technicians across 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed chargers for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. See [coverage](/coverage/).
 
 ## What to send us to get started
 

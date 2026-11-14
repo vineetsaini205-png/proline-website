@@ -115,6 +115,6 @@ Never accept the quick fix of linking neutral to earth at the charger to make th
 
 ## Earthing as part of the job
 
-Earthing comes with every [EV charger installation](/services/ev-charger-installation/) we do, along with the cabling and the DB box. We are based in Delhi, work in 10 states and have installed more than 500 chargers and DB boxes, AC and DC.
+Earthing comes with every [EV charger installation](/services/ev-charger-installation/) we do, along with the cabling and the DB box. We are based in Delhi, work in 10 states and have installed more than 1,000 chargers, AC and DC.
 
 Planning a charger? The [installation checklist](/tools/installation-checklist/) lists the earthing, cable run, DB box and civil work your site needs in a minute.

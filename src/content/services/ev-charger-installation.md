@@ -95,6 +95,6 @@ In practice that means:
 
 ## Where we install
 
-We are based in Delhi and install chargers in Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
+We are based in Delhi and install chargers in Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Not sure what your installation needs? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work for your charger and site in a minute.

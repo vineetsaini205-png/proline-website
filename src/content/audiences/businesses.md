@@ -140,7 +140,7 @@ The [charging station setup](/start-an-ev-charging-station/) page walks through 
 
 ## Why Proline
 
-We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. We don't make chargers, so our advice on brands starts from your site and your vehicles, not from one catalogue.
+We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians. In 2 years we have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. We don't make chargers, so our advice on brands starts from your site and your vehicles, not from one catalogue.
 
 ## What to send us
 

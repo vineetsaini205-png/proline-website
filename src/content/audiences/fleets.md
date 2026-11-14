@@ -159,7 +159,7 @@ It suits a fleet that bills partner fleets or drivers on leased vehicles at its 
 
 ## Why Proline
 
-We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians, so depots in different states can follow one design. In 2 years we have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
+We are based in Delhi and work in 10 states across North, South and West India, with more than 200 technicians, so depots in different states can follow one design. In 2 years we have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 ## What to send us
 

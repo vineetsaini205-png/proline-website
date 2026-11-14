@@ -126,6 +126,6 @@ The job is done when the charger shows online in your CMS and a test session has
 
 After handover, an [EV charger AMC](/services/ev-charger-amc/) repeats the key tests on planned visits and records them, so faults are caught early.
 
-We are based in Delhi and commission chargers in all 10 states we work in. We have installed more than 500 chargers and DB boxes, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
+We are based in Delhi and commission chargers in all 10 states we work in. We have installed more than 1,000 chargers, AC and DC, including work for Tata Motors, KIA, Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower.
 
 Planning the installation too? The [installation checklist](/tools/installation-checklist/) lists the cable, earthing, DB box and civil work your charger needs in a minute.

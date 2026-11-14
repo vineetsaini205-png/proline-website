@@ -90,7 +90,7 @@ Our advice on charger brands is free. If you supply your own chargers, we instal
 
 ## Our record
 
-We have done installation work for carmakers Tata Motors and KIA, and for Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. In two years we have installed more than 500 chargers and DB boxes, AC and DC, and our 200+ technicians work in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We are based in Delhi, where the dealer rule applies.
+We have done installation work for carmakers Tata Motors and KIA, and for Bolt.Earth, ThunderPlus, Ultraviolette, Reliable Charge and Mtekpower. In two years we have installed more than 1,000 chargers, AC and DC, and our 200+ technicians work in 10 states: Delhi, Haryana, Uttar Pradesh, Uttarakhand, Himachal Pradesh, Maharashtra, Madhya Pradesh, Chhattisgarh, Telangana and Tamil Nadu. We are based in Delhi, where the dealer rule applies.
 
 ## What to send us to get started
 
