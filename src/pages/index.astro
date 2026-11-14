@@ -230,7 +230,7 @@ const faqs = [
   .home-hero { background: var(--page); border-bottom: 1px solid var(--line); }
   .home-hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); grid-template-areas: "text photo" "routes routes"; gap: 28px 48px; padding-top: 44px; padding-bottom: 40px; align-items: center; }
   .hero-text { grid-area: text; }
-  .hero-photo { grid-area: photo; margin: 0; }
+  .hero-photo { grid-area: photo; margin: 0; align-self: start; } /* top-aligned so the whole animation fits on shorter screens */
   .hero-photo :global(.ha) { max-width: 600px; margin-inline: auto; } /* stays small when the hero is one column */
   .routes { grid-area: routes; }
   .hero-kicker { font-size: 15px; font-weight: 600; color: var(--green-text); margin-bottom: 14px; }
