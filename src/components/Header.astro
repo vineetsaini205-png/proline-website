@@ -24,7 +24,8 @@ const isCurrent = (href?: string) => !!href && href !== '/' && path.startsWith(h
 <div class="offer">
   <div class="wrap">
     <p><span class="dot" aria-hidden="true"></span>{site.offerStrip}</p>
-    <p class="offer-hours"><a href={`tel:${site.phoneE164}`}>Call {site.phoneDisplay}</a> ({site.callHours.replace(/^Calls\s*/i, '')}) · <a href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank">{site.whatsappHours}</a></p>
+    <!-- Owner (15 Nov): no phone number in this strip; it stays in the footer and behind the Call buttons -->
+    <p class="offer-hours"><a href={`tel:${site.phoneE164}`}>{site.callHours}</a> · <a href={waLink(site.whatsapp, waText)} rel="noopener" target="_blank">{site.whatsappHours}</a></p>
   </div>
 </div>
 <header class="site-header">
