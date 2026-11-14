@@ -3,7 +3,8 @@
 //  1 what Proline does + four audience routes   2 proof of actual work   3 how we help you choose
 //  4 one home job and one commercial job   5 what happens on site   6 for brands and station operators
 //  7 common questions and the enquiry form
-// Main outcome: start a charger or site consultation. No prices (rule 1); no "best deal" or "cheapest".
+// Main outcome: start a charger or site consultation. No prices (rule 1) and no "cheapest"; owner (15 Nov) wants
+// "best fit", "save money" and "best quote" in the hero text.
 // Google reviews go in only once real ones exist (rule 6).
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
@@ -95,8 +96,8 @@ const faqs = [
       <div class="hero-text">
         <p class="hero-kicker">Proline Electrical Works · Delhi · Projects across India</p>
         <h1 id="hero-title">Compare charger brands. Get a Proline tie-up quote. Have it installed.</h1>
-        <p class="hero-lead">Buying a charger for your vehicle or planning a commercial charging site? We help you choose the type, kW rating and brand around your requirements.</p>
-        <p class="hero-lead">We compare price, build quality, local service support and warranty terms. Our technical team also handles the survey, civil work, installation and commissioning.</p>
+        <p class="hero-lead">Buying a charger for your vehicle or planning a commercial charging site? Connect with us for the charger that best fits your vehicle, site and budget. We help you choose the type, kW rating and brand around your requirements.</p>
+        <p class="hero-lead"><strong>We help you save money.</strong> We recommend only the charger you actually need, compare price, build quality, local service support and warranty across brands, and give you our best quote. Our technical team also handles the survey, civil work, installation and commissioning.</p>
         <div class="btn-row hero-actions">
           <a class="btn btn-primary btn-lg" href={waLink(site.whatsapp, waText)} target="_blank" rel="noopener"><Icon name="whatsapp" size={20} />Help me choose on WhatsApp</a>
           <a class="btn btn-outline btn-lg" href={`tel:${site.phoneE164}`}><Icon name="phone" size={20} />Call {site.phoneDisplay}</a>
