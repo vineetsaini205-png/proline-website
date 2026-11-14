@@ -273,6 +273,11 @@ const fmtPay = (r: ReturnType<typeof station>) => r.paybackMonths ? `${r.payback
     });
     root.addEventListener('input', calc);
     el('o-quote').addEventListener('click', () => (window as any).prolineFill?.('#quote-form', root.dataset.summary || ''));
+    // Links from the opportunity checker carry ?state= (and may carry ?charger=).
+    const qp = new URLSearchParams(location.search);
+    const qc = qp.get('charger'), qs = qp.get('state');
+    if (qc && cfg.chargers.some((c) => c.id === qc)) { el<HTMLSelectElement>('e-charger').value = qc; onCharger(); }
+    if (qs && cfg.states.some((x) => x.state === qs)) { el<HTMLSelectElement>('e-state').value = qs; onState(); }
     calc();
   }
 </script>

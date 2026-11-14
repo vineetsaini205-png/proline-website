@@ -74,6 +74,7 @@ export const hubs: NavLink[] = [
 ];
 
 export const tools: NavLink[] = [
+  { label: 'Opportunity checker', href: '/tools/ev-charging-opportunity-checker/', note: 'Chargers, footfall and EV growth by pincode' },
   { label: 'Earnings calculator', href: '/tools/ev-charging-station-earnings-calculator/', note: 'Revenue, costs and payback' },
   { label: 'EV vs petrol savings', href: '/tools/ev-vs-petrol-savings-calculator/', note: 'Your running-cost savings' },
   { label: 'Installation checklist', href: '/tools/installation-checklist/', note: 'What your installation needs' },
@@ -103,6 +104,7 @@ export const commercial: NavLink[] = [
   { label: 'Fleets', href: '/for/fleets/', note: 'Depots, e-buses, trucks, e-rickshaws' },
   { label: 'Housing societies', href: '/for/housing-societies/', note: 'Shared or private chargers' },
   { label: 'Businesses', href: '/for/businesses/', note: 'Hotels, malls, offices, fuel stations' },
+  { label: 'Opportunity checker', href: '/tools/ev-charging-opportunity-checker/', note: 'Check any pincode or city' },
   { label: 'Earnings calculator', href: '/tools/ev-charging-station-earnings-calculator/', note: 'Revenue, costs and payback' },
 ];
 

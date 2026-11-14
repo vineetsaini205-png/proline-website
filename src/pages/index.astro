@@ -49,6 +49,8 @@ const checks = [
   { icon: 'wrench', title: 'Brand support', text: 'Local service, spares and app or OCPP support where you are.' },
   { icon: 'shield', title: 'Warranty', text: 'What the maker covers, and who handles warranty calls and site visits.' },
   { icon: 'clipboard', title: 'Complete installed cost', text: 'Charger, cable, protection, earthing and civil work together, not the charger alone.' },
+  { icon: 'chart', title: 'Earning opportunity', text: 'For a commercial site: footfall around it, chargers nearby, EV growth in your state and the earnings you want, worked out from public data before you invest.',
+    href: '/tools/ev-charging-opportunity-checker/', cta: 'Check your pincode' },
 ];
 
 const quoteIncludes = [
@@ -146,9 +148,9 @@ const faqs = [
 
   <section class="section section-soft" aria-labelledby="choose-title">
     <div class="wrap">
-      <SectionHead eyebrow="How we help you choose" title="What we check before we suggest a charger" lead="A charger is right only when it suits the vehicle, the supply and the parking. We check these first, then compare brands." id="choose-title" />
+      <SectionHead eyebrow="How we help you choose" title="What we check before we suggest a charger" lead="A charger is right only when it suits the vehicle, the supply and the parking. We check these first, then compare brands. For a commercial site, we also look at the earning opportunity." id="choose-title" />
       <ul class="checks-grid" role="list">
-        {checks.map((c) => <li><span class="check-icon"><Icon name={c.icon} size={20} /></span><div><h3>{c.title}</h3><p>{c.text}</p></div></li>)}
+        {checks.map((c) => <li class:list={[c.href && 'is-feature']}><span class="check-icon"><Icon name={c.icon} size={20} /></span><div><h3>{c.title}</h3><p>{c.text}</p>{c.href && <a class="link-arrow" href={c.href}>{c.cta}<Icon name="arrowRight" size={16} /></a>}</div></li>)}
       </ul>
       <div class="quote-box">
         <h3>What our tie-up quote includes</h3>
@@ -279,6 +281,10 @@ const faqs = [
   .check-icon { flex: none; display: inline-flex; width: 36px; height: 36px; align-items: center; justify-content: center; border-radius: 6px; background: var(--green-50); color: var(--green-text); }
   .checks-grid h3 { font-size: 16.5px; }
   .checks-grid p { margin-top: 2px; font-size: 14.5px; color: var(--muted); }
+  .checks-grid li.is-feature { grid-column: span 2; border-color: var(--green-text); background: var(--green-50); }
+  .checks-grid li.is-feature .check-icon { background: var(--green-text); color: var(--white); }
+  .checks-grid .link-arrow { margin-top: 8px; font-size: 15px; }
+  @media (max-width: 620px) { .checks-grid li.is-feature { grid-column: auto; } }
   .quote-box { margin-top: 24px; padding: 22px 24px; background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--green-text); border-radius: var(--radius-lg); }
   .quote-box h3 { font-size: 19px; }
   .quote-box > p { margin-top: 8px; color: var(--body); }

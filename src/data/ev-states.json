@@ -1,0 +1,64 @@
+{
+ "checked": "2026-11-15",
+ "note": "State-level EV data for the opportunity checker. Update every few months: Vahan figures from the Vahan dashboard (or Solentra's compilation of it), IEMI when NITI Aayog publishes a new edition, stations from the latest Lok Sabha / Rajya Sabha reply.",
+ "sources": {
+  "vahan": {
+   "name": "Vahan dashboard, Ministry of Road Transport and Highways",
+   "url": "https://vahan.parivahan.gov.in/vahan4dashboard/",
+   "via": "Solentra",
+   "viaUrl": "https://solentra.in/ev-sales/",
+   "counted": "2026-11-09",
+   "period": "January–October 2026, against the same months of 2025",
+   "scope": "Battery electric vehicles of all types registered on Vahan"
+  },
+  "iemi": {
+   "name": "NITI Aayog, India Electric Mobility Index 2025",
+   "url": "https://www.niti.gov.in/node/2424",
+   "published": "2026-09-15"
+  },
+  "stations": {
+   "name": "Lok Sabha, Unstarred Question 2567, Ministry of Heavy Industries",
+   "url": "https://sansad.in/getFile/lsapps/loksabhaquestions/annex/186/AU2567_HPosUo.pdf",
+   "answered": "2025-12-16"
+  }
+ },
+ "states": [
+  { "state": "Andaman and Nicobar Islands", "ev25": 131, "ev26": 165, "per100": 2, "iemi": 15, "stations": 4, "fast": 1 },
+  { "state": "Andhra Pradesh", "ev25": 46963, "ev26": 100073, "per100": 10.5, "iemi": 52, "stations": 791, "fast": 424 },
+  { "state": "Arunachal Pradesh", "ev25": 89, "ev26": 146, "per100": null, "per100Text": "fewer than 1", "iemi": 21, "stations": 45, "fast": 4 },
+  { "state": "Assam", "ev25": 70078, "ev26": 95580, "per100": 17.3, "iemi": 35, "stations": 345, "fast": 96 },
+  { "state": "Bihar", "ev25": 98821, "ev26": 139695, "per100": 10.8, "iemi": 40, "stations": 518, "fast": 172 },
+  { "state": "Chandigarh", "ev25": 4201, "ev26": 5542, "per100": 12.0, "iemi": 71, "stations": 13, "fast": 11 },
+  { "state": "Chhattisgarh", "ev25": 40219, "ev26": 55764, "per100": 9.6, "iemi": 49, "stations": 347, "fast": 124 },
+  { "state": "Dadra and Nagar Haveli and Daman and Diu", "ev25": 231, "ev26": 332, "per100": 1, "iemi": 10, "stations": 14, "fast": 11 },
+  { "state": "Delhi", "ev25": 97624, "ev26": 101862, "per100": 13.6, "iemi": 84, "stations": 1957, "fast": 399 },
+  { "state": "Goa", "ev25": 8026, "ev26": 11158, "per100": 14.4, "iemi": 65, "stations": 156, "fast": 94 },
+  { "state": "Gujarat", "ev25": 62614, "ev26": 110887, "per100": 5.6, "iemi": 38, "stations": 1205, "fast": 578 },
+  { "state": "Haryana", "ev25": 31696, "ev26": 37183, "per100": 3.8, "iemi": 51, "stations": 919, "fast": 384 },
+  { "state": "Himachal Pradesh", "ev25": 1590, "ev26": 2461, "per100": 1.8, "iemi": 28, "stations": 133, "fast": 52 },
+  { "state": "Jammu and Kashmir", "ev25": 9909, "ev26": 15365, "per100": 7.7, "iemi": 31, "stations": 180, "fast": 61 },
+  { "state": "Jharkhand", "ev25": 27149, "ev26": 40699, "per100": 7.0, "iemi": 40, "stations": 353, "fast": 129 },
+  { "state": "Karnataka", "ev25": 171344, "ev26": 260737, "per100": 13.8, "iemi": 73, "stations": 6096, "fast": 751 },
+  { "state": "Kerala", "ev25": 89162, "ev26": 133231, "per100": 14.2, "iemi": 40, "stations": 1389, "fast": 553 },
+  { "state": "Ladakh", "ev25": 3, "ev26": 13, "per100": 0.3, "per100Text": "13 of 4,703", "iemi": 32, "stations": 1, "fast": 0 },
+  { "state": "Lakshadweep", "ev25": 21, "ev26": 86, "per100": 9.1, "per100Text": "86 of 942", "iemi": 22, "stations": 1, "fast": 0 },
+  { "state": "Madhya Pradesh", "ev25": 115692, "ev26": 169734, "per100": 11.8, "iemi": 59, "stations": 1146, "fast": 353 },
+  { "state": "Maharashtra", "ev25": 224596, "ev26": 328262, "per100": 11.0, "iemi": 78, "stations": 4166, "fast": 1205 },
+  { "state": "Manipur", "ev25": 906, "ev26": 1485, "per100": 4.8, "iemi": 46, "stations": 58, "fast": 9 },
+  { "state": "Meghalaya", "ev25": 726, "ev26": 876, "per100": 2, "iemi": 32, "stations": 62, "fast": 21 },
+  { "state": "Mizoram", "ev25": 666, "ev26": 1216, "per100": 4.0, "iemi": 24, "stations": 13, "fast": 0 },
+  { "state": "Nagaland", "ev25": 16, "ev26": 28, "per100": 0.1, "per100Text": "28 of 26,351", "iemi": 14, "stations": 37, "fast": 6 },
+  { "state": "Odisha", "ev25": 63600, "ev26": 135585, "per100": 15.5, "iemi": 55, "stations": 606, "fast": 165 },
+  { "state": "Puducherry", "ev25": 3814, "ev26": 6529, "per100": 8.7, "iemi": 41, "stations": 46, "fast": 28 },
+  { "state": "Punjab", "ev25": 38220, "ev26": 52344, "per100": 7.1, "iemi": 39, "stations": 698, "fast": 225 },
+  { "state": "Rajasthan", "ev25": 94978, "ev26": 153443, "per100": 10.4, "iemi": 51, "stations": 1515, "fast": 523 },
+  { "state": "Sikkim", "ev25": 5, "ev26": 17, "per100": 0.2, "per100Text": "17 of 11,084", "iemi": 16, "stations": 12, "fast": 3 },
+  { "state": "Tamil Nadu", "ev25": 134188, "ev26": 240370, "per100": 10.6, "iemi": 61, "stations": 1780, "fast": 926 },
+  { "state": "Telangana", "ev25": 65362, "ev26": 119678, "per100": 12.8, "iemi": 51, "stations": 1062, "fast": 548, "noGrowth": "Telangana moved onto central Vahan in February–March 2026, so its 2025 months are incomplete and no growth is worked out." },
+  { "state": "Tripura", "ev25": 8443, "ev26": 8519, "per100": 17.7, "iemi": 36, "stations": 55, "fast": 4 },
+  { "state": "Uttar Pradesh", "ev25": 332501, "ev26": 404877, "per100": 11.6, "iemi": 51, "stations": 2316, "fast": 540 },
+  { "state": "Uttarakhand", "ev25": 16423, "ev26": 22642, "per100": 8.6, "iemi": 26, "stations": 221, "fast": 84 },
+  { "state": "West Bengal", "ev25": 55133, "ev26": 137731, "per100": 11.5, "iemi": 42, "stations": 891, "fast": 321 }
+ ],
+ "india": { "ev25": 1915140, "ev26": 2894315, "per100": 10.7, "stations": 29151, "fast": 8805 }
+}

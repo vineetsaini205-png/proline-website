@@ -1,0 +1,373 @@
+---
+// Pincode / city opportunity checker (owner, 15 Nov 2026): "enter the city name, pincode to check what is earning
+// opportunity there … govt database and live chargers database … growth rate of EV adoption".
+// What is possible with public data, and said plainly on the page:
+// - Location: India Post pincode data (free Postal PIN Code API) + OpenStreetMap Nominatim, called from the visitor's browser.
+// - Chargers and busy places: OpenStreetMap through the Overpass API, live. Incomplete; attribution required (ODbL).
+// - EV growth: Vahan has no public API and no pincode figures, so state figures from src/data/ev-states.json (dated, sourced).
+// No prices and no earnings promise: earnings go to the calculator, where the visitor enters the numbers.
+import ToolPage from '../../layouts/ToolPage.astro';
+import Icon from '../../components/Icon.astro';
+import ev from '../../data/ev-states.json';
+import tariffs from '../../data/tariffs.json';
+import site from '../../data/site.json';
+import { FACTORS, POIS, ROADS, RATINGS, RADIUS } from '../../lib/opportunity';
+import { formatDate } from '../../lib/text';
+
+const s = ev.sources;
+const counted = formatDate(new Date(s.vahan.counted));
+const answered = formatDate(new Date(s.stations.answered));
+const cfg = { calcStates: tariffs.states.map((t) => t.state), wa: site.whatsapp, counted };
+const n = (v: number) => v.toLocaleString('en-IN');
+const bandText = (f: (typeof FACTORS)[keyof typeof FACTORS]) => f.bands.map(([t, p], i) => {
+  if (f.kind === 'max') return t === Infinity ? `more: ${p}` : t === 0 ? `none: ${p}` : `up to ${t}: ${p}`;
+  return t === -Infinity || (t === 0 && i === f.bands.length - 1) ? `lower: ${p}` : `${t}+: ${p}`;
+}).join(' · ');
+
+const faqs = [
+  { q: 'Where does the data come from?', a: `The location comes from India Post’s pincode data (through the free Postal PIN Code API) and OpenStreetMap. Nearby chargers and busy places come from OpenStreetMap, read live when you search. State figures: EV registrations from the Vahan dashboard of the Ministry of Road Transport and Highways (state totals compiled by Solentra, counted ${counted}), NITI Aayog’s India Electric Mobility Index 2025, and the public charging stations listed in a Lok Sabha reply of ${answered}.` },
+  { q: 'Is the EV growth figure for my pincode?', a: 'No. Vahan reports registrations by state and by RTO, not by pincode, and it has no public data feed. The checker uses your state’s figures for growth and EV share, and the busy places around your pincode for local demand.' },
+  { q: 'Why does it show fewer chargers than the charging apps?', a: 'OpenStreetMap is mapped by volunteers and misses many chargers, especially new ones and those inside private premises. Check the charging apps and maps for your area too. Many chargers on the map is a sure sign of competition; none on the map is not proof that there are none.' },
+  { q: 'What does it count as footfall?', a: 'It does not count people. It counts places that bring vehicles: fuel stations, malls and supermarkets, hotels, restaurants and cafés, hospitals, colleges, railway, metro and bus stations, offices and car parks within 2 km, plus a national highway or main road close by. Places that are not on OpenStreetMap are not counted, so small towns can score lower than they should.' },
+  { q: 'Does a High rating mean a station will earn well?', a: 'No. It is a first screen, not a promise of earnings. What a station earns also depends on the power available at the site, how easy it is to see and reach, the price drivers pay, uptime and how soon drivers find it. Put your numbers into the [earnings calculator](/tools/ev-charging-station-earnings-calculator/) and have the site checked before you invest.' },
+  { q: 'What happens to the pincode I type?', a: 'Your browser sends it to the Postal PIN Code API and to OpenStreetMap’s servers to find the location and the places around it. Proline does not store it unless you send us the result with the form or on WhatsApp. See our [privacy policy](/privacy-policy/).' },
+];
+---
+<ToolPage
+  title="EV Charging Opportunity Checker by Pincode | Proline"
+  description="Enter a pincode or city to see public chargers and busy places nearby, your state’s EV growth and a Low, Medium or High rating for a charging station."
+  h1="EV charging station opportunity checker"
+  label="Opportunity checker"
+  intro="Planning a charging station? Enter a pincode, area or city. The checker counts public chargers and busy places nearby on OpenStreetMap, adds your state’s EV growth from Vahan registrations and NITI Aayog’s EV index, and rates the opportunity Low, Medium or High, with every number behind it. Use it as a first screen, then work out the earnings and get the site checked."
+  faqs={faqs}
+  related={['/tools/ev-charging-station-earnings-calculator/', '/start-an-ev-charging-station/', '/services/site-survey/', '/chargers/dc-fast-chargers/']}
+  form="station" need="DC fast charger or charging station"
+  ctaTitle="Get a site assessment"
+  ctaLead="Share the location, the space you have and your sanctioned load. We look at power, access and demand at the site, and reply with the chargers that fit and our tie-up quote."
+  waText="Hello Proline, I want to check a location for a charging station.">
+
+  <div class="opp" id="opp" data-cfg={JSON.stringify(cfg)}>
+    <form class="opp-form" id="opp-form" novalidate>
+      <div class="field">
+        <label for="opp-q">Pincode, area or city</label>
+        <div class="opp-row">
+          <input id="opp-q" name="q" type="text" maxlength="80" autocomplete="off" spellcheck="false" placeholder="e.g. 110037 or Mahipalpur, Delhi" required />
+          <button class="btn btn-primary" type="submit" id="opp-go"><Icon name="search" size={20} />Check opportunity</button>
+        </div>
+        <p class="hint">A six-digit pincode works best. For a city, add the state, like “Kharar, Punjab”.</p>
+      </div>
+      <p class="opp-status" id="opp-status" role="status" aria-live="polite"></p>
+    </form>
+
+    <div id="opp-out" class="opp-out" hidden>
+      <div class="opp-head">
+        <p class="opp-place" id="o-place"></p>
+        <div class="opp-score">
+          <p class="opp-rating" id="o-rating"></p>
+          <p class="opp-total" id="o-total"></p>
+        </div>
+        <p class="opp-why" id="o-why"></p>
+        <p class="opp-warn" id="o-warn" hidden></p>
+      </div>
+      <div class="opp-body">
+        <ul class="opp-factors" id="o-factors" role="list"></ul>
+        <div class="opp-cols">
+          <section aria-labelledby="o-ch-title">
+            <h3 id="o-ch-title">Public chargers within 5 km</h3>
+            <ul class="opp-list" id="o-chargers" role="list"></ul>
+          </section>
+          <section aria-labelledby="o-poi-title">
+            <h3 id="o-poi-title">Busy places within 2 km</h3>
+            <dl class="opp-dl" id="o-pois"></dl>
+          </section>
+          <section aria-labelledby="o-st-title">
+            <h3 id="o-st-title">Your state</h3>
+            <dl class="opp-dl" id="o-state"></dl>
+          </section>
+        </div>
+        <div class="opp-next">
+          <h3>Next: the earnings you want</h3>
+          <p>A good location is half the answer. Put your charger, the price drivers pay and your site costs into the calculator to see revenue and payback, then have the site checked for power and access.</p>
+          <div class="btn-row">
+            <a class="btn btn-primary" id="o-calc" href="/tools/ev-charging-station-earnings-calculator/"><Icon name="calculator" size={20} />Work out the earnings</a>
+            <a class="btn btn-outline" id="o-quote" href="#quote">Get a site assessment</a>
+            <a class="btn btn-outline" id="o-wa" href="#" rel="noopener" target="_blank"><Icon name="whatsapp" size={20} />Send this on WhatsApp</a>
+          </div>
+        </div>
+        <p class="opp-src" id="o-src"></p>
+      </div>
+    </div>
+  </div>
+
+  <div slot="method">
+    <h2 id="method-title">How the rating works</h2>
+    <p>The checker adds up four factors to a score out of 100: {RATINGS[0].label} at {RATINGS[0].min} or more, {RATINGS[1].label} from {RATINGS[1].min} to {RATINGS[0].min - 1}, {RATINGS[2].label} below {RATINGS[1].min}. Every number it uses is shown with the result, so you can check it.</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">Factor</th><th scope="col">Points</th><th scope="col">What it measures, and the points for each level</th></tr></thead>
+        <tbody>
+          <tr><td>{FACTORS.footfall.label}</td><td>up to {FACTORS.footfall.max}</td><td>A footfall index from the places within {RADIUS.pois / 1000} km that bring vehicles (weights below). Index {bandText(FACTORS.footfall)}.</td></tr>
+          <tr><td>{FACTORS.gap.label}</td><td>up to {FACTORS.gap.max}</td><td>Public chargers on OpenStreetMap within {RADIUS.gap / 1000} km. Fewer chargers leave more room for yours: {bandText(FACTORS.gap)}.</td></tr>
+          <tr><td>{FACTORS.growth.label}</td><td>up to {FACTORS.growth.max}</td><td>How many more EVs were registered in the state in January–October 2026 than in the same months of 2025. Percent growth {bandText(FACTORS.growth)}. {FACTORS.growth.missing} points when growth cannot be worked out.</td></tr>
+          <tr><td>{FACTORS.share.label}</td><td>up to {FACTORS.share.max}</td><td>EVs per 100 new vehicles registered in the state in 2026 (India: {ev.india.per100}). {bandText(FACTORS.share)}.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>The footfall index</h3>
+    <p>Each place within {RADIUS.pois / 1000} km counts its weight, up to a limit so that one busy market does not swamp the rest.</p>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th scope="col">Place</th><th scope="col">Weight</th><th scope="col">Counted up to</th></tr></thead>
+        <tbody>
+          {POIS.map((p) => <tr><td>{p.label}</td><td>{p.weight}</td><td>{p.cap}</td></tr>)}
+          <tr><td>{ROADS.highway.label}</td><td colspan="2">adds {ROADS.highway.bonus}</td></tr>
+          <tr><td>{ROADS.main.label}</td><td colspan="2">adds {ROADS.main.bonus}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>What it cannot see</h3>
+    <p>Whether the site has the power for DC chargers, the rent or revenue share, the exact plot and its entry, chargers that are not on the map, and local permissions. Those decide a station as much as the location does, and a <a href="/services/site-survey/">site survey</a> checks them.</p>
+    <h3>Sources</h3>
+    <ul>
+      <li>EV registrations: <a href={s.vahan.url} rel="noopener" target="_blank">{s.vahan.name}</a>, {s.vahan.period}; state totals compiled by <a href={s.vahan.viaUrl} rel="noopener" target="_blank">{s.vahan.via}</a>, counted {counted}. Vahan does not publish pincode figures.</li>
+      <li>State EV readiness: <a href={s.iemi.url} rel="noopener" target="_blank">{s.iemi.name}</a>, published {formatDate(new Date(s.iemi.published))}.</li>
+      <li>Public charging stations by state: <a href={s.stations.url} rel="noopener" target="_blank">{s.stations.name}</a>, answered {answered}: {n(ev.india.stations)} stations in India, {n(ev.india.fast)} of them fast chargers.</li>
+      <li>Nearby chargers and places: map data © <a href="https://www.openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>, available under the Open Database Licence, read through the <a href="https://overpass-api.de/" rel="noopener" target="_blank">Overpass API</a>.</li>
+      <li>Location: India Post pincode data through the <a href="https://www.postalpincode.in/" rel="noopener" target="_blank">Postal PIN Code API</a>, and <a href="https://nominatim.org/" rel="noopener" target="_blank">OpenStreetMap Nominatim</a>.</li>
+    </ul>
+  </div>
+</ToolPage>
+
+<style is:global>
+  .opp { display: grid; gap: 0; border: 1px solid var(--line); border-radius: var(--radius-xl); overflow: hidden; background: var(--white); box-shadow: var(--shadow-sm); }
+  .opp-form { padding: 24px 28px; display: grid; gap: 10px; }
+  .opp-row { display: flex; gap: 10px; }
+  .opp-row input { flex: 1 1 auto; min-width: 0; font-size: 17px; }
+  .opp-row .btn { flex: none; }
+  .opp-status { margin: 0; font-size: 15px; color: var(--muted); min-height: 0; }
+  .opp-status:empty { display: none; }
+  .opp-status.is-busy::before { content: ''; display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px; border: 2px solid var(--line-strong); border-top-color: var(--green-text); border-radius: 50%; animation: opp-spin .8s linear infinite; }
+  .opp-status.is-error { color: var(--red-text); font-weight: 600; }
+  @keyframes opp-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .opp-status.is-busy::before { animation: none; } }
+
+  .opp-head { padding: 24px 28px; background: var(--navy); color: #C9D6E8; display: grid; gap: 10px; }
+  .opp-place { margin: 0; font-size: 15px; }
+  .opp-place a { color: #C9D6E8; }
+  .opp-score { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+  .opp-rating { margin: 0; font-family: var(--font-head); font-weight: 700; font-size: clamp(28px, 3.6vw, 40px); line-height: 1.1; color: var(--white); letter-spacing: -0.01em; }
+  .opp-rating .tag { display: inline-block; padding: 2px 14px 5px; border-radius: 999px; margin-right: 6px; line-height: 1.1; }
+  .opp-rating .r-High { background: var(--green); color: var(--navy); }
+  .opp-rating .r-Medium { background: #FFC457; color: var(--navy); }
+  .opp-rating .r-Low { background: #A9BBD3; color: var(--navy); }
+  .opp-total { margin: 0; font-size: 18px; color: var(--white); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .opp-why { margin: 0; font-size: 15px; }
+  .opp-warn { margin: 0; padding: 10px 12px; border-radius: 6px; background: rgba(255, 196, 87, .12); border: 1px solid rgba(255, 196, 87, .35); color: #FFE2A8; font-size: 14px; }
+
+  .opp-body { padding: 24px 28px; display: grid; gap: 24px; }
+  .opp-factors { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .opp-factors li { padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--white); }
+  .of-top { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; color: var(--ink); }
+  .of-top strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .of-bar { height: 8px; border-radius: 99px; background: var(--soft); margin: 8px 0; overflow: hidden; }
+  .of-bar i { display: block; height: 100%; background: var(--green-text); border-radius: 99px; }
+  .opp-factors p { margin: 0; font-size: 14px; color: var(--muted); }
+
+  .opp-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+  .opp-cols h3, .opp-next h3 { font-size: 17px; margin-bottom: 8px; }
+  .opp-list { list-style: none; margin: 0; padding: 0; font-size: 14.5px; }
+  .opp-list li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .opp-list li span { min-width: 0; overflow-wrap: anywhere; }
+  .opp-list li small { display: block; color: var(--muted); font-size: 13px; }
+  .opp-list li b { flex: none; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .opp-dl { margin: 0; font-size: 14.5px; }
+  .opp-dl div { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .opp-dl dt { color: var(--muted); min-width: 0; }
+  .opp-dl dd { margin: 0; font-weight: 600; color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+  .opp-next { padding: 18px 20px; background: var(--soft); border-radius: var(--radius-lg); }
+  .opp-next p { margin: 0 0 14px; font-size: 15px; }
+  .opp-src { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+  .opp-src a { color: var(--muted); }
+
+  @media (max-width: 980px) { .opp-cols { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 700px) {
+    .opp-form, .opp-head, .opp-body { padding: 18px; }
+    .opp-row { flex-direction: column; }
+    .opp-row .btn { width: 100%; }
+    .opp-factors { grid-template-columns: minmax(0, 1fr); }
+    .opp-next .btn-row { display: grid; grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+
+<script>
+  import data from '../../data/ev-states.json';
+  import { findState, growthPct, score, overpassQuery, parseOverpass, footfallIndex, POIS, FACTORS, RADIUS, type StateRow, type Poi, type Charger } from '../../lib/opportunity';
+
+  const root = document.getElementById('opp');
+  if (root) {
+    const cfg = JSON.parse(root.dataset.cfg || '{}') as { calcStates: string[]; wa: string; counted: string };
+    const rows = data.states as StateRow[];
+    const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+    const form = $<HTMLFormElement>('opp-form'), input = $<HTMLInputElement>('opp-q'), go = $<HTMLButtonElement>('opp-go');
+    const status = $('opp-status'), out = $('opp-out');
+    const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+    const num = (v: number) => v.toLocaleString('en-IN');
+    const plural = (v: number, one: string, many: string) => `${num(v)} ${v === 1 ? one : many}`;
+    const say = (msg: string, kind: '' | 'busy' | 'error' = '') => { status.textContent = msg; status.className = 'opp-status' + (kind ? ` is-${kind}` : ''); };
+
+    const getJson = async (url: string, init: RequestInit = {}, ms = 12000) => {
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms);
+      try {
+        const r = await fetch(url, { ...init, signal: ctl.signal });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return await r.json();
+      } finally { clearTimeout(t); }
+    };
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    type Place = { lat: number; lon: number; label: string; state: string | null; pin: string | null };
+    const NOMINATIM = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&countrycodes=in&accept-language=en&';
+    const nomi = async (params: string) => {
+      const j = await getJson(NOMINATIM + params);
+      return Array.isArray(j) && j.length ? j[0] : null;
+    };
+
+    async function locate(q: string): Promise<Place | 'notfound'> {
+      const pin = /^\d{6}$/.test(q) ? q : null;
+      if (pin) {
+        // India Post (district, state, post offices) and OpenStreetMap (coordinates) side by side.
+        const [post, osm] = await Promise.allSettled([
+          getJson(`https://api.postalpincode.in/pincode/${pin}`, {}, 9000),
+          nomi(`postalcode=${pin}`),
+        ]);
+        const offices: any[] = post.status === 'fulfilled' && Array.isArray(post.value) && post.value[0]?.Status === 'Success' ? post.value[0].PostOffice || [] : [];
+        const o = offices[0];
+        let hit = osm.status === 'fulfilled' ? osm.value : null;
+        if (!hit && o) { await wait(1100); hit = await nomi(`q=${encodeURIComponent(`${o.Name}, ${o.District}, ${o.State}, India`)}`).catch(() => null); }
+        if (!hit) { if (!o && post.status === 'rejected' && osm.status === 'rejected') throw new Error('lookup'); return 'notfound'; }
+        const names = [...new Set(offices.map((x) => String(x.Name)))].slice(0, 3).join(', ');
+        const district = o?.District || hit.address?.state_district || hit.address?.county || '';
+        const state = o?.State || hit.address?.state || null;
+        return { lat: +hit.lat, lon: +hit.lon, pin, state, label: `Around pincode ${pin}${names ? ` (${names})` : ''}${district ? `, ${district}` : ''}${state ? `, ${state}` : ''}` };
+      }
+      const hit = await nomi(`q=${encodeURIComponent(q)}`);
+      if (!hit) return 'notfound';
+      const a = hit.address || {};
+      const state = a.state || (/delhi/i.test(hit.display_name) ? 'Delhi' : null);
+      const parts = String(hit.display_name).split(', ').filter((x: string) => x !== 'India' && !/^\d{6}$/.test(x));
+      return { lat: +hit.lat, lon: +hit.lon, pin: a.postcode || null, state, label: `Around ${parts.slice(0, 3).join(', ')}${state && !parts.slice(0, 3).includes(state) ? `, ${state}` : ''}` };
+    }
+
+    const ENDPOINTS = ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://maps.mail.ru/osm/tools/overpass/api/interpreter'];
+    async function nearby(lat: number, lon: number) {
+      const body = new URLSearchParams({ data: overpassQuery(lat, lon) });
+      for (const ep of ENDPOINTS) {
+        try { return parseOverpass(await getJson(ep, { method: 'POST', body }, 20000), lat, lon); }
+        catch { /* busy or timed out: try the next server */ }
+      }
+      return null;
+    }
+
+    const factorText = (key: string, ctx: { poi: Poi | null; near: number | null; st?: StateRow; growth: number | null }) => {
+      const { poi, near, st, growth } = ctx;
+      if (key === 'footfall') {
+        if (!poi) return 'Could not be counted just now.';
+        const top = POIS.map((p) => ({ l: p.label.toLowerCase(), v: poi[p.key] })).filter((x) => x.v > 0).sort((a, b) => b.v - a.v).slice(0, 3).map((x) => `${num(x.v)} ${x.l}`);
+        const roads = [poi.highway && 'a national highway or expressway within 1 km', !poi.highway && poi.main && 'a main road within 500 m'].filter(Boolean);
+        return `Footfall index ${footfallIndex(poi)}${top.length ? `: ${top.join(', ')}` : ': few places mapped here'}${roads.length ? `, and ${roads[0]}` : ''}.`;
+      }
+      if (key === 'gap') return near == null ? 'Could not be counted just now.' : `${plural(near, 'public charger', 'public chargers')} on the map within ${RADIUS.gap / 1000} km.${near === 0 ? ' Check the charging apps too: the map misses some.' : ''}`;
+      if (!st) return 'State not found for this location.';
+      if (key === 'growth') {
+        if (growth != null) return `${num(st.ev26)} EVs registered in January–October 2026, ${growth >= 0 ? `${growth}% more` : `${-growth}% fewer`} than the same months of 2025 (${num(st.ev25)}).`;
+        return st.noGrowth || `Too few EVs registered in 2025 to compare (${num(st.ev25)}). Scored ${FACTORS.growth.missing}.`;
+      }
+      return `${st.per100 != null ? (st.per100Text ? `${st.per100Text} new vehicles` : `${st.per100} of every 100 new vehicles`) : `${st.per100Text} in 100 new vehicles`} registered in 2026 were electric (India: ${data.india.per100}).`;
+    };
+
+    async function run(q: string) {
+      q = q.trim().replace(/\s+/g, ' ');
+      if (/^\d+$/.test(q.replace(/\s/g, '')) && q.replace(/\s/g, '').length !== 6) { say('Enter a six-digit pincode, or an area or city name.', 'error'); input.focus(); return; }
+      q = /^\d[\d\s]{5,6}$/.test(q) ? q.replace(/\s/g, '') : q;
+      if (q.length < 2) { say('Enter a pincode, area or city.', 'error'); input.focus(); return; }
+      go.disabled = true;
+      try {
+        say('Finding the location…', 'busy');
+        let place: Place | 'notfound';
+        try { place = await locate(q); }
+        catch { say('The location service did not answer. Please try again in a minute.', 'error'); return; }
+        if (place === 'notfound') { say(`We could not find “${q}”. Check the pincode, or try the area and city, like “Mahipalpur, Delhi”.`, 'error'); return; }
+        say('Counting chargers and busy places nearby…', 'busy');
+        const near = await nearby(place.lat, place.lon);
+        render(place, near);
+        say('');
+        try { history.replaceState(null, '', `?q=${encodeURIComponent(q)}`); } catch { /* ignore */ }
+      } finally { go.disabled = false; }
+    }
+
+    function render(place: Place, near: { poi: Poi; chargers: Charger[] } | null) {
+      const st = findState(rows, place.state);
+      const growth = growthPct(st);
+      // Overpass also returns stations whose outline touches the circle; keep the list to the radius it names.
+      if (near) near.chargers = near.chargers.filter((c) => c.km <= RADIUS.chargers / 1000);
+      const chargersNear = near ? near.chargers.filter((c) => c.km <= RADIUS.gap / 1000).length : null;
+      const sc = score({ poi: near?.poi ?? null, chargersNear, growth, per100: st?.per100 ?? null, stateKnown: !!st });
+      const osm = `https://www.openstreetmap.org/?mlat=${place.lat.toFixed(5)}&mlon=${place.lon.toFixed(5)}#map=15/${place.lat.toFixed(5)}/${place.lon.toFixed(5)}`;
+
+      $('o-place').innerHTML = `${esc(place.label)} · <a href="${osm}" rel="noopener" target="_blank">see the spot on the map</a>`;
+      $('o-rating').innerHTML = sc.rating ? `<span class="tag r-${sc.rating}">${sc.rating}</span> opportunity` : 'Partial result';
+      $('o-total').textContent = sc.complete ? `${sc.total} out of 100` : `${sc.total} out of ${sc.parts.filter((p) => p.pts != null).reduce((s, p) => s + p.max, 0)} so far`;
+      const best = [...sc.parts].filter((p) => p.pts != null).sort((a, b) => b.pts! / b.max - a.pts! / a.max);
+      $('o-why').textContent = best.length > 1 ? `Strongest: ${best[0].label}. Weakest: ${best[best.length - 1].label}.` : '';
+      const warn = !near ? 'Nearby chargers and busy places could not be loaded just now: the free OpenStreetMap service is busy. Try again in a minute for the full rating.'
+        : !st ? 'We could not tell the state for this location, so the state figures are missing. Try the pincode instead.' : '';
+      $('o-warn').hidden = !warn; $('o-warn').textContent = warn;
+
+      $('o-factors').innerHTML = sc.parts.map((p) => {
+        const pct = p.pts == null ? 0 : Math.round((p.pts / p.max) * 100);
+        return `<li><div class="of-top"><span>${esc(p.label)}</span><strong>${p.pts == null ? '–' : p.pts} / ${p.max}</strong></div><div class="of-bar" aria-hidden="true"><i style="width:${pct}%"></i></div><p>${esc(factorText(p.key, { poi: near?.poi ?? null, near: chargersNear, st, growth }))}</p></li>`;
+      }).join('');
+
+      $('o-chargers').innerHTML = !near ? '<li><span>Could not be loaded just now.</span></li>'
+        : near.chargers.length === 0 ? `<li><span>None on OpenStreetMap within ${RADIUS.chargers / 1000} km. Check the charging apps too.</span></li>`
+        : near.chargers.slice(0, 8).map((c) => {
+          const kind = c.dc ? 'DC fast' : c.ac ? 'AC' : '';
+          const sub = [c.operator && c.operator !== c.name ? c.operator : '', kind].filter(Boolean).join(' · ');
+          return `<li><span>${esc(c.name)}${sub ? `<small>${esc(sub)}</small>` : ''}</span><b>${c.km < 1 ? `${Math.round(c.km * 1000)} m` : `${c.km.toFixed(1)} km`}</b></li>`;
+        }).join('') + (near.chargers.length > 8 ? `<li><span>and ${num(near.chargers.length - 8)} more</span><b></b></li>` : '');
+
+      $('o-pois').innerHTML = !near ? '<div><dt>Could not be loaded just now.</dt><dd></dd></div>'
+        : POIS.map((p) => `<div><dt>${esc(p.label)}</dt><dd>${num(near.poi[p.key])}</dd></div>`).join('')
+          + `<div><dt>National highway or expressway within 1 km</dt><dd>${near.poi.highway ? 'Yes' : 'No'}</dd></div>`
+          + `<div><dt>Main road within 500 m</dt><dd>${near.poi.main ? 'Yes' : 'No'}</dd></div>`;
+
+      $('o-state').innerHTML = !st ? '<div><dt>State not found</dt><dd></dd></div>' : [
+        ['State', esc(st.state)],
+        ['EVs registered, Jan–Oct 2026', num(st.ev26)],
+        ['Growth on Jan–Oct 2025', growth == null ? 'Not worked out' : `${growth >= 0 ? '+' : ''}${growth}%`],
+        ['EVs per 100 new vehicles', st.per100 != null && !st.per100Text ? `${st.per100} (India ${data.india.per100})` : esc(st.per100Text || '')],
+        ['NITI Aayog EV index 2025', `${st.iemi} / 100`],
+        ['Public charging stations (Lok Sabha, Dec 2025)', `${num(st.stations)} (${num(st.fast)} fast)`],
+      ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+
+      $('o-src').innerHTML = `Indicative only, from public data. Nearby chargers and places: map data © <a href="https://www.openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap contributors</a>, read live. State EV figures: Vahan dashboard (Ministry of Road Transport and Highways), compiled by Solentra, counted ${esc(cfg.counted)}; NITI Aayog India Electric Mobility Index 2025; Lok Sabha reply of 16 December 2025. <a href="#method-title">How the rating works</a>.`;
+
+      const calc = $<HTMLAnchorElement>('o-calc');
+      calc.href = '/tools/ev-charging-station-earnings-calculator/' + (st && cfg.calcStates.includes(st.state) ? `?state=${encodeURIComponent(st.state)}` : '');
+      const summary = `Opportunity checker: ${place.label}. ${sc.rating ? `${sc.rating} opportunity, ${sc.total}/100` : `Partial result, ${sc.total} points so far`} (${sc.parts.map((p) => `${p.label} ${p.pts ?? '–'}/${p.max}`).join('; ')}). ${chargersNear != null ? `${plural(chargersNear, 'public charger', 'public chargers')} within 3 km on OpenStreetMap.` : ''}`;
+      $<HTMLAnchorElement>('o-wa').href = `https://wa.me/${cfg.wa}?text=${encodeURIComponent('Hello Proline, I want to check a location for a charging station. ' + summary)}`;
+      (window as any).prolineFill?.('#quote-form', summary, 'DC fast charger or charging station');
+      const city = document.querySelector<HTMLInputElement>('#quote-form [name="city"]');
+      if (city && !city.value) city.value = (place.pin ? `${place.pin}, ` : '') + (st?.state ?? '');
+      root!.dataset.summary = summary;
+
+      out.hidden = false;
+      out.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    }
+
+    form.addEventListener('submit', (e) => { e.preventDefault(); run(input.value); });
+    $('o-quote').addEventListener('click', () => (window as any).prolineFill?.('#quote-form', root.dataset.summary || '', 'DC fast charger or charging station'));
+    const q0 = new URLSearchParams(location.search).get('q');
+    if (q0) { input.value = q0.slice(0, 80); run(input.value); }
+  }
+</script>
