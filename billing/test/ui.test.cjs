@@ -373,6 +373,7 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await page.waitForFunction((n) => document.querySelector('.doc-head h1').textContent.indexOf(n) >= 0, 'PEW-DC/' + fyC + '/01');
   await idle();
   assert.equal(await page.evaluate(() => PBApp.S.doc.refs.vehicleNo), 'DL1AB1234');
+  assert.equal(await page.inputValue('.line[data-i="0"] [data-k="rate"]'), '', 'a challan line without a rate stays empty, not 0');
   assert.equal(await page.evaluate(() => PBApp.S.series.DC.next), 'PEW-DC/' + fyC + '/02');
   // From a final proforma: a challan draft with its lines and parties, the proforma as the reference.
   const pi = await page.evaluate(() => PBApp.S.docs.find((d) => d.type === 'PI' && d.status === 'FINAL').id);
