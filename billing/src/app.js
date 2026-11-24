@@ -294,9 +294,11 @@
       '</div></section>' +
       '<section class="card"><h2>Logo and signature</h2><div class="grid2">' +
       '<div><b>Logo</b><div class="imgbox" id="img-logo">' + imgPreview('logo') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="logo"><button class="link" data-action="img-remove" data-kind="logo">Use the standard logo</button></div>' +
-      '<div><b>Signature</b><div class="imgbox" id="img-signature">' + imgPreview('signature') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="signature"><button class="link" data-action="img-remove" data-kind="signature">Remove</button></div>' +
+      '<div><b>Signature and stamp</b><div class="imgbox" id="img-signature">' + imgPreview('signature') + '</div><input type="file" accept="image/png,image/jpeg" data-upload="signature"><button class="link" data-action="img-remove" data-kind="signature">Remove</button></div>' +
       sField('sign.name', 'Signatory name') + sField('sign.designation', 'Designation') +
-      '</div><p class="muted small">PNG or JPG, under 1.5 MB. A signature on a white or clear background looks best.</p></section>' +
+      sField('sign.use', 'Print the signature and stamp', { select: options([['bw', 'Only on “Signed B&W PDF”'], ['all', 'On every PDF']], s.sign.use || 'bw'),
+        hint: '“Signed B&W PDF” is on every final document: black and white, with your stamp and signature.' }) +
+      '</div><p class="muted small">PNG or JPG, under 1.5 MB. A signature, or your stamp with your signature on it, on a white or clear background looks best.</p></section>' +
       '<section class="card"><h2>Numbering</h2><p class="muted">Each type has its own series per financial year (April–March). A document gets its number when you finalise it: the next in the series, a cancelled number given again, or one you type (for documents issued before this app). The series always continues after the highest number recorded in it.</p><div class="grid3">' +
       sField('series.INV.prefix', 'Tax invoice prefix', { hint: 'A tax invoice number can have at most 16 characters' }) + sField('series.PI.prefix', 'Proforma prefix') + sField('series.PO.prefix', 'PO prefix') +
       sField('series.DC.prefix', 'Delivery challan prefix', { hint: 'A challan number can have at most 16 characters' }) +
@@ -512,6 +514,7 @@
       else if (d.status === 'FINAL') b.push('<button class="btn primary" data-action="doc-storepdf">Save the PDF to Drive</button>');
       if (url && d.status === 'FINAL') b.push('<button class="btn" data-action="doc-regenerate">Generate PDF again</button>');
       b.push('<button class="btn" data-action="doc-download">Download PDF</button>');
+      if (d.status === 'FINAL') b.push('<button class="btn" data-action="doc-download-signed" title="Black and white, with your stamp and signature">Signed B&amp;W PDF</button>');
       if (url) b.push('<button class="btn" data-action="doc-email">Email…</button>');
       b.push('<button class="btn" data-action="doc-duplicate">Duplicate</button>');
       if (d.type === 'PI' && d.status === 'FINAL') b.push('<button class="btn" data-action="doc-to-invoice">Make tax invoice</button>');
@@ -570,10 +573,32 @@
   }
 
   // ---------------------------------------------------------------- PDFs
-  function makePdf(doc, watermark) {
+  // o.signed: print the signature image (the owner's stamp and signature) on this PDF; o.bw: black and white;
+  // o.images: images to use instead of the uploaded ones. The signature prints on every PDF only when Settings say so.
+  function makePdf(doc, watermark, o) {
+    o = o || {};
     var c = calc(doc);
-    var dd = PBPDF.build(doc, c, S.settings, S.images || {}, { watermark: watermark });
+    var imgs = Object.assign({}, o.images || S.images || {});
+    if (!o.signed && (S.settings.sign || {}).use !== 'all') imgs.signature = null;
+    var dd = PBPDF.build(doc, c, S.settings, imgs, { watermark: watermark, bw: !!o.bw });
     return pdfMake.createPdf(dd);
+  }
+  /** The same image in shades of grey (keeps transparency), for black-and-white PDFs. */
+  function greyImage(src) {
+    return new Promise(function (resolve) {
+      if (!src) { resolve(src); return; }
+      var im = new Image();
+      im.onload = function () {
+        var cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight;
+        var cx = cv.getContext('2d'); cx.drawImage(im, 0, 0);
+        var d = cx.getImageData(0, 0, cv.width, cv.height), p = d.data;
+        for (var i = 0; i < p.length; i += 4) { var l = Math.round(0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2]); p[i] = p[i + 1] = p[i + 2] = l; }
+        cx.putImageData(d, 0, 0);
+        resolve(cv.toDataURL('image/png'));
+      };
+      im.onerror = function () { resolve(src); };
+      im.src = src;
+    });
   }
   // Inline preview: Chrome's own PDF viewer is blocked inside the Apps Script frame (and on phones),
   // so pages are drawn with pdf.js, loaded only when needed.
@@ -1083,6 +1108,12 @@
     'doc-download': async function () {
       await run('Making the PDF…', loadImages);
       makePdf(S.doc, S.doc.status === 'CANCELLED' ? 'CANCELLED' : null).download(PBPDF.fileName(S.doc));
+    },
+    'doc-download-signed': async function () {
+      var imgs = await run('Making the PDF…', loadImages);
+      if (!imgs || !imgs.signature) { toast('Add your stamp and signature in Settings, under Logo and signature, first.', 'error'); return; }
+      var grey = { logo: await greyImage(imgs.logo), signature: await greyImage(imgs.signature) };
+      makePdf(S.doc, null, { signed: true, bw: true, images: grey }).download(PBPDF.fileName(S.doc).replace(/\.pdf$/, ' (signed).pdf'));
     },
     'doc-delete': async function () {
       if (!(await confirmBox('Delete this draft?', 'The draft is removed. Drafts have no number, so the series is not affected.', 'Delete'))) return;

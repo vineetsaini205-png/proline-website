@@ -392,6 +392,27 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await page.waitForFunction(() => /Draft saved/.test(document.getElementById('toast').textContent));
   await idle();
 
+  // Signed black-and-white PDF (owner, 24 Nov): the stamp and signature print only there unless Settings say every PDF.
+  await page.click('.tabs [data-view="settings"]');
+  await page.waitForSelector('[data-s="sign.use"]');
+  assert.equal(await page.inputValue('[data-s="sign.use"]'), 'bw');
+  const sigPath = path.join(out, 'test-signature.png');
+  require('fs').writeFileSync(sigPath, Buffer.from('iVBORw0KGgoAAAANSUhEUgAAADwAAAAYCAYAAACmwZ5SAAAAh0lEQVR42u3YsQ2AMAwEwA9iDuoMwHBUFFQMxwCpWSRpERIFViCx37/B5a3IMkCWAABx3jIDNh1rGNgaHu8vYBF5nWC6hh3sYAf3mSku+fUvbQ2nEvyEO9MeVINrw7oC/4VrAm6J+xzcG64aWANMDNaMEzesFSfatCxhfZcG28WD4bZF1zBdCvXGLh/4W73PAAAAAElFTkSuQmCC', 'base64'));
+  await page.setInputFiles('[data-upload="signature"]', sigPath);
+  await page.waitForFunction(() => /Image saved/.test(document.getElementById('toast').textContent));
+  await idle();
+  assert.ok(await page.$('#img-signature img'), 'the signature preview shows');
+  const finalInv = await page.evaluate(() => PBApp.S.docs.find((d) => d.type === 'INV' && d.status === 'FINAL').id);
+  await page.click('.tabs [data-view="docs"]');
+  await page.waitForSelector(`tr[data-open="${finalInv}"]`);
+  await page.click(`tr[data-open="${finalInv}"]`);
+  await page.waitForSelector('.doc-head [data-action="doc-download-signed"]');
+  await idle();
+  const [dlSigned] = await Promise.all([page.waitForEvent('download'), page.click('.doc-head [data-action="doc-download-signed"]')]);
+  assert.match(dlSigned.suggestedFilename(), / \(signed\)\.pdf$/);
+  const signedBytes = require('fs').readFileSync(await dlSigned.path());
+  assert.ok(signedBytes.length > 10000 && signedBytes.slice(0, 5).toString() === '%PDF-', 'a real PDF');
+
   // Series check: no gaps.
   await page.click('.tabs [data-view="settings"]');
   await page.click('[data-action="series-check"]');
@@ -417,6 +438,6 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   assert.equal(await page.evaluate(() => [...document.querySelectorAll('.new .btn')].every((b) => b.scrollWidth <= b.clientWidth + 1)), true, 'the four new-document buttons fit on a phone');
 
   assert.deepEqual(errors, []);
-  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, generate the PDF again, templates, xlsx upload, delivery challan, challan from a proforma, series check, phone layout');
+  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, generate the PDF again, templates, xlsx upload, delivery challan, challan from a proforma, signed black-and-white PDF, series check, phone layout');
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });

@@ -46,7 +46,7 @@ var DEFAULT_SETTINGS = {
   'firm.gstin': '', 'firm.pan': '', 'firm.phone': '+91 73038 87364', 'firm.email': 'Sales@prolineelectricalworks.com',
   'firm.website': 'www.prolineelectricalworks.com', 'firm.udyam': '',
   'bank.name': '', 'bank.accountName': 'Proline Electrical Works', 'bank.accountNo': '', 'bank.ifsc': '', 'bank.branch': '', 'bank.upi': '',
-  'sign.name': 'Vineet Saini', 'sign.designation': 'Proprietor',
+  'sign.name': 'Vineet Saini', 'sign.designation': 'Proprietor', 'sign.use': 'bw',
   'brand.logoFileId': '', 'brand.signatureFileId': '',
   'series.INV.prefix': 'PEW', 'series.PI.prefix': 'PEW-PI', 'series.PO.prefix': 'PEW-PO', 'series.DC.prefix': 'PEW-DC', 'series.pad': '4', 'series.fyStyle': '26-27',
   'series.INV.reuse': '', 'series.PI.reuse': '', 'series.PO.reuse': '', 'series.DC.reuse': '',
@@ -135,6 +135,7 @@ function apiSaveSettings(obj) {
     if (clean['series.' + t + '.reuse'] != null) clean['series.' + t + '.reuse'] = splitList_(clean['series.' + t + '.reuse']).join(', ');
   });
   if (clean['series.fyStyle'] != null && ['26-27', '2627'].indexOf(clean['series.fyStyle']) < 0) throw new Error('Choose how the year is written in numbers.');
+  if (clean['sign.use'] != null && ['bw', 'all'].indexOf(clean['sign.use']) < 0) throw new Error('Choose where the signature and stamp print.');
   if (clean['series.pad'] != null && !/^[1-6]$/.test(clean['series.pad'])) throw new Error('Choose how many digits the number has.');
   if (clean['series.INV.prefix'] != null || clean['series.pad'] != null || clean['series.fyStyle'] != null) {
     var cur = settings_();
