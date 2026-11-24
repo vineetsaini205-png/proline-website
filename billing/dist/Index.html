@@ -2115,14 +2115,16 @@ if (typeof module !== 'undefined' && module.exports) module.exports = PBPDF;
       var inv = copyDoc(S.doc, 'INV');
       inv.refs.piNumber = S.doc.number;
       inv.refs.vehicleNo = (S.doc.refs || {}).vehicleNo || '';
-      openNew('INV', inv); toast('Tax invoice draft made from ' + S.doc.number + '. Check it and finalise.');
+      var from = S.doc.number;   // read before openNew replaces S.doc
+      openNew('INV', inv); toast('Tax invoice draft made from ' + from + '. Check it and finalise.');
     },
     'doc-to-challan': function () {
       var dc = copyDoc(S.doc, 'DC');
       dc.refs.invoiceRef = S.doc.number;
       dc.refs.poNumber = (S.doc.refs || {}).poNumber || '';
       dc.refs.vehicleNo = (S.doc.refs || {}).vehicleNo || '';
-      openNew('DC', dc); toast('Delivery challan draft made from ' + S.doc.number + '. Check it and finalise.');
+      var from = S.doc.number;
+      openNew('DC', dc); toast('Delivery challan draft made from ' + from + '. Check it and finalise.');
     },
     'doc-email': function () {
       var d = S.doc;

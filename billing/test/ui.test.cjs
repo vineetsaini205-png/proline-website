@@ -146,6 +146,7 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await page.click('.doc-head [data-action="doc-to-invoice"]');
   assert.equal(await page.inputValue('[data-f="refs.piNumber"]'), await page.evaluate(() => PBApp.S.docs.find((d) => d.type === 'PI').number));
   assert.equal(await page.inputValue('[data-f="refs.vehicleNo"]'), 'DL1AB1234', 'the vehicle number goes from the proforma to the invoice');
+  assert.match(await page.textContent('#toast'), /made from PEW-PI\/\d\d-\d\d\/0001\./, 'the toast names the proforma');
   await page.click('.doc-head [data-action="doc-finalise"]');
   await page.click('#cb-ok');
   await page.waitForFunction(() => /PEW\/\d\d-\d\d\/0002/.test(document.querySelector('.doc-head h1').textContent));
