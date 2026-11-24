@@ -168,4 +168,31 @@ t('reading imported cells: dates day first, states, types, statuses', () => {
   Object.values(PB.IMPORT).forEach((T) => T.examples.forEach((r) => assert.equal(r.length, T.columns.length)));
 });
 
+t('delivery challan: no GST, an approximate value or the rates, HSN and value needed', () => {
+  const firm = { legalName: 'Proline Electrical Works', gstin: PB.checkGstin('27AAPFU0939F1ZV').gstin, address1: 'Sample' };
+  const items = [
+    { name: 'Cable tray with cover', type: 'Goods', hsn: '73089090', qty: 15, unit: 'Mtr', rate: '', gstRate: 18 },
+    { name: 'Cable tie 300 mm', type: 'Goods', hsn: '39269099', qty: 1, unit: 'Pkt', rate: '', gstRate: 18 }];
+  const dc = { type: 'DC', date: '2026-11-24', party: { name: 'Sample Customer' }, pos: { code: '29' }, items, pricesIncludeGst: true };
+  let c = PB.compute({ ...dc, declaredValue: '49,000' }, '07');
+  assert.equal(c.tax, 0);
+  assert.equal(c.payable, 49000);
+  assert.equal(c.declared, true);
+  assert.equal(c.roundOff, 0);
+  assert.equal(c.words, 'Indian Rupees Forty-Nine Thousand Only');
+  c = PB.compute({ ...dc, items: [{ ...items[0], rate: 320 }, { ...items[1], rate: 220.4 }] }, '07');
+  assert.equal(c.declared, false);
+  assert.equal(c.taxable, 5020.4, 'rates are not read as including GST');
+  assert.equal(c.igst + c.cgst + c.sgst, 0);
+  assert.equal(c.payable, 5020, 'rounded to the rupee');
+  assert.deepEqual(PB.validate({ ...dc, pos: {}, declaredValue: 49000 }, firm), [], 'place of supply optional, GST rate not asked');
+  assert.deepEqual(PB.validate(dc, firm), ['Enter the approximate value of the goods, or a rate on each line.']);
+  assert.deepEqual(PB.validate({ ...dc, declaredValue: 49000, items: [{ ...items[0], hsn: '' }] }, firm), ['Line 1: HSN/SAC code is missing.']);
+  assert.ok(PB.UNITS.includes('Pkt'));
+  assert.equal(PB.checkDocNumber('DC', 'PEW-DC/2627/01'), '');
+  assert.match(PB.checkDocNumber('DC', 'PEW-DC/26-27/0001'), /^A delivery challan number can have at most 16 characters \(PEW-DC\/26-27\/0001 has 17\)/);
+  assert.equal(PB.checkDocNumber('PI', 'PEW-PI/26-27/0001'), '', 'no limit for proformas');
+  assert.match(PB.checkDocNumber('INV', 'PEW 1'), /^A tax invoice number may only use/);
+});
+
 console.log(`${n} checks passed`);

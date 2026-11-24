@@ -324,6 +324,43 @@ t('generate the PDF again: same number, the old PDF goes to the bin, the new one
   assert.equal(after.meta.pdfFileId, res.pdfFileId);
 });
 
+t('delivery challan: approximate value, no GST, own series and folder, not in the GST register', () => {
+  const r = cust.registrations[0], fyC = PB.fy(today).compact;
+  const party = { id: cust.id, name: cust.name, gstin: r.gstin, address: r.address, city: r.city, stateCode: r.stateCode, pin: r.pin };
+  const base = { type: 'DC', date: today, party, pos: { code: '' }, refs: { vehicleNo: 'DL1AB1234', purpose: 'Supply' },
+    items: [{ name: 'Cable tray with cover', type: 'Goods', hsn: '73089090', qty: 15, unit: 'Mtr', rate: '', gstRate: 18 },
+      { name: 'Cable tie 300 mm', type: 'Goods', hsn: '39269099', qty: 1, unit: 'Pkt', rate: '', gstRate: 18 }],
+    shipTo: { same: false, name: 'Sample Site', address: 'Plot 5, Sector 1', city: 'Noida', pin: '201301', stateCode: '09' } };
+  assert.equal(apiBootstrap().series.DC.next, 'PEW-DC/' + fyC + '/01');
+  assert.throws(() => apiFinalise(base), /approximate value/);
+  const draft = apiSaveDraft({ ...base, declaredValue: '49000' });
+  assert.equal(draft.summary.payable, 49000);
+  const invNext = apiBootstrap().series.INV.next, registerRows = raw('Register').length, mails = FAKE.mails.length;
+  const res = apiFinalise(draft.doc);
+  assert.equal(res.doc.number, 'PEW-DC/' + fyC + '/01');
+  assert.equal(res.doc.calc.payable, 49000);
+  assert.equal(res.doc.calc.tax, 0);
+  assert.equal(res.doc.refs.vehicleNo, 'DL1AB1234');
+  assert.equal(res.series.DC.next, 'PEW-DC/' + fyC + '/02');
+  assert.equal(res.series.INV.next, invNext, 'the invoice series is not touched');
+  assert.equal(raw('Register').length, registerRows, 'a challan is not a tax invoice');
+  const pdf = apiStorePdf(res.doc.id, b64('%PDF challan'), { email: true });
+  assert.equal(FAKE.files[pdf.pdfFileId].folder.path(), 'Proline Billing/' + PB.fy(today).long + '/Delivery Challans');
+  assert.match(FAKE.mails[mails].subject, /^Delivery Challan PEW-DC\/\d{4}\/01/);
+  assert.match(FAKE.mails[mails].htmlBody, /Value of goods: ₹49,000\.00/);
+});
+
+t('challan numbers: at most 16 characters (GST rule 55)', () => {
+  assert.throws(() => apiSaveSettings({ 'series.DC.prefix': 'PROLINE-DC' }), /delivery challan number can have at most 16/);
+  apiSaveSettings({ 'series.DC.prefix': 'PEW-DC', 'series.fyStyle': '26-27', 'series.pad': '4' });
+  const r = cust.registrations[0];
+  const dc = { type: 'DC', date: today, party: { id: cust.id, name: cust.name, gstin: r.gstin, stateCode: r.stateCode }, pos: {}, declaredValue: 1000,
+    items: [{ name: 'Cable gland', type: 'Goods', hsn: '85369090', qty: 2, unit: 'Nos' }] };
+  assert.throws(() => apiFinalise(dc), /PEW-DC\/26-27\/0002 has 17/);
+  apiSaveSettings({ 'series.fyStyle': '2627', 'series.pad': '2' });
+  assert.equal(apiFinalise(dc).doc.number, 'PEW-DC/' + PB.fy(today).compact + '/02');
+});
+
 t('web app page: title and the Proline tab icon', () => {
   const out = doGet();
   assert.equal(out.favicon, 'https://www.prolineelectricalworks.com/favicon-32.png');

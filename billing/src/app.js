@@ -121,7 +121,7 @@
     var invFy = S.docs.filter(function (d) { return d.type === 'INV' && d.status === 'FINAL' && (d.fy || PB.fy(d.date).long) === cur.long; });
     var invTotal = invFy.reduce(function (a, d) { return a + (+d.payable || 0); }, 0);
     var drafts = S.docs.filter(function (d) { return d.status === 'DRAFT'; }).length;
-    var seriesLine = ['INV', 'PI', 'PO'].map(function (t) { return '<div><span class="muted">' + esc(PB.TYPES[t].short) + '</span> <b>' + esc((S.series[t] || {}).next || '') + '</b></div>'; }).join('');
+    var seriesLine = ['INV', 'PI', 'PO', 'DC'].map(function (t) { return '<div><span class="muted">' + esc(PB.TYPES[t].short) + '</span> <b>' + esc((S.series[t] || {}).next || '') + '</b></div>'; }).join('');
     var rows = list.map(function (d) {
       var id = esc(d.id);
       var acts = d.status === 'FINAL' ? '<span class="row-acts"><button class="btn small" data-row-action="amend" data-id="' + id + '">Amend</button><button class="btn small danger ghost" data-row-action="cancel" data-id="' + id + '">Cancel</button></span>' : '';
@@ -137,14 +137,14 @@
       '</section>' +
       '<section class="card">' +
       '<div class="filters">' +
-      '<div class="seg">' + [['ALL', 'All'], ['INV', 'Invoices'], ['PI', 'Proforma'], ['PO', 'POs']].map(function (o) { return '<button data-ftype="' + o[0] + '" class="' + (f.type === o[0] ? 'on' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+      '<div class="seg">' + [['ALL', 'All'], ['INV', 'Invoices'], ['PI', 'Proforma'], ['PO', 'POs'], ['DC', 'Challans']].map(function (o) { return '<button data-ftype="' + o[0] + '" class="' + (f.type === o[0] ? 'on' : '') + '">' + o[1] + '</button>'; }).join('') + '</div>' +
       '<select data-fstatus aria-label="Status">' + options([['ALL', 'Any status'], ['DRAFT', 'Drafts'], ['FINAL', 'Final'], ['CANCELLED', 'Cancelled']], f.status) + '</select>' +
       '<select data-ffy aria-label="Financial year"><option value="">All years</option>' + options(Object.keys(fys).sort().reverse(), f.fy) + '</select>' +
       '<input type="search" data-fq placeholder="Search name, number or GSTIN" value="' + esc(f.q) + '">' +
       '<button class="btn small" data-view="import">Import from Excel</button>' +
       '</div>' +
       (rows ? '<div class="table-wrap"><table class="list"><thead><tr><th>Type</th><th>Number</th><th>Date</th><th>Customer / vendor</th><th class="num">Amount</th><th>Status</th><th></th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-        : '<div class="empty"><p>No documents yet.</p><p class="muted">Start with <b>+ Invoice</b>, <b>+ Proforma</b> or <b>+ PO</b> at the top, or <a href="#" data-view="import">import from Excel</a>. Add your firm details in <a href="#" data-view="settings">Settings</a> first.</p></div>') +
+        : '<div class="empty"><p>No documents yet.</p><p class="muted">Start with <b>+ Invoice</b>, <b>+ Proforma</b>, <b>+ PO</b> or <b>+ Challan</b> at the top, or <a href="#" data-view="import">import from Excel</a>. Add your firm details in <a href="#" data-view="settings">Settings</a> first.</p></div>') +
       '</section>';
   }
 
@@ -271,7 +271,7 @@
   }
   function viewSettings() {
     var s = S.settings, g = s.firm.gstin ? PB.checkGstin(s.firm.gstin) : null;
-    var series = ['INV', 'PI', 'PO'].map(function (t) {
+    var series = ['INV', 'PI', 'PO', 'DC'].map(function (t) {
       var st = S.series[t] || {};
       return '<div class="series-row"><b>' + esc(PB.TYPES[t].title) + '</b><span>Next: <code>' + esc(st.next || '') + '</code>' +
         ((st.reuse || []).length ? '<br><span class="muted small">Can be given again: ' + esc(st.reuse.join(', ')) + '</span>' : '') + '</span>' +
@@ -299,18 +299,20 @@
       '</div><p class="muted small">PNG or JPG, under 1.5 MB. A signature on a white or clear background looks best.</p></section>' +
       '<section class="card"><h2>Numbering</h2><p class="muted">Each type has its own series per financial year (April–March). A document gets its number when you finalise it: the next in the series, a cancelled number given again, or one you type (for documents issued before this app). The series always continues after the highest number recorded in it.</p><div class="grid3">' +
       sField('series.INV.prefix', 'Tax invoice prefix', { hint: 'A tax invoice number can have at most 16 characters' }) + sField('series.PI.prefix', 'Proforma prefix') + sField('series.PO.prefix', 'PO prefix') +
+      sField('series.DC.prefix', 'Delivery challan prefix', { hint: 'A challan number can have at most 16 characters' }) +
       sField('series.fyStyle', 'Year in the number', { select: options([['26-27', '26-27, e.g. PEW/26-27/0001'], ['2627', '2627, e.g. PEW/2627/07']], s.series.fyStyle) }) +
       sField('series.pad', 'Digits in the number', { select: options([['1', '1, e.g. 7'], ['2', '2, e.g. 07'], ['3', '3, e.g. 007'], ['4', '4, e.g. 0007'], ['5', '5, e.g. 00007']], s.series.pad) }) +
       sField('pdf.copies', 'Tax invoice copies in the PDF', { select: options([['Original', 'Original only'], ['Original + Duplicate', 'Original + duplicate'], ['Original + Duplicate + Triplicate', 'Original + duplicate + triplicate (goods)']], s.pdf.copies) }) +
       '</div><div class="series">' + series + '</div>' +
       '<h3>Cancelled numbers you can give again</h3><p class="muted small">Numbers of documents cancelled outside this app, separated by commas, e.g. PEW/2627/0002, PEW/2627/0003. Documents cancelled in this app are offered by themselves. Each number is offered under Number until it is used.</p><div class="grid3">' +
-      sField('series.INV.reuse', 'Tax invoices', { textarea: true, rows: 2 }) + sField('series.PI.reuse', 'Proformas', { textarea: true, rows: 2 }) + sField('series.PO.reuse', 'Purchase orders', { textarea: true, rows: 2 }) +
+      sField('series.INV.reuse', 'Tax invoices', { textarea: true, rows: 2 }) + sField('series.PI.reuse', 'Proformas', { textarea: true, rows: 2 }) + sField('series.PO.reuse', 'Purchase orders', { textarea: true, rows: 2 }) + sField('series.DC.reuse', 'Delivery challans', { textarea: true, rows: 2 }) +
       '</div><p class="hint warn">GST rule 46: each invoice number is used once in a financial year. Give a cancelled number again only if that invoice was never sent or reported in GSTR-1. Ask your CA if unsure.</p>' +
       '<div class="actions left"><button class="btn" data-action="series-check">Check all series for gaps</button></div><div id="series-result"></div></section>' +
       '<section class="card"><h2>Default notes and terms</h2><div class="grid2">' +
       sField('notes.INV', 'Note on tax invoices', { textarea: true, rows: 2 }) + sField('terms.INV', 'Terms on tax invoices', { textarea: true }) +
       sField('notes.PI', 'Note on proformas', { textarea: true, rows: 2 }) + sField('terms.PI', 'Terms on proformas', { textarea: true }) +
       sField('notes.PO', 'Note on purchase orders', { textarea: true, rows: 2 }) + sField('terms.PO', 'Terms on purchase orders', { textarea: true }) +
+      sField('notes.DC', 'Note on delivery challans', { textarea: true, rows: 2 }) + sField('terms.DC', 'Terms on delivery challans', { textarea: true }) +
       '</div></section>' +
       '<section class="card"><h2>Email and storage</h2><div class="grid2">' +
       sField('email.to', 'Email each final PDF to') + sField('email.cc', 'Copy to (optional)') +
@@ -335,7 +337,7 @@
     var s = S.settings;
     return {
       type: type, status: 'DRAFT', number: '', date: PB.today(), party: {}, pos: { code: type === 'PO' ? s.firm.stateCode : '' }, posAuto: true,
-      reverseCharge: false, pricesIncludeGst: false, roundOff: true, refs: {}, shipTo: { same: true },
+      reverseCharge: false, pricesIncludeGst: false, roundOff: true, refs: {}, shipTo: { same: true }, declaredValue: '',
       items: [blankLine()], notes: s.notes[type] || '', terms: s.terms[type] || '',
       annexure: { enabled: false, title: 'Annexure A', intro: '', rows: [], notes: '' }, meta: {}
     };
@@ -362,7 +364,7 @@
   function partiesFor(type) { return S.parties.filter(function (p) { return type === 'PO' ? p.role !== 'Customer' : p.role !== 'Vendor'; }).sort(function (a, b) { return a.name.localeCompare(b.name); }); }
 
   function viewDoc() {
-    var d = S.doc, T = PB.TYPES[d.type], ro = !editable(), isPO = d.type === 'PO';
+    var d = S.doc, T = PB.TYPES[d.type], ro = !editable(), isPO = d.type === 'PO', isDC = d.type === 'DC';
     var dis = ro ? ' disabled' : '';
     var party = d.party || {};
     var p = party.id ? S.parties.filter(function (x) { return x.id === party.id; })[0] : null;
@@ -374,11 +376,17 @@
     var refsHtml = {
       INV: refField('refs.poNumber', 'Customer PO no.') + refField('refs.poDate', 'PO date', 'date') + refField('refs.dueDate', 'Due date', 'date') + refField('refs.eWayBill', 'E-way bill no.') + refField('refs.vehicleNo', 'Vehicle no.') + refField('refs.piNumber', 'Proforma ref.'),
       PI: refField('refs.validTill', 'Valid till', 'date') + refField('refs.deliveryPeriod', 'Delivery period', null, 'e.g. 3–4 weeks from advance') + refField('refs.paymentTerms', 'Payment terms', null, 'e.g. 50% advance') + refField('refs.poNumber', 'Customer ref.'),
-      PO: refField('refs.deliveryDate', 'Deliver by', 'date') + refField('refs.paymentTerms', 'Payment terms', null, 'e.g. 30 days after delivery') + refField('refs.deliveryTerms', 'Delivery terms', null, 'e.g. freight included') + refField('refs.quoteRef', 'Vendor quotation ref.')
+      PO: refField('refs.deliveryDate', 'Deliver by', 'date') + refField('refs.paymentTerms', 'Payment terms', null, 'e.g. 30 days after delivery') + refField('refs.deliveryTerms', 'Delivery terms', null, 'e.g. freight included') + refField('refs.quoteRef', 'Vendor quotation ref.'),
+      // Purpose: the e-way bill's reasons for moving goods, offered as suggestions; any text is allowed.
+      DC: '<label>Purpose<input data-f="refs.purpose" list="dl-purpose" value="' + esc(get(d, 'refs.purpose')) + '" placeholder="e.g. Supply, For own use"' + dis + '></label>' +
+        refField('refs.vehicleNo', 'Vehicle no.') + refField('refs.eWayBill', 'E-way bill no.') + refField('refs.transporter', 'Transporter', null, 'Name, or own vehicle') +
+        refField('refs.poNumber', 'Customer PO no.') + refField('refs.invoiceRef', 'Invoice / proforma ref.') +
+        '<label>Approx. value of goods (₹)<input data-f="declaredValue" inputmode="decimal" value="' + esc(d.declaredValue) + '" placeholder="Empty: from the rates"' + dis + '><span class="hint">Printed as the value of the goods. Leave it empty to add up the rates of the lines.</span></label>' +
+        '<datalist id="dl-purpose">' + ['Supply', 'For own use', 'Job work', 'Job work returns', 'Sales return', 'Exhibition or fairs', 'Line sales', 'Recipient not known', 'Others'].map(function (x) { return '<option value="' + x + '">'; }).join('') + '</datalist>'
     }[d.type];
     function refField(path, label, type, ph) { return '<label>' + esc(label) + '<input data-f="' + path + '"' + (type ? ' type="' + type + '"' : '') + ' value="' + esc(get(d, path)) + '"' + (ph ? ' placeholder="' + esc(ph) + '"' : '') + dis + '></label>'; }
     var shipDiff = !(d.shipTo && d.shipTo.same !== false);
-    var posHint = (!isPO && shipDiff && d.shipTo.stateCode && d.pos.code && d.shipTo.stateCode !== d.pos.code) ?
+    var posHint = (!isPO && !isDC && shipDiff && d.shipTo.stateCode && d.pos.code && d.shipTo.stateCode !== d.pos.code) ?
       '<span class="hint warn">Installing at the site? The place of supply is then usually the site’s state (' + esc(PB.stateName(d.shipTo.stateCode)) + '). Ask your CA if unsure.</span>' : '';
     var vendorHint = (isPO && party.name && !party.gstin) ? '<span class="hint warn">Unregistered vendor: they usually cannot charge GST, so set GST to 0%.</span>' : '';
 
@@ -396,12 +404,12 @@
 
     var detailsCard = '<section class="card"><h2>Details</h2><div class="grid3">' + numberField(d, ro) +
       '<label>Date<input type="date" data-f="date" value="' + esc(d.date) + '"' + dis + '></label>' +
-      '<label>Place of supply<select data-pos' + dis + '>' + stateOptions(d.pos && d.pos.code, 'Choose the state') + '</select>' + posHint + '</label>' +
-      (isPO ? '<div></div>' : '<label>Reverse charge<select data-f="reverseCharge" data-bool' + dis + '>' + options([['false', 'No'], ['true', 'Yes']], String(!!d.reverseCharge)) + '</select></label>') +
+      '<label>Place of supply' + (isDC ? ' (optional)' : '') + '<select data-pos' + dis + '>' + stateOptions(d.pos && d.pos.code, isDC ? 'None' : 'Choose the state') + '</select>' + posHint + '</label>' +
+      (isPO ? '<div></div>' : isDC ? '' : '<label>Reverse charge<select data-f="reverseCharge" data-bool' + dis + '>' + options([['false', 'No'], ['true', 'Yes']], String(!!d.reverseCharge)) + '</select></label>') +
       refsHtml + '</div>' +
-      '<div class="toggles"><label class="check"><input type="checkbox" data-f="pricesIncludeGst" data-check' + (d.pricesIncludeGst ? ' checked' : '') + dis + '> Rates include GST</label>' +
-      '<label class="check"><input type="checkbox" data-f="roundOff" data-check' + (d.roundOff !== false ? ' checked' : '') + dis + '> Round the total to the nearest rupee</label></div>' +
-      '<h3>' + (isPO ? 'Deliver to' : 'Ship to / site') + '</h3><div class="seg small">' +
+      (isDC ? '' : '<div class="toggles"><label class="check"><input type="checkbox" data-f="pricesIncludeGst" data-check' + (d.pricesIncludeGst ? ' checked' : '') + dis + '> Rates include GST</label>' +
+      '<label class="check"><input type="checkbox" data-f="roundOff" data-check' + (d.roundOff !== false ? ' checked' : '') + dis + '> Round the total to the nearest rupee</label></div>') +
+      '<h3>' + (isPO ? 'Deliver to' : isDC ? 'Ship to / deliver at' : 'Ship to / site') + '</h3><div class="seg small">' +
       '<button type="button" data-ship="same" class="' + (shipDiff ? '' : 'on') + '"' + dis + '>' + sameLabel + '</button><button type="button" data-ship="diff" class="' + (shipDiff ? 'on' : '') + '"' + dis + '>Another address</button></div>' +
       (shipDiff ? '<div class="grid3">' + ['name:Name', 'gstin:GSTIN (optional)', 'city:City', 'pin:PIN'].map(function (x) { var k = x.split(':'); return '<label>' + k[1] + '<input data-f="shipTo.' + k[0] + '" value="' + esc(d.shipTo[k[0]]) + '"' + dis + '></label>'; }).join('') +
         '<label class="span2">Address<textarea data-f="shipTo.address" rows="2"' + dis + '>' + esc(d.shipTo.address) + '</textarea></label>' +
@@ -409,8 +417,9 @@
       '</section>';
 
     var lines = d.items.map(function (it, i) { return lineHtml(it, i, ro); }).join('');
-    var itemsCard = '<section class="card"><div class="head-row"><h2>Items</h2><span class="grow"></span><span class="muted small" id="tax-mode"></span></div>' +
-      '<div class="lines-head"><span>Item or service</span><span>HSN/SAC</span><span>Qty and unit</span><span>Rate (₹)</span><span>Disc %</span><span>GST</span><span class="num">Amount</span></div>' +
+    var itemsCard = '<section class="card' + (isDC ? ' is-dc' : '') + '"><div class="head-row"><h2>Items</h2><span class="grow"></span><span class="muted small" id="tax-mode"></span></div>' +
+      (isDC ? '<div class="lines-head"><span>Item</span><span>HSN</span><span>Qty and unit</span><span>Rate (₹, optional)</span><span class="num">Amount</span></div>'
+        : '<div class="lines-head"><span>Item or service</span><span>HSN/SAC</span><span>Qty and unit</span><span>Rate (₹)</span><span>Disc %</span><span>GST</span><span class="num">Amount</span></div>') +
       '<div id="lines">' + lines + '</div>' + (ro ? '' : '<div class="actions left"><button class="btn ghost" data-action="line-add">+ Add a line</button><button class="btn ghost" data-action="lines-paste">Paste lines from Excel</button></div>') +
       '<datalist id="dl-products">' + S.products.filter(function (x) { return x.active; }).map(function (x) { return '<option value="' + esc(x.name) + '">'; }).join('') + '</datalist>' +
       '<div class="totals" id="totals"></div></section>';
@@ -458,26 +467,30 @@
   }
   function numberProblem(d) {
     var n = d.numbering || {};
-    if (n.mode !== 'manual' && n.mode !== 'reuse') return '';
+    if (n.mode !== 'manual' && n.mode !== 'reuse') {
+      // The next challan number must fit in 16 characters too (a long prefix with the 26-27 year style does not).
+      var nx = (S.series[d.type] || {}).next;
+      return d.type === 'DC' && nx && !S.amending ? PB.checkDocNumber('DC', nx) : '';
+    }
     var no = String(n.number || '').trim();
     if (!no) return 'Type the number, or choose “Next in series”.';
-    if (d.type === 'INV') { var e = PB.checkInvoiceNumber(no); if (e) return e; }
+    var e = PB.checkDocNumber(d.type, no); if (e) return e;
     var f = PB.fy(d.date);
     var clash = S.docs.filter(function (x) { return x.type === d.type && x.status === 'FINAL' && x.id !== d.id && String(x.number).toUpperCase() === no.toUpperCase() && (x.fy || PB.fy(x.date).long) === f.long; })[0];
     return clash ? 'Number ' + clash.number + ' is already used by a final ' + PB.TYPES[d.type].short.toLowerCase() + ' (' + clash.partyName + ').' : '';
   }
 
   function lineHtml(it, i, ro) {
-    var dis = ro ? ' disabled' : '';
+    var dis = ro ? ' disabled' : '', dc = !!(S.doc && S.doc.type === 'DC');
     // Each field has a small caption that shows only on phones (desktop has the header row).
     var cap = function (t) { return '<span class="cap">' + t + '</span>'; };
     return '<div class="line" data-i="' + i + '">' +
       '<div class="c-name"><input list="dl-products" data-k="name" value="' + esc(it.name) + '" placeholder="Item or service" aria-label="Item"' + dis + '><textarea data-k="description" rows="1" placeholder="Details (optional)" aria-label="Details"' + dis + '>' + esc(it.description) + '</textarea></div>' +
       '<div class="c-hsn"><label class="ml">' + cap('HSN/SAC') + '<input data-k="hsn" value="' + esc(it.hsn) + '" inputmode="numeric" placeholder="HSN/SAC" aria-label="HSN or SAC"' + dis + '></label><select data-k="type" aria-label="Goods or service"' + dis + '>' + options(['Goods', 'Service'], it.type) + '</select></div>' +
       '<div class="c-qty"><label class="ml">' + cap('Qty') + '<input data-k="qty" value="' + esc(it.qty) + '" inputmode="decimal" aria-label="Quantity"' + dis + '></label><select data-k="unit" aria-label="Unit"' + dis + '>' + options(PB.UNITS.indexOf(it.unit) >= 0 || !it.unit ? PB.UNITS : PB.UNITS.concat([it.unit]), it.unit) + '</select></div>' +
-      '<div class="c-rate"><label class="ml">' + cap('Rate (₹)') + '<input data-k="rate" value="' + esc(it.rate) + '" inputmode="decimal" placeholder="0.00" aria-label="Rate"' + dis + '></label></div>' +
-      '<div class="c-disc"><label class="ml">' + cap('Disc %') + '<input data-k="discountPct" value="' + esc(it.discountPct) + '" inputmode="decimal" placeholder="0" aria-label="Discount %"' + dis + '></label></div>' +
-      '<div class="c-gst"><label class="ml">' + cap('GST') + '<select data-k="gstRate" aria-label="GST rate"' + dis + '>' + options(PB.GST_RATES.map(function (r) { return [r, r + '%']; }), it.gstRate) + '</select></label></div>' +
+      '<div class="c-rate"><label class="ml">' + cap('Rate (₹)') + '<input data-k="rate" value="' + esc(it.rate) + '" inputmode="decimal" placeholder="' + (dc ? 'Optional' : '0.00') + '" aria-label="Rate"' + dis + '></label></div>' +
+      (dc ? '' : '<div class="c-disc"><label class="ml">' + cap('Disc %') + '<input data-k="discountPct" value="' + esc(it.discountPct) + '" inputmode="decimal" placeholder="0" aria-label="Discount %"' + dis + '></label></div>' +
+      '<div class="c-gst"><label class="ml">' + cap('GST') + '<select data-k="gstRate" aria-label="GST rate"' + dis + '>' + options(PB.GST_RATES.map(function (r) { return [r, r + '%']; }), it.gstRate) + '</select></label></div>') +
       '<div class="c-amt"><b class="line-total">—</b>' + (ro ? '' : '<span class="line-tools"><button class="icon" data-action="line-up" title="Move up">↑</button><button class="icon" data-action="line-down" title="Move down">↓</button><button class="icon" data-action="line-del" title="Remove">✕</button></span>') + '</div>' +
       '</div>';
   }
@@ -502,6 +515,7 @@
       if (url) b.push('<button class="btn" data-action="doc-email">Email…</button>');
       b.push('<button class="btn" data-action="doc-duplicate">Duplicate</button>');
       if (d.type === 'PI' && d.status === 'FINAL') b.push('<button class="btn" data-action="doc-to-invoice">Make tax invoice</button>');
+      if ((d.type === 'PI' || d.type === 'INV') && d.status === 'FINAL') b.push('<button class="btn" data-action="doc-to-challan">Make delivery challan</button>');
       if (d.status === 'FINAL') b.push('<button class="btn" data-action="doc-amend">Amend…</button>');
       if (d.status === 'FINAL') b.push('<button class="btn danger ghost" data-action="doc-cancel">Cancel…</button>');
     }
@@ -510,13 +524,22 @@
 
   function refreshTotals() {
     if (S.view !== 'doc' || !S.doc) return;
-    var c = calc(S.doc);
+    var c = calc(S.doc), isDC = S.doc.type === 'DC';
     $$('#lines .line').forEach(function (el) {
       var l = c.lines[+el.dataset.i];
       var t = $('.line-total', el);
-      if (t && l) t.textContent = l.qty && (l.rate || l.rate === 0) ? rupees(l.total) : '—';
+      if (t && l) t.textContent = l.qty && (isDC ? l.rate > 0 : (l.rate || l.rate === 0)) ? rupees(l.total) : '—';
     });
     var mode = $('#tax-mode');
+    if (isDC) {
+      if (mode) mode.textContent = 'No GST on a delivery challan';
+      var dcRows = c.declared && c.taxable > 0 ? [['From the rates of the lines', rupees(c.taxable)]] : [];
+      var totDc = $('#totals');
+      if (totDc) totDc.innerHTML = '<div class="words">' + esc(c.words) + '</div><table>' + dcRows.map(function (r) { return '<tr><td>' + r[0] + '</td><td class="num">' + r[1] + '</td></tr>'; }).join('') +
+        '<tr class="grand"><td>' + (c.declared ? 'Approx. value of goods' : 'Value of goods') + '</td><td class="num">' + rupees(c.payable) + '</td></tr></table>' +
+        (c.payable > 50000 ? '<p class="hint warn">Goods worth more than ₹50,000 usually need an e-way bill to move. Ask your CA if unsure.</p>' : '');
+      return;
+    }
     if (mode) mode.textContent = S.doc.pos && S.doc.pos.code ? (c.intra ? 'Same state: CGST + ' + c.sgstLabel : 'Other state: IGST') + (S.doc.pricesIncludeGst ? ' · rates include GST' : '') : 'Choose the place of supply to work out the tax';
     var rows = [];
     if (c.discount > 0) { rows.push(['Gross amount', rupees(c.gross)]); rows.push(['Discount', '- ' + rupees(c.discount)]); }
@@ -1073,6 +1096,12 @@
       inv.refs.piNumber = S.doc.number;
       openNew('INV', inv); toast('Tax invoice draft made from ' + S.doc.number + '. Check it and finalise.');
     },
+    'doc-to-challan': function () {
+      var dc = copyDoc(S.doc, 'DC');
+      dc.refs.invoiceRef = S.doc.number;
+      dc.refs.poNumber = (S.doc.refs || {}).poNumber || '';
+      openNew('DC', dc); toast('Delivery challan draft made from ' + S.doc.number + '. Check it and finalise.');
+    },
     'doc-email': function () {
       var d = S.doc;
       var to = [S.settings.email.to, d.party.email].filter(Boolean).join(', ');
@@ -1179,7 +1208,8 @@
   };
   function finaliseBox(T, num, c, to, emailDefault) {
     return new Promise(function (resolve) {
-      modal('<h2>Finalise this ' + esc(T.title.toLowerCase()) + '?</h2><p class="pre">' + esc('It gets number ' + num + ' and is locked. You can amend or cancel it later.\n\nTotal: ' + rupees(c.payable) + '\nThe PDF is saved to Google Drive.') + '</p>' +
+      var what = T.code === 'DC' ? (c.declared ? 'Approx. value of goods: ' : 'Value of goods: ') : 'Total: ';
+      modal('<h2>Finalise this ' + esc(T.title.toLowerCase()) + '?</h2><p class="pre">' + esc('It gets number ' + num + ' and is locked. You can amend or cancel it later.\n\n' + what + rupees(c.payable) + '\nThe PDF is saved to Google Drive.') + '</p>' +
         (to ? '<label class="check"><input type="checkbox" id="fb-email"' + (emailDefault ? ' checked' : '') + '> Email the PDF to ' + esc(to) + '</label>' : '') +
         '<div class="actions"><button class="btn" data-close>Back</button><button class="btn primary" id="cb-ok">Finalise</button></div>', function (root) {
         $('#cb-ok', root).onclick = function () { var em = $('#fb-email', root); closeModal.after = null; closeModal(); resolve({ email: !!(em && em.checked) }); };
@@ -1228,8 +1258,9 @@
     fresh.party = d.party; fresh.pos = d.pos; fresh.posAuto = false; fresh.shipTo = d.shipTo || { same: true };
     fresh.items = d.items; fresh.pricesIncludeGst = d.pricesIncludeGst; fresh.roundOff = d.roundOff; fresh.reverseCharge = d.reverseCharge;
     fresh.annexure = d.annexure || fresh.annexure;
-    if (type === d.type) { fresh.notes = d.notes; fresh.terms = d.terms; }
-    fresh.refs = type === d.type ? { poNumber: (d.refs || {}).poNumber, paymentTerms: (d.refs || {}).paymentTerms, deliveryTerms: (d.refs || {}).deliveryTerms, deliveryPeriod: (d.refs || {}).deliveryPeriod } : {};
+    if (type === d.type) { fresh.notes = d.notes; fresh.terms = d.terms; fresh.declaredValue = d.declaredValue || ''; }
+    var r = d.refs || {};
+    fresh.refs = type === d.type ? { poNumber: r.poNumber, paymentTerms: r.paymentTerms, deliveryTerms: r.deliveryTerms, deliveryPeriod: r.deliveryPeriod, purpose: r.purpose, transporter: r.transporter } : {};
     fresh.meta = { sourceId: src.id };
     return fresh;
   }

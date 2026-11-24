@@ -35,6 +35,15 @@ const samples = [
       { description: 'Cabling', spec: '3C × 6 sq mm armoured copper, up to 45 m', qty: '45', unit: 'Mtr', remarks: 'Extra length at actuals' } ],
       notes: 'Exclusions: civil work beyond cable trenching, electricity connection or load increase from the DISCOM.' } } },
   { name: 'purchase-order', doc: { type: 'PO', status: 'FINAL', number: 'PEW-PO/26-27/0002', date: '2026-10-24', party: { id: 'v1', name: 'Sample Charger Maker', gstin: g('06AABCS9999K1Z'), address: 'Sample Industrial Area', city: 'Faridabad', pin: '121003', stateCode: '06' }, pos: { code: '07' }, refs: { deliveryDate: '2026-11-05', paymentTerms: '30 days after delivery', deliveryTerms: 'Delivered to our address, freight included', quoteRef: 'SCM/Q/1021' }, items: items.slice(0, 1), terms: '1. Please quote this PO number on your invoice.\n2. Subject to Delhi jurisdiction.', shipTo: { same: true } } },
+  { name: 'challan', doc: { type: 'DC', status: 'FINAL', number: 'PEW-DC/2627/01', date: '2026-11-24', party: { ...party, gstin: g('29AAACS1234A1Z'), stateCode: '29', city: 'Bengaluru', pin: '560001', address: 'Sample Tech Park, Sample Road' }, pos: { code: '29' }, declaredValue: 49000,
+    refs: { purpose: 'Supply', vehicleNo: 'DL1AB1234', poNumber: 'SC/PO/912' }, items: [
+      { name: 'Cable tray with cover', type: 'Goods', hsn: '73089090', qty: 15, unit: 'Mtr' },
+      { name: 'Fastener 8 mm', type: 'Goods', hsn: '73181500', qty: 34, unit: 'Nos' },
+      { name: 'Cable tie 300 mm', type: 'Goods', hsn: '39269099', qty: 1, unit: 'Pkt' },
+      { name: '4 core 10 sq mm copper flexible cable', description: 'For the charger feeder', type: 'Goods', hsn: '85444999', qty: 55, unit: 'Mtr' }],
+    terms: '1. Please check the goods when they arrive, then sign and stamp this challan.\n2. This challan is not a tax invoice.\n3. Subject to Delhi jurisdiction.',
+    shipTo: { same: false, name: 'Sample Site Ltd', address: 'Plot 5, Sample Industrial Area', city: 'Noida', pin: '201301', stateCode: '09' } } },
+  { name: 'challan-priced-draft', doc: { type: 'DC', status: 'DRAFT', number: '', date: '2026-11-24', party, pos: {}, refs: {}, items: items.slice(1, 3).map((i) => ({ ...i, discountPct: 0 })), terms: '', shipTo: { same: true } }, watermark: 'DRAFT' },
   { name: 'invoice-draft', doc: { type: 'INV', status: 'DRAFT', number: '', date: '2026-10-24', party, pos: { code: '07' }, refs: {}, items: items.slice(3), terms: 'Subject to Delhi jurisdiction.', shipTo: { same: true } }, watermark: 'DRAFT' },
 ];
 

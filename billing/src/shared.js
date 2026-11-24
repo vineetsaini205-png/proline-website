@@ -21,12 +21,14 @@ var PB = (function () {
   // Union territories without a legislature: intra-UT supplies carry UTGST instead of SGST.
   var UT_CODES = ['04', '25', '26', '31', '35', '38'];
   var GST_RATES = [0, 0.25, 3, 5, 12, 18, 28, 40];
-  // Rmt (running metre), LS (lump sum), Cu m and Sq ft added for civil-work quotes (owner, 2 Nov).
-  var UNITS = ['Nos', 'Set', 'Pcs', 'Mtr', 'Rmt', 'Kg', 'Ltr', 'Sq m', 'Sq ft', 'Cu m', 'Job', 'LS', 'Lot', 'Visit', 'Month', 'Year', 'Hrs', 'Days', 'kWh', 'kWp'];
+  // Rmt (running metre), LS (lump sum), Cu m and Sq ft added for civil-work quotes (owner, 2 Nov); Pkt for challans (24 Nov).
+  var UNITS = ['Nos', 'Set', 'Pcs', 'Pkt', 'Mtr', 'Rmt', 'Kg', 'Ltr', 'Sq m', 'Sq ft', 'Cu m', 'Job', 'LS', 'Lot', 'Visit', 'Month', 'Year', 'Hrs', 'Days', 'kWh', 'kWp'];
   var TYPES = {
     INV: { code: 'INV', title: 'Tax Invoice', short: 'Invoice', folder: 'Tax Invoices', defaultPrefix: 'PEW' },
     PI: { code: 'PI', title: 'Proforma Invoice', short: 'Proforma', folder: 'Proforma Invoices', defaultPrefix: 'PEW-PI' },
-    PO: { code: 'PO', title: 'Purchase Order', short: 'PO', folder: 'Purchase Orders', defaultPrefix: 'PEW-PO' }
+    PO: { code: 'PO', title: 'Purchase Order', short: 'PO', folder: 'Purchase Orders', defaultPrefix: 'PEW-PO' },
+    // Delivery challan (owner, 24 Nov): goods sent to a customer or site, with quantities, HSN and a value, and no GST.
+    DC: { code: 'DC', title: 'Delivery Challan', short: 'Challan', folder: 'Delivery Challans', defaultPrefix: 'PEW-DC' }
   };
 
   function stateName(code) {
@@ -140,9 +142,16 @@ var PB = (function () {
     return m ? +m[1] : null;
   }
   /** GST rule 46(b): up to 16 characters; letters, digits, "/" and "-" only. */
-  function checkInvoiceNumber(no) {
-    if (no.length > 16) return 'A tax invoice number can have at most 16 characters (' + no + ' has ' + no.length + '). Shorten the prefix in Settings.';
-    if (!/^[A-Za-z0-9\/-]+$/.test(no)) return 'A tax invoice number may only use letters, digits, "/" and "-".';
+  function checkInvoiceNumber(no, what) {
+    what = what || 'A tax invoice number';
+    if (no.length > 16) return what + ' can have at most 16 characters (' + no + ' has ' + no.length + '). Shorten the prefix in Settings.';
+    if (!/^[A-Za-z0-9\/-]+$/.test(no)) return what + ' may only use letters, digits, "/" and "-".';
+    return '';
+  }
+  /** Number rules by type: tax invoices (GST rule 46) and delivery challans (rule 55, the same limits). */
+  function checkDocNumber(type, no) {
+    if (type === 'INV') return checkInvoiceNumber(no);
+    if (type === 'DC') return checkInvoiceNumber(no, 'A delivery challan number');
     return '';
   }
 
@@ -151,16 +160,19 @@ var PB = (function () {
    * Works out every line and the totals.
    * supplierState: GST state code of the supplier (Proline for INV/PI, the vendor for a PO).
    * doc.pos.code: place of supply. Same state → CGST + SGST (or UTGST); different → IGST.
+   * A delivery challan carries no GST: its value is qty × rate of the lines, or the approximate
+   * value typed on the challan (doc.declaredValue), which then stands as the value of the goods.
    */
   function compute(doc, supplierState) {
+    var noTax = doc.type === 'DC';
     var pos = doc.pos && doc.pos.code ? String(doc.pos.code) : '';
     var intra = !!pos && !!supplierState && pos === String(supplierState);
     var sgstLabel = intra && UT_CODES.indexOf(pos) >= 0 ? 'UTGST' : 'SGST';
-    var incl = !!doc.pricesIncludeGst;
+    var incl = !noTax && !!doc.pricesIncludeGst;
     var lines = [], hsn = {}, order = [];
     var t = { gross: 0, discount: 0, taxable: 0, cgst: 0, sgst: 0, igst: 0 };
     (doc.items || []).forEach(function (it, i) {
-      var qty = num(it.qty), rate = num(it.rate), disc = Math.min(Math.max(num(it.discountPct), 0), 100), gr = num(it.gstRate);
+      var qty = num(it.qty), rate = num(it.rate), disc = Math.min(Math.max(num(it.discountPct), 0), 100), gr = noTax ? 0 : num(it.gstRate);
       var gross = r2(qty * rate);
       var afterDisc = r2(gross * (1 - disc / 100));
       var taxable = incl ? r2(afterDisc / (1 + gr / 100)) : afterDisc;
@@ -181,7 +193,8 @@ var PB = (function () {
     ['gross', 'discount', 'taxable', 'cgst', 'sgst', 'igst'].forEach(function (k) { t[k] = r2(t[k]); });
     var tax = r2(t.cgst + t.sgst + t.igst);
     var total = r2(t.taxable + tax);
-    var payable = doc.roundOff === false ? total : Math.round(total);
+    var declared = noTax ? r2(Math.max(num(doc.declaredValue), 0)) : 0;
+    var payable = declared > 0 ? declared : doc.roundOff === false ? total : Math.round(total);
     var hsnSummary = order.map(function (k) {
       var h = hsn[k];
       return { hsn: h.hsn, rate: h.rate, taxable: r2(h.taxable), cgst: r2(h.cgst), sgst: r2(h.sgst), igst: r2(h.igst), tax: r2(h.cgst + h.sgst + h.igst) };
@@ -189,7 +202,7 @@ var PB = (function () {
     return {
       intra: intra, sgstLabel: sgstLabel, lines: lines, hsnSummary: hsnSummary,
       gross: t.gross, discount: t.discount, taxable: t.taxable, cgst: t.cgst, sgst: t.sgst, igst: t.igst, tax: tax,
-      total: total, roundOff: r2(payable - total), payable: r2(payable), words: amountInWords(payable)
+      total: total, roundOff: declared > 0 ? 0 : r2(payable - total), payable: r2(payable), words: amountInWords(payable), declared: declared > 0
     };
   }
 
@@ -258,15 +271,16 @@ var PB = (function () {
   /** Problems that stop a document from being finalised (empty list = fine). */
   function validate(doc, firm) {
     var p = [];
-    var isPO = doc.type === 'PO';
+    var isPO = doc.type === 'PO', isDC = doc.type === 'DC';
     if (!doc.date) p.push('Pick the document date.');
     if (!doc.party || !doc.party.name) p.push(isPO ? 'Choose the vendor.' : 'Choose the customer.');
-    if (!doc.pos || !doc.pos.code) p.push('Choose the place of supply.');
+    // A challan names the place of supply only when goods go to another state for a supply (GST rule 55), so it is optional there.
+    if (!isDC && (!doc.pos || !doc.pos.code)) p.push('Choose the place of supply.');
     if (!firm || !firm.legalName) p.push('Add your firm name in Settings.');
     if (!firm || !firm.gstin) p.push('Add your GSTIN in Settings.');
     else if (!checkGstin(firm.gstin).ok) p.push('Your GSTIN in Settings is not valid.');
     if (!firm || !firm.address1) p.push('Add your firm address in Settings (it must be on GST invoices).');
-    if (doc.type === 'INV' && doc.party && doc.party.gstin && !checkGstin(doc.party.gstin).ok) p.push('The customer GSTIN is not valid.');
+    if ((doc.type === 'INV' || isDC) && doc.party && doc.party.gstin && !checkGstin(doc.party.gstin).ok) p.push('The customer GSTIN is not valid.');
     if (isPO && doc.party && doc.party.gstin && !checkGstin(doc.party.gstin).ok) p.push('The vendor GSTIN is not valid.');
     if (!doc.items || !doc.items.length) p.push('Add at least one item.');
     (doc.items || []).forEach(function (it, i) {
@@ -274,9 +288,10 @@ var PB = (function () {
       if (!String(it.name || '').trim()) p.push(n + 'add a description.');
       if (!(num(it.qty) > 0)) p.push(n + 'quantity must be more than 0.');
       if (num(it.rate) < 0) p.push(n + 'rate cannot be negative.');
-      if (GST_RATES.indexOf(num(it.gstRate)) < 0) p.push(n + 'choose a GST rate.');
-      if (doc.type === 'INV') { var h = checkHsn(it.hsn, it.type); if (h) p.push(n + h + '.'); }
+      if (!isDC && GST_RATES.indexOf(num(it.gstRate)) < 0) p.push(n + 'choose a GST rate.');
+      if (doc.type === 'INV' || isDC) { var h = checkHsn(it.hsn, it.type); if (h) p.push(n + h + '.'); }
     });
+    if (isDC && doc.items && doc.items.length && !(compute(doc, '').payable > 0)) p.push('Enter the approximate value of the goods, or a rate on each line.');
     return p;
   }
 
@@ -394,7 +409,7 @@ var PB = (function () {
     STATES: STATES, UT_CODES: UT_CODES, GST_RATES: GST_RATES, UNITS: UNITS, TYPES: TYPES,
     stateName: stateName, r2: r2, num: num, money: money, words: words, amountInWords: amountInWords,
     gstinCheckChar: gstinCheckChar, checkGstin: checkGstin, checkPan: checkPan, checkHsn: checkHsn,
-    fy: fy, fyTag: fyTag, formatNumber: formatNumber, seqOf: seqOf, checkInvoiceNumber: checkInvoiceNumber,
+    fy: fy, fyTag: fyTag, formatNumber: formatNumber, seqOf: seqOf, checkInvoiceNumber: checkInvoiceNumber, checkDocNumber: checkDocNumber,
     normKey: normKey, parseDate: parseDate, stateCodeOf: stateCodeOf, docTypeOf: docTypeOf, statusOf: statusOf, yesNo: yesNo, IMPORT: IMPORT,
     compute: compute, validate: validate, today: today, prettyDate: prettyDate
   };

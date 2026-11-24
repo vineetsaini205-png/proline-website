@@ -92,6 +92,7 @@
     .badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; background: var(--navy-50); color: var(--navy); }
     .badge.t-INV { background: var(--green-50); color: var(--green-text); }
     .badge.t-PO { background: var(--amber-50); color: var(--amber); }
+    .badge.t-DC { background: #EEEAFB; color: #4B3A8F; }
     .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--soft); color: var(--muted); border: 1px solid var(--line); vertical-align: middle; }
     .pill.s-FINAL { background: var(--green-50); color: var(--green-text); border-color: #BFE5D0; }
     .pill.s-CANCELLED { background: var(--red-50); color: var(--red); border-color: #F3C3BE; }
@@ -115,6 +116,7 @@
     .lines-head, .line { display: grid; grid-template-columns: minmax(200px, 3fr) 1.2fr 1.3fr 1.1fr 0.7fr 0.8fr 1.3fr; gap: 8px; align-items: start; }
     .lines-head { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding: 0 0 6px; border-bottom: 1px solid var(--line); }
     .line { padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .is-dc .lines-head, .is-dc .line { grid-template-columns: minmax(200px, 3fr) 1.2fr 1.3fr 1.1fr 1.3fr; }
     .line > div { display: flex; flex-direction: column; gap: 6px; }
     .line .c-amt { align-items: flex-end; }
     .line-total { font-size: 15px; color: var(--ink); padding-top: 8px; }
@@ -164,6 +166,7 @@
       .tiles { grid-template-columns: 1fr; }
       .lines-head { display: none; }
       .line { grid-template-columns: 1fr 1fr; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+      .is-dc .line { grid-template-columns: 1fr 1fr; }
       .line .c-name { grid-column: span 2; }
       .line .cap { display: block; }
       .line .c-amt { grid-column: span 2; flex-direction: row; justify-content: space-between; align-items: center; }
@@ -177,7 +180,7 @@
       .span2 { grid-column: span 1; }
       .bar { padding: 8px 12px; gap: 8px; }
       .new { margin-left: 0; width: 100%; }
-      .new .btn { flex: 1; padding: 8px; }
+      .new .btn { flex: 1; padding: 8px 4px; font-size: 13px; }
       #user { display: none; }
       table.list thead { display: none; }
       table.list tr { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 10px; padding: 10px 0; border-bottom: 1px solid var(--line); }
@@ -206,6 +209,7 @@
       <button class="btn primary" data-new="INV">+ Invoice</button>
       <button class="btn" data-new="PI">+ Proforma</button>
       <button class="btn" data-new="PO">+ PO</button>
+      <button class="btn" data-new="DC">+ Challan</button>
     </div>
   </header>
   <main id="main"><section class="card"><p class="muted">Loading…</p></section></main>

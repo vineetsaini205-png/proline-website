@@ -17,7 +17,8 @@ var PBPDF = (function () {
   var LABELS = {
     INV: { title: 'TAX INVOICE', no: 'Invoice No.', party: 'BILL TO', ship: 'SHIP TO / SITE', details: 'INVOICE DETAILS' },
     PI: { title: 'PROFORMA INVOICE', no: 'Proforma No.', party: 'BILL TO', ship: 'SHIP TO / SITE', details: 'DETAILS' },
-    PO: { title: 'PURCHASE ORDER', no: 'PO No.', party: 'VENDOR', ship: 'DELIVER TO', details: 'ORDER DETAILS' }
+    PO: { title: 'PURCHASE ORDER', no: 'PO No.', party: 'VENDOR', ship: 'DELIVER TO', details: 'ORDER DETAILS' },
+    DC: { title: 'DELIVERY CHALLAN', no: 'Challan No.', party: 'BILL TO', ship: 'SHIP TO / DELIVER AT', details: 'DISPATCH DETAILS' }
   };
 
   function t(s) { return s == null ? '' : String(s); }
@@ -127,7 +128,7 @@ var PBPDF = (function () {
     var d = [];
     var row = function (k, v) { if (v) d.push([{ text: k, color: C.muted }, { text: v, color: C.ink }]); };
     row('Place of supply', doc.pos && doc.pos.code ? PB.stateName(doc.pos.code) + ' (' + doc.pos.code + ')' : '');
-    if (doc.type !== 'PO') row('Reverse charge', doc.reverseCharge ? 'Yes' : 'No');
+    if (doc.type === 'INV' || doc.type === 'PI') row('Reverse charge', doc.reverseCharge ? 'Yes' : 'No');
     if (doc.type === 'INV') {
       row('Customer PO', lines([t(r.poNumber), r.poDate ? 'dated ' + PB.prettyDate(r.poDate) : '']).join(' '));
       row('Proforma ref.', t(r.piNumber));
@@ -136,6 +137,14 @@ var PBPDF = (function () {
     }
     if (doc.type === 'PI') { row('Delivery', t(r.deliveryPeriod)); row('Payment terms', t(r.paymentTerms)); row('Your ref.', t(r.poNumber)); }
     if (doc.type === 'PO') { row('Quotation ref.', t(r.quoteRef)); row('Payment terms', t(r.paymentTerms)); row('Delivery terms', t(r.deliveryTerms)); }
+    if (doc.type === 'DC') {
+      row('Purpose', t(r.purpose));
+      row('Customer PO', lines([t(r.poNumber), r.poDate ? 'dated ' + PB.prettyDate(r.poDate) : '']).join(' '));
+      row('Invoice ref.', t(r.invoiceRef));
+      row('Transporter', t(r.transporter));
+      row('Vehicle no.', t(r.vehicleNo));
+      row('E-way bill', t(r.eWayBill));
+    }
     var details = [label(L.details), { table: { widths: [76, '*'], body: d.length ? d : [[{ text: '' }, { text: '' }]] }, layout: noLines }];
     return {
       table: { widths: ['*', '*', 206], body: [[{ stack: party }, { stack: ship }, { stack: details }]] },
@@ -167,6 +176,40 @@ var PBPDF = (function () {
   }
   function fmtQty(q) { return (Math.round(q * 1000) / 1000).toString(); }
 
+  /** Challan lines: what is sent, with HSN, quantity and unit. Rate and amount only when the lines have rates. */
+  function challanTable(calc) {
+    var priced = calc.lines.some(function (l) { return l.rate > 0; });
+    var head = ['#', 'Item and description', 'HSN', 'Qty', 'Unit'].concat(priced ? ['Rate (₹)', 'Amount (₹)'] : []);
+    var right = { 'Qty': 1, 'Rate (₹)': 1, 'Amount (₹)': 1 };
+    var body = [head.map(function (h) { return { text: h, bold: true, color: C.white, fontSize: 8.8, alignment: right[h] ? 'right' : 'left' }; })];
+    calc.lines.forEach(function (l) {
+      var desc = [{ text: l.name, bold: true, color: C.ink }];
+      if (l.description) desc.push({ text: l.description, fontSize: 8.9, color: C.muted, margin: [0, 1, 0, 0] });
+      var row = [{ text: String(l.n), color: C.muted }, { stack: desc }, { text: l.hsn }, { text: fmtQty(l.qty), alignment: 'right', bold: true, color: C.ink }, { text: t(l.unit) }];
+      if (priced) row.push({ text: l.rate ? m(l.rate) : '–', alignment: 'right' }, { text: l.rate ? m(l.taxable) : '–', alignment: 'right', bold: true, color: C.ink });
+      body.push(row);
+    });
+    var widths = [14, '*', 58, 40, 38].concat(priced ? [58, 66] : []);
+    return { table: { headerRows: 1, widths: widths, body: body, dontBreakRows: true }, layout: zebra(1), fontSize: 9.8, margin: [0, 10, 0, 0] };
+  }
+  /** The value of the goods on a challan: typed as an approximate value, or worked out from the rates. */
+  function challanValue(calc) {
+    return { table: { widths: ['*'], body: [[{ stack: [
+      { text: (calc.declared ? 'Approx. value of goods' : 'Value of goods').toUpperCase(), fontSize: 8.3, bold: true, color: '#C9D6E6', characterSpacing: 0.6 },
+      { text: '₹ ' + m(calc.payable), bold: true, color: C.white, fontSize: 15, alignment: 'right', margin: [0, 3, 0, 0] }
+    ] }]] }, layout: { hLineWidth: function () { return 0; }, vLineWidth: function () { return 0; }, fillColor: function () { return C.navy; }, paddingLeft: function () { return 10; }, paddingRight: function () { return 10; }, paddingTop: function () { return 8; }, paddingBottom: function () { return 8; } } };
+  }
+  /** Space for the person who receives the goods, beside the authorised signatory. */
+  function receiverBlock() {
+    return { stack: [
+      { text: 'Received the above goods in good condition.', bold: true, color: C.ink, fontSize: 10.1 },
+      { text: ' ', margin: [0, 22, 0, 0] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 190, y2: 0, lineWidth: 0.6, lineColor: C.line }] },
+      { text: 'Receiver’s signature, name and stamp', fontSize: 8.9, color: C.muted, margin: [0, 3, 0, 0] },
+      { text: 'Date and time:', fontSize: 8.9, color: C.muted, margin: [0, 8, 0, 0] }
+    ] };
+  }
+
   function totalsTable(calc) {
     var b = [];
     var row = function (k, v, opt) { b.push([{ text: k, color: C.muted }, { text: v, alignment: 'right', color: C.ink, bold: !!(opt && opt.bold) }]); };
@@ -192,7 +235,7 @@ var PBPDF = (function () {
   }
 
   function bankBlock(doc, bank) {
-    if (doc.type === 'PO' || !bank) return null;
+    if (doc.type === 'PO' || doc.type === 'DC' || !bank) return null;
     var rows = [];
     var r = function (k, v) { if (v) rows.push([{ text: k, color: C.muted }, { text: v, color: C.ink, bold: k === 'A/c no.' }]); };
     r('Bank', bank.name); r('A/c name', bank.accountName); r('A/c no.', bank.accountNo); r('IFSC', bank.ifsc); r('Branch', bank.branch); r('UPI', bank.upi);
@@ -218,6 +261,7 @@ var PBPDF = (function () {
   }
 
   function copyContent(doc, calc, firm, bank, sign, settings, images, copyLabel) {
+    if (doc.type === 'DC') return challanContent(doc, calc, firm, sign, images, copyLabel);
     var left = [label('AMOUNT IN WORDS'), { text: calc.words, bold: true, color: C.ink, fontSize: 10 }];
     var bankB = bankBlock(doc, bank);
     if (bankB) left.push(bankB);
@@ -231,6 +275,25 @@ var PBPDF = (function () {
       { columns: [{ width: '*', stack: notesTerms(doc) }, { width: 196, stack: [signBlock(doc, firm, sign, images)] }], columnGap: 18, margin: [0, 12, 0, 0], unbreakable: true }
     ];
     if (doc.type === 'PO') c.push({ margin: [0, 16, 0, 0], text: 'Accepted by the vendor (signature and stamp): ______________________________', fontSize: 9.2, color: C.muted });
+    if (doc.status === 'CANCELLED' && doc.meta && doc.meta.cancelReason) {
+      c.splice(2, 0, { text: 'CANCELLED on ' + PB.prettyDate(String(doc.meta.cancelledAt || '').slice(0, 10)) + ': ' + doc.meta.cancelReason, color: C.red, bold: true, fontSize: 10.4, margin: [0, 0, 0, 8] });
+    }
+    return c;
+  }
+
+  /** A delivery challan: items and value, then the receiver and the authorised signatory side by side. */
+  function challanContent(doc, calc, firm, sign, images, copyLabel) {
+    var left = [label('VALUE IN WORDS'), { text: calc.words, bold: true, color: C.ink, fontSize: 10 }];
+    var nt = notesTerms(doc);
+    if (nt.length) left.push({ stack: nt, margin: [0, 10, 0, 0] });
+    var c = [
+      header(doc, firm, images, copyLabel),
+      rule(),
+      partyBlock(doc, firm),
+      challanTable(calc),
+      { columns: [{ width: '*', stack: left }, { width: 196, stack: [challanValue(calc)] }], columnGap: 18, margin: [0, 10, 0, 0], unbreakable: true },
+      { columns: [{ width: '*', stack: [receiverBlock()] }, { width: 196, stack: [signBlock(doc, firm, sign, images)] }], columnGap: 18, margin: [0, 18, 0, 0], unbreakable: true }
+    ];
     if (doc.status === 'CANCELLED' && doc.meta && doc.meta.cancelReason) {
       c.splice(2, 0, { text: 'CANCELLED on ' + PB.prettyDate(String(doc.meta.cancelledAt || '').slice(0, 10)) + ': ' + doc.meta.cancelReason, color: C.red, bold: true, fontSize: 10.4, margin: [0, 0, 0, 8] });
     }
@@ -268,7 +331,9 @@ var PBPDF = (function () {
     var firm = doc.firm || settings.firm || {};
     var bank = doc.bank || settings.bank || {};
     var sign = doc.sign || settings.sign || {};
-    var copies = [doc.type === 'INV' ? 'Original for recipient' : null];
+    var copies = [doc.type === 'INV' ? 'Original for recipient' : doc.type === 'DC' ? 'Original for consignee' : null];
+    // GST rule 55(2): a challan for goods is made in triplicate, each copy marked for whom it is.
+    if (doc.type === 'DC' && doc.status !== 'DRAFT') copies = ['Original for consignee', 'Duplicate for transporter', 'Triplicate for consigner'];
     if (doc.type === 'INV' && doc.status !== 'DRAFT') {
       var anyGoods = (doc.items || []).some(function (i) { return i.type !== 'Service'; });
       var mode = (settings.pdf && settings.pdf.copies) || 'Original';

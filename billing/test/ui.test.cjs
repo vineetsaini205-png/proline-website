@@ -342,6 +342,52 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await page.waitForFunction(() => /1 items added/.test(document.getElementById('toast').textContent));
   assert.ok(await page.evaluate(() => PBApp.S.products.some((p) => p.name === 'Surge protector Type 2' && p.hsn === '8536')));
 
+  // Delivery challan (owner, 24 Nov): no GST columns, an approximate value, vehicle number, its own series.
+  await page.click('.new [data-new="DC"]');
+  await page.waitForSelector('[data-party-pick]');
+  await idle();
+  await page.fill('[data-party-pick]', 'Sample Customer Pvt Ltd');
+  await page.dispatchEvent('[data-party-pick]', 'change');
+  await page.waitForFunction(() => /Sample Customer/.test(document.querySelector('.party-box') ? document.querySelector('.party-box').textContent : ''));
+  assert.equal(await page.$('.line [data-k="gstRate"]'), null, 'no GST on a challan line');
+  assert.equal(await page.$('[data-f="reverseCharge"]'), null, 'no reverse charge on a challan');
+  assert.match(await page.textContent('#tax-mode'), /No GST/);
+  await page.click('[data-action="lines-paste"]');
+  await page.fill('#paste-form [name="rows"]', 'Cable tray with cover;;73089090;15;Mtr;;;\nCable tie 300 mm;;39269099;1;Pkt;;;');
+  await page.click('#paste-form .btn.primary');
+  await page.waitForFunction(() => document.querySelectorAll('#lines .line').length === 2);
+  assert.equal(await page.inputValue('.line[data-i="1"] [data-k="unit"]'), 'Pkt');
+  await page.click('.doc-head [data-action="doc-finalise"]');
+  await page.waitForSelector('.alert');
+  assert.match(await page.textContent('.alert'), /approximate value/);
+  await page.fill('[data-f="declaredValue"]', '49000');
+  await page.fill('[data-f="refs.vehicleNo"]', 'DL1AB1234');
+  assert.match(await page.textContent('#totals'), /Approx\. value of goods₹ 49,000\.00/);
+  assert.match(await page.textContent('#totals'), /Forty-Nine Thousand/);
+  assert.ok(!/e-way bill/.test(await page.textContent('#totals')), 'under ₹50,000');
+  await shot('13-challan-draft');
+  await page.click('.doc-head [data-action="doc-finalise"]');
+  await page.waitForSelector('#cb-ok');
+  assert.match(await page.textContent('#modal'), /Approx\. value of goods: ₹ 49,000\.00/);
+  await page.click('#cb-ok');
+  await page.waitForFunction((n) => document.querySelector('.doc-head h1').textContent.indexOf(n) >= 0, 'PEW-DC/' + fyC + '/01');
+  await idle();
+  assert.equal(await page.evaluate(() => PBApp.S.doc.refs.vehicleNo), 'DL1AB1234');
+  assert.equal(await page.evaluate(() => PBApp.S.series.DC.next), 'PEW-DC/' + fyC + '/02');
+  // From a final proforma: a challan draft with its lines and parties, the proforma as the reference.
+  const pi = await page.evaluate(() => PBApp.S.docs.find((d) => d.type === 'PI' && d.status === 'FINAL').id);
+  await page.click('.tabs [data-view="docs"]');
+  await page.waitForSelector(`tr[data-open="${pi}"]`);
+  await page.click(`tr[data-open="${pi}"]`);
+  await page.waitForSelector('.doc-head [data-action="doc-to-challan"]');
+  await page.click('.doc-head [data-action="doc-to-challan"]');
+  await page.waitForFunction(() => /New delivery challan/.test(document.querySelector('.doc-head h1').textContent));
+  assert.equal(await page.inputValue('[data-f="refs.invoiceRef"]'), await page.evaluate((id) => PBApp.S.docs.find((d) => d.id === id).number, pi));
+  assert.ok(await page.evaluate(() => PBApp.S.doc.items.length > 0 && PBApp.S.doc.type === 'DC'));
+  await page.click('.doc-head [data-action="doc-save"]');
+  await page.waitForFunction(() => /Draft saved/.test(document.getElementById('toast').textContent));
+  await idle();
+
   // Series check: no gaps.
   await page.click('.tabs [data-view="settings"]');
   await page.click('[data-action="series-check"]');
@@ -360,8 +406,13 @@ const page_ = 'file://' + path.join(__dirname, '..', 'dist', 'test.html');
   await page.screenshot({ path: path.join(out, '10-phone-invoice.png'), fullPage: true });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   assert.equal(overflow, false, 'no sideways scrolling on a phone');
+  await page.click('.new [data-new="DC"]');
+  await page.waitForFunction(() => /New delivery challan/.test(document.querySelector('.doc-head h1').textContent));
+  await page.screenshot({ path: path.join(out, '14-phone-challan.png'), fullPage: true });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1), false, 'challan: no sideways scrolling on a phone');
+  assert.equal(await page.evaluate(() => [...document.querySelectorAll('.new .btn')].every((b) => b.scrollWidth <= b.clientWidth + 1)), true, 'the four new-document buttons fit on a phone');
 
   assert.deepEqual(errors, []);
-  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, generate the PDF again, templates, xlsx upload, series check, phone layout');
+  console.log('UI flow passed: settings, items, parties, invoice IGST, proforma + annexure → invoice, PO, cancel, number style 2627, import by paste, reuse a cancelled number, typed number check, paste lines, amend and cancel from the list, generate the PDF again, templates, xlsx upload, delivery challan, challan from a proforma, series check, phone layout');
   await browser.close();
 })().catch((e) => { console.error(e); process.exit(1); });

@@ -48,13 +48,14 @@ var DEFAULT_SETTINGS = {
   'bank.name': '', 'bank.accountName': 'Proline Electrical Works', 'bank.accountNo': '', 'bank.ifsc': '', 'bank.branch': '', 'bank.upi': '',
   'sign.name': 'Vineet Saini', 'sign.designation': 'Proprietor',
   'brand.logoFileId': '', 'brand.signatureFileId': '',
-  'series.INV.prefix': 'PEW', 'series.PI.prefix': 'PEW-PI', 'series.PO.prefix': 'PEW-PO', 'series.pad': '4', 'series.fyStyle': '26-27',
-  'series.INV.reuse': '', 'series.PI.reuse': '', 'series.PO.reuse': '',
+  'series.INV.prefix': 'PEW', 'series.PI.prefix': 'PEW-PI', 'series.PO.prefix': 'PEW-PO', 'series.DC.prefix': 'PEW-DC', 'series.pad': '4', 'series.fyStyle': '26-27',
+  'series.INV.reuse': '', 'series.PI.reuse': '', 'series.PO.reuse': '', 'series.DC.reuse': '',
   'pdf.copies': 'Original',
   'terms.INV': '1. Payment is due by the due date shown. Please quote the invoice number when you pay.\n2. Warranty on chargers, batteries and other equipment is as per the manufacturer\'s terms.\n3. Goods once supplied are not taken back except under the manufacturer\'s warranty.\n4. Subject to Delhi jurisdiction.',
   'terms.PI': '1. This is a proforma invoice and not a tax invoice. A tax invoice will be issued on supply.\n2. Prices are valid until the date shown.\n3. Work starts after the advance payment is received.\n4. Subject to Delhi jurisdiction.',
   'terms.PO': '1. Please quote this PO number on your invoice, delivery challan and all letters.\n2. Supply must match the specifications and quantities in this order; goods that do not may be returned at your cost.\n3. Send your tax invoice with GSTIN and HSN codes, and the e-way bill where required.\n4. Payment as per the terms in this order, after the goods are received and checked.\n5. Subject to Delhi jurisdiction.',
-  'notes.INV': 'Thank you for your business.', 'notes.PI': '', 'notes.PO': '',
+  'terms.DC': '1. Please check the goods when they arrive, then sign and stamp this challan.\n2. This challan is not a tax invoice.\n3. Subject to Delhi jurisdiction.',
+  'notes.INV': 'Thank you for your business.', 'notes.PI': '', 'notes.PO': '', 'notes.DC': '',
   'email.to': 'Sales@prolineelectricalworks.com', 'email.cc': '', 'email.onFinalise': 'yes',
   'drive.rootFolderId': ''
 };
@@ -128,7 +129,7 @@ function apiSaveSettings(obj) {
     clean['firm.stateCode'] = g.stateCode;
     if (!clean['firm.pan']) clean['firm.pan'] = g.pan;
   }
-  ['INV', 'PI', 'PO'].forEach(function (t) {
+  ['INV', 'PI', 'PO', 'DC'].forEach(function (t) {
     var p = clean['series.' + t + '.prefix'];
     if (p != null && !/^[A-Za-z0-9\-]{0,10}$/.test(p)) throw new Error('A number prefix may use letters, digits and "-", up to 10 characters.');
     if (clean['series.' + t + '.reuse'] != null) clean['series.' + t + '.reuse'] = splitList_(clean['series.' + t + '.reuse']).join(', ');
@@ -143,6 +144,15 @@ function apiSaveSettings(obj) {
     var sample = PB.formatNumber(pre, PB.fyTag(PB.fy(PB.today()), style), Math.pow(10, Math.max(pad, 3)) - 1, pad);
     var e = PB.checkInvoiceNumber(sample);
     if (e) throw new Error(e);
+  }
+  // A changed challan prefix must also fit in 16 characters (GST rule 55). Checked only when it changes, so
+  // other settings still save while an unchanged prefix is too long; finalising a challan then says so.
+  var dcPre = clean['series.DC.prefix'];
+  if (dcPre != null && dcPre !== settings_().series.DC.prefix) {
+    var cs = settings_(), dpad = +(clean['series.pad'] || cs.series.pad || 4);
+    var dcSample = PB.formatNumber(dcPre, PB.fyTag(PB.fy(PB.today()), clean['series.fyStyle'] || cs.series.fyStyle), Math.pow(10, Math.max(dpad, 3)) - 1, dpad);
+    var de = PB.checkDocNumber('DC', dcSample);
+    if (de) throw new Error(de);
   }
   saveSettingsRaw_(clean);
   log_('settings', '', Object.keys(clean).join(', '));
@@ -557,7 +567,7 @@ function apiImportDocuments(list) {
           var f = PB.fy(d.date);
           d.number = String(d.number || '').trim();
           if (!d.number) throw new Error('a final or cancelled document needs its number.');
-          if (d.type === 'INV') { var e = PB.checkInvoiceNumber(d.number); if (e) throw new Error(e); }
+          var e = PB.checkDocNumber(d.type, d.number); if (e) throw new Error(e);
           if (d.status === 'FINAL') {
             var k = d.type + '|' + f.long + '|' + d.number.toUpperCase();
             if (seen[k]) throw new Error(d.number + ' is twice in the file as final.');
@@ -679,7 +689,7 @@ function sendDocEmail_(doc, file, to, cc, message) {
     message ? esc_(message) + '<br><br>' : '',
     '<b>' + t.title + ' ' + esc_(doc.number) + '</b> dated ' + PB.prettyDate(doc.date) + '<br>',
     (doc.type === 'PO' ? 'Vendor: ' : 'Customer: ') + esc_(doc.party.name) + (doc.party.gstin ? ' (GSTIN ' + esc_(doc.party.gstin) + ')' : '') + '<br>',
-    'Amount: ₹' + PB.money(doc.calc.payable) + '<br>',
+    (doc.type === 'DC' ? 'Value of goods: ₹' : 'Amount: ₹') + PB.money(doc.calc.payable) + '<br>',
     doc.status === 'CANCELLED' ? '<b>Cancelled:</b> ' + esc_(doc.meta.cancelReason || '') + '<br>' : '',
     '<br>The PDF is attached and saved in Google Drive: <a href="' + file.getUrl() + '">open it</a>.<br><br>',
     esc_(s.firm.tradeName || s.firm.legalName)
@@ -741,7 +751,7 @@ function dropReuse_(type, number) {
 function checkTypedNumber_(type, number, f, exceptId) {
   if (!number) throw new Error('Type the number, or choose “Next in series”.');
   if (number.length > 30) throw new Error('That number is too long.');
-  if (type === 'INV') { var e = PB.checkInvoiceNumber(number); if (e) throw new Error(e); }
+  var e = PB.checkDocNumber(type, number); if (e) throw new Error(e);
   var clash = liveNumber_(type, number, f, exceptId);
   if (clash) throw new Error('Number ' + clash.number + ' is already used by a final ' + PB.TYPES[type].short.toLowerCase() + ' (' + clash.partyName + ', ' + PB.prettyDate(clash.date) + ').');
 }
@@ -763,7 +773,7 @@ function pickNumber_(s, doc, f, exceptId) {
   var number = numberFor_(s, doc.type, f, next);
   var taken = function (no) { return rows_('Documents').some(function (d) { return d.type === doc.type && d.status !== 'DRAFT' && sameNo_(d.number, no) && PB.fy(d.date).long === f.long; }); };
   while (taken(number)) { next++; number = numberFor_(s, doc.type, f, next); }
-  if (doc.type === 'INV') { var e = PB.checkInvoiceNumber(number); if (e) throw new Error(e); }
+  var e = PB.checkDocNumber(doc.type, number); if (e) throw new Error(e);
   return { mode: 'auto', number: number };
 }
 /** The series continues after the highest number recorded in it (auto, typed, imported). */
@@ -835,7 +845,7 @@ function saveSettingsRaw_(obj) {
 function settings_() {
   var raw = settingsRaw_();
   var g = function (k) { return raw[k] != null ? raw[k] : (DEFAULT_SETTINGS[k] || ''); };
-  var out = { firm: {}, bank: {}, sign: {}, brand: {}, series: { INV: {}, PI: {}, PO: {} }, pdf: {}, terms: {}, notes: {}, email: {}, drive: {} };
+  var out = { firm: {}, bank: {}, sign: {}, brand: {}, series: { INV: {}, PI: {}, PO: {}, DC: {} }, pdf: {}, terms: {}, notes: {}, email: {}, drive: {} };
   Object.keys(DEFAULT_SETTINGS).forEach(function (k) {
     var parts = k.split('.');
     if (parts.length === 3) out[parts[0]][parts[1]][parts[2]] = g(k);
