@@ -135,7 +135,7 @@ var PBPDF = (function () {
       row('E-way bill', t(r.eWayBill));
       row('Vehicle no.', t(r.vehicleNo));
     }
-    if (doc.type === 'PI') { row('Delivery', t(r.deliveryPeriod)); row('Payment terms', t(r.paymentTerms)); row('Your ref.', t(r.poNumber)); }
+    if (doc.type === 'PI') { row('Delivery', t(r.deliveryPeriod)); row('Payment terms', t(r.paymentTerms)); row('Your ref.', t(r.poNumber)); row('Vehicle no.', t(r.vehicleNo)); }
     if (doc.type === 'PO') { row('Quotation ref.', t(r.quoteRef)); row('Payment terms', t(r.paymentTerms)); row('Delivery terms', t(r.deliveryTerms)); }
     if (doc.type === 'DC') {
       row('Purpose', t(r.purpose));

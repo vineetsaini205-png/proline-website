@@ -375,7 +375,7 @@
     var sameLabel = isPO ? 'Our address' : 'Same as bill to';
     var refsHtml = {
       INV: refField('refs.poNumber', 'Customer PO no.') + refField('refs.poDate', 'PO date', 'date') + refField('refs.dueDate', 'Due date', 'date') + refField('refs.eWayBill', 'E-way bill no.') + refField('refs.vehicleNo', 'Vehicle no.') + refField('refs.piNumber', 'Proforma ref.'),
-      PI: refField('refs.validTill', 'Valid till', 'date') + refField('refs.deliveryPeriod', 'Delivery period', null, 'e.g. 3–4 weeks from advance') + refField('refs.paymentTerms', 'Payment terms', null, 'e.g. 50% advance') + refField('refs.poNumber', 'Customer ref.'),
+      PI: refField('refs.validTill', 'Valid till', 'date') + refField('refs.deliveryPeriod', 'Delivery period', null, 'e.g. 3–4 weeks from advance') + refField('refs.paymentTerms', 'Payment terms', null, 'e.g. 50% advance') + refField('refs.poNumber', 'Customer ref.') + refField('refs.vehicleNo', 'Vehicle no.'),
       PO: refField('refs.deliveryDate', 'Deliver by', 'date') + refField('refs.paymentTerms', 'Payment terms', null, 'e.g. 30 days after delivery') + refField('refs.deliveryTerms', 'Delivery terms', null, 'e.g. freight included') + refField('refs.quoteRef', 'Vendor quotation ref.'),
       // Purpose: the e-way bill's reasons for moving goods, offered as suggestions; any text is allowed.
       DC: '<label>Purpose<input data-f="refs.purpose" list="dl-purpose" value="' + esc(get(d, 'refs.purpose')) + '" placeholder="e.g. Supply, For own use"' + dis + '></label>' +
@@ -1094,12 +1094,14 @@
     'doc-to-invoice': function () {
       var inv = copyDoc(S.doc, 'INV');
       inv.refs.piNumber = S.doc.number;
+      inv.refs.vehicleNo = (S.doc.refs || {}).vehicleNo || '';
       openNew('INV', inv); toast('Tax invoice draft made from ' + S.doc.number + '. Check it and finalise.');
     },
     'doc-to-challan': function () {
       var dc = copyDoc(S.doc, 'DC');
       dc.refs.invoiceRef = S.doc.number;
       dc.refs.poNumber = (S.doc.refs || {}).poNumber || '';
+      dc.refs.vehicleNo = (S.doc.refs || {}).vehicleNo || '';
       openNew('DC', dc); toast('Delivery challan draft made from ' + S.doc.number + '. Check it and finalise.');
     },
     'doc-email': function () {
